@@ -25,14 +25,11 @@ public class UserUnitTest {
     public String email = "jsmith@ualberta.ca";
     public String phoneNumber = "1234567890";
     public String username = "jsmith";
-
     public Image image;
 
 
     @Test
     public void testGetName() {
-        //File path = new File("Taskr/docs/TestPic.png");
-        Bitmap bitmap = BitmapFactory.decodeFile("Taskr/docs/TestPic.png");
         User user = new User(name, phoneNumber, image, email, username);
         String returnedValue = user.getName();
         assertEquals(returnedValue, name);
@@ -64,12 +61,5 @@ public class UserUnitTest {
         User user = new User(name, phoneNumber, image, email, username);
         Image returnedValue = user.getProfilePicture();
         assertEquals(returnedValue, image);
-    }
-
-    @Test
-    public void testSetName(){
-        User user = new User(name, phoneNumber, image, email, username);
-        String returnedValue = user.setName("NSJDBA");
-        assertEquals(returnedValue, name);
     }
 }
