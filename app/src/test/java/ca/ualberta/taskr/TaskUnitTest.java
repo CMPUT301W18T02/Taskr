@@ -4,6 +4,7 @@ package ca.ualberta.taskr;
  * Created by Jacob Bakker on 2/22/2018.
  */
 
+import android.graphics.Bitmap;
 import android.media.Image;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import ca.ualberta.taskr.models.Bid;
@@ -36,6 +36,7 @@ public class TaskUnitTest {
     public String newBidName2 = "A Bribe";
     public float newBidAmount1 = 0.01f;
     public float newBidAmount2 = 6.66f;
+
 
     @Test
     public void testGetOwner() {
@@ -100,14 +101,6 @@ public class TaskUnitTest {
         Task task = new Task(owner, title, status, bids, description, photos, location, chosenBidder);
         ArrayList<Image> testPhotos = task.getPhotos();
         assertEquals(testPhotos, photos);
-    }
-
-    @Test
-    public void testAddAndGetPhoto() {
-        Task task = new Task(owner, title, status, bids, description, photos, location, chosenBidder);
-        task.addPhoto(newPhoto1);
-        Image testPhoto = task.getPhotoAtIndex(0);
-        assertEquals(testPhoto, newPhoto1);
     }
 
     @Test
