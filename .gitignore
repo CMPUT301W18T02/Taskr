@@ -181,4 +181,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-/Taskr/tooling/TaksrGenerator/.idea
+/tooling/TaksrGenerator/.idea/
