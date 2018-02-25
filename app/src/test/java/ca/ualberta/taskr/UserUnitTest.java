@@ -1,15 +1,10 @@
 package ca.ualberta.taskr;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.Image;
-import android.media.ImageReader;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import java.io.File;
 
 import ca.ualberta.taskr.models.User;
 
