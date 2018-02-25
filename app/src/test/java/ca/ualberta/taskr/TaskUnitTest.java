@@ -4,7 +4,6 @@ package ca.ualberta.taskr;
  * Created by Jacob Bakker on 2/22/2018.
  */
 
-import android.graphics.Bitmap;
 import android.media.Image;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
