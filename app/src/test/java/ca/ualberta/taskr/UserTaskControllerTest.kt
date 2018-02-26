@@ -1,5 +1,6 @@
 package ca.ualberta.taskr
 
+import android.media.Image
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.UserTaskController
 import org.junit.Test
@@ -16,6 +17,15 @@ class UserTaskControllerTest {
 
     private val map = HashMap<User, ArrayList<Task>>()
 
+    var name = "John"
+    var email = "jsmith@ualberta.ca"
+    var phoneNumber = "1234567890"
+    var username = "jsmith"
+    var image: Image? = null
+
+    private val usr = User(name, phoneNumber, image, email, username)
+
+
     @Test
     fun testGetHashMap(){
         val usrTaskCtrl = UserTaskController(map)
@@ -24,7 +34,12 @@ class UserTaskControllerTest {
     }
 
     @Test
-    fun testAddUser(){}
+    fun testAddUser(){
+        val usrTaskCtrl = UserTaskController(map)
+        usrTaskCtrl.addUser(usr)
+        val otherUsr = usrTaskCtrl.getUserFromUsername(username)
+        assertEquals(usr, otherUsr)
+    }
 
     @Test
     fun testAddTask(){}
@@ -51,5 +66,10 @@ class UserTaskControllerTest {
     fun testCheckDataBaseConnectivity(){}
 
     @Test
-    fun testGetUserFromUsername(){}
+    fun testGetUserFromUsername(){
+        val usrTaskCtrl = UserTaskController(map)
+        usrTaskCtrl.addUser(usr)
+        val otherUsr = usrTaskCtrl.getUserFromUsername(username)
+        assertEquals(usr, otherUsr)
+    }
 }
