@@ -5,15 +5,15 @@ package ca.ualberta.taskr.models
  */
 data class UserTaskController(val UserMap: HashMap<User, ArrayList<Task>>) {
 
-    fun addUser(){}
+    fun addUser(usr:User){}
 
     fun addTask(){}
 
-    fun getTaskList(){}
+    fun getTaskList(): ArrayList<Task>{}
 
-    fun getAllTasks(){}
+    fun getAllTasks(): ArrayList<Task>{}
 
-    fun getNearbyTasks(){}
+    fun getNearbyTasks(): ArrayList<Task>{}
 
     fun removeTask(){}
 
@@ -21,7 +21,7 @@ data class UserTaskController(val UserMap: HashMap<User, ArrayList<Task>>) {
 
     fun downloadChanges(){}
 
-    fun checkDataBaseConnectivity(){}
+    fun checkDataBaseConnectivity(): Boolean{}
 
-    fun getUserFromUsername(){}
+    fun getUserFromUsername(username:String): User{}
 }
