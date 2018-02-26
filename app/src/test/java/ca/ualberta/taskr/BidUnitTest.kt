@@ -12,21 +12,21 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class BidUnitTest {
 
-    private val bidVal = 10.00
-    private val bidder = "Richard B. Small"
+    private val amount = 10.00
+    private val owner = "Richard B. Small"
 
     @Test
     fun testGetBidder(){
-        val bid = Bid(bidder, bidVal)
-        val otherBidder = bid.bidder
-        assertEquals(bidder, otherBidder)
+        val bid = Bid(owner, amount)
+        val otherBidder = bid.owner
+        assertEquals(owner, otherBidder)
     }
 
     @Test
     fun testGetValue(){
-        val bid = Bid(bidder, bidVal)
-        val otherBidVal = bid.value
-        assertEquals(bidVal, otherBidVal, 0.001)
+        val bid = Bid(owner, amount)
+        val otherBidVal = bid.amount
+        assertEquals(amount, otherBidVal, 0.001)
     }
 
 }
