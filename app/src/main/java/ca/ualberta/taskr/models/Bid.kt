@@ -1,4 +1,4 @@
 package ca.ualberta.taskr.models
 
 
-data class Bid(val bidder: String, val value: Double)
+data class Bid(val owner: String, val amount: Double)
