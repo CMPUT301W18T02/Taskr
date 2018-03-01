@@ -1,49 +1,82 @@
 package ca.ualberta.taskr.models
 
+import android.drm.DrmStore
 import android.media.Image
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.searchly.jestdroid.DroidClientConfig
+import com.searchly.jestdroid.JestClientFactory
+import io.searchbox.action.Action
+import io.searchbox.client.JestClient
+import io.searchbox.client.JestResult
+import io.searchbox.core.Get
 
 /**
  * Created by james on 25/02/18.
  */
-data class UserTaskController(val UserMap: HashMap<User, ArrayList<Task>>) {
+data class UserTaskController(val userMap: HashMap<User, ArrayList<Task>>) {
+    private val factory = JestClientFactory()
+    private var serverUri = "http://cmput301.softwareprocess.es:8080/cmput301w18t02"
 
-    fun addUser(usr:User){}
+    constructor(userMap: HashMap<User, ArrayList<Task>>, serverUri: String) : this(userMap) {
+        this.serverUri = serverUri
+    }
 
-    fun addTask(){}
+    init {
+        factory.setDroidClientConfig(DroidClientConfig
+                .Builder(serverUri)
+                .multiThreaded(true)
+                .defaultMaxTotalConnectionPerRoute(3)
+                .maxTotalConnection(20)
+                .build())
+    }
 
-    fun getTaskList(): ArrayList<Task>{
+    val client = factory.`object`
+
+    fun addUser(usr: User) {}
+
+    fun addTask() {}
+
+    fun getTaskList(): ArrayList<Task> {
         return ArrayList<Task>() // temporary for compilation
     }
 
-    fun getAllTasks(): ArrayList<Task>{
-        return ArrayList<Task>() // temporary for compilation
+    fun getAllTasks(): ArrayList<Task> {
+        downloadChanges()
+
+        val taskCollection = userMap.values
+        val tasks = ArrayList<Task>()
+        for (list in taskCollection) {
+            tasks.addAll(list)
+        }
+
+        return tasks// temporary for compilation
     }
 
-    fun getNearbyTasks(): ArrayList<Task>{
-        return ArrayList<Task>() // temporary for compilation
+    fun getNearbyTasks(location: LatLng): List<Task> {
+        return getAllTasks().filter { location.distanceTo(it.location) <= 5000 }
     }
 
-    fun removeTask(){}
+    fun removeTask() {}
 
-    fun uploadChanges(){}
+    fun uploadChanges() {}
 
-    fun downloadChanges(){}
+    fun downloadChanges() {}
 
-    fun checkDataBaseConnectivity(): Boolean{
-        return true // temporary for compilation
+    fun checkDataBaseConnectivity(): Boolean {
+        val result = client.execute(Get.Builder("", "").build())
+        return true
     }
 
-    fun getUserFromUsername(username:String): User{
-        // temporary data for compilation
-        var name = "John"
-        var email = "jsmith@ualberta.ca"
-        var phoneNumber = "1234567890"
-        var username = "jsmith"
-        var image: Image? = null
+    fun getUserFromUsername(username: String): User {
+        val users = userMap.keys.filter { it.name == (username) }
 
-        val usr = User(name, phoneNumber, image, email, username)
-
-        return usr
+        if (users.isNotEmpty()) {
+            return users[0]
+        } else {
+            throw UserDoesNotExistException(username)
+        }
         // end of temporary data
     }
+
+    class UserDoesNotExistException(message: String) : Exception("User: $message does not exist")
 }

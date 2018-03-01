@@ -29,7 +29,7 @@ class UserTaskControllerTest {
     @Test
     fun testGetHashMap(){
         val usrTaskCtrl = UserTaskController(map)
-        val hashMap = usrTaskCtrl.UserMap
+        val hashMap = usrTaskCtrl.userMap
         assertEquals(map, hashMap)
     }
 
