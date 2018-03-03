@@ -59,7 +59,7 @@ class LatLng:
 
 
 def generate_users(number):
-    r = requests.delete(base_url + "user")  # clear all users
+    r = requests.delete(base_url + "user/_query", data='{"query": {"match_all": {}}}')  # clear all users
     print(r)
     user_list = []
     for i in range(number):
@@ -82,17 +82,48 @@ def generate_tasks(num_tasks, people):
         task_list.append(task)
     return task_list
 
+def generate_data(num_tasks, num_users):
+    users = generate_users(num_users)
+
+    return users, generate_tasks(num_tasks, users)
+
+def generate_indices(num_tasks, num_users):
+    r = requests.post(base_url + "user")
+    r = requests.post(base_url + "task")
+
+
+def delete_indices(num_tasks, num_users):
+    r = requests.delete(base_url + "user")
+    r = requests.delete(base_url + "task")
+
+
+
+def delete_data(num_tasks, num_users):
+    r = requests.delete(base_url + "user/_query", data='{"query": {"match_all": {}}}')
+
+    r = requests.delete(base_url + "task/_query", data='{"query": {"match_all": {}}}')
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("num_users", nargs="?", default=10, type=int, help="Enter the number of users, default is 10")
-    parser.add_argument("num_tasks", nargs="?", default=20, type=int,
-                        help="Enter the number of tasks, has random number of bids from 0-5; default 20 tasks")
 
+    options = {"generate_data": generate_data,
+               "generate_indices": generate_indices,
+               "delete_indices": delete_indices,
+               "delete_data": delete_data}
+
+    parser.add_argument("mode", help="Generator Mode, options are: delete_data, delete_indices, generate_data, generate_indices")
+    parser.add_argument("num_users", nargs="?", default=10, type=int, help="Use with generate_data, Enter the number of users, default is 10")
+    parser.add_argument("num_tasks", nargs="?", default=20, type=int,
+                        help="Use with generate_data, Enter the number of tasks, has random number of bids from 0-5; default 20 tasks")
+    parser.add_argument("base_url", nargs="?", default="http://cmput301.softwareprocess.es:8080/cmput301w18t02", help="Specify the baseUrl for elasticSearch default is http://cmput301.softwareprocess.es:8080/cmput301w18t02")
     args = parser.parse_args()
-    users = generate_users(args.num_users)
-    tasks = generate_tasks(args.num_tasks, [user.username for user in users])
+
+    base_url = args.base_url
+    func = options[args.mode]
+
+    result = func(args.num_tasks, args.num_users)
+
     # print(args.num_users)
     # print(args.num_tasks)
