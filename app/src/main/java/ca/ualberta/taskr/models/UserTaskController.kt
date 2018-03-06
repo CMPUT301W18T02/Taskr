@@ -1,48 +1,41 @@
 package ca.ualberta.taskr.models
 
-import android.drm.DrmStore
-import android.media.Image
+import android.accounts.NetworkErrorException
+import ca.ualberta.taskr.models.elasticsearch.ElasticSearch
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.searchly.jestdroid.DroidClientConfig
-import com.searchly.jestdroid.JestClientFactory
-import io.searchbox.action.Action
-import io.searchbox.client.JestClient
-import io.searchbox.client.JestResult
-import io.searchbox.core.Get
 
 /**
  * Created by james on 25/02/18.
  */
-data class UserTaskController(val userMap: HashMap<User, ArrayList<Task>>) {
-    private val factory = JestClientFactory()
-    private var serverUri = "http://cmput301.softwareprocess.es:8080/cmput301w18t02"
+data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
 
-    constructor(userMap: HashMap<User, ArrayList<Task>>, serverUri: String) : this(userMap) {
-        this.serverUri = serverUri
+    private val query: ElasticSearch = GenerateRetrofit.generateRetrofit()
+
+
+    fun doesUserExist(username: String): Boolean {
+        return userMap.keys.none { it.username == username }
+    }
+    fun addUser(user: User) {
+        if (doesUserExist(user.username)) {
+            throw UserAlreadyExistsException(user.username)
+        }
+        else {
+            userMap[user] = ArrayList()
+        }
     }
 
-    init {
-        factory.setDroidClientConfig(DroidClientConfig
-                .Builder(serverUri)
-                .multiThreaded(true)
-                .defaultMaxTotalConnectionPerRoute(3)
-                .maxTotalConnection(20)
-                .build())
+    fun addTask(user: User, task: Task){
+        val tasks = userMap[user] ?: throw UserDoesNotExistException(user.username)
+        tasks.add(task)
     }
 
-    val client = factory.`object`
+    fun getUserTasks(user: User): List<Task> {
+        return userMap[user] ?: throw UserDoesNotExistException(user.username)
 
-    fun addUser(usr: User) {}
-
-    fun addTask() {}
-
-    fun getTaskList(): ArrayList<Task> {
-        return ArrayList<Task>() // temporary for compilation
     }
 
     fun getAllTasks(): ArrayList<Task> {
-        downloadChanges()
-
         val taskCollection = userMap.values
         val tasks = ArrayList<Task>()
         for (list in taskCollection) {
@@ -60,11 +53,25 @@ data class UserTaskController(val userMap: HashMap<User, ArrayList<Task>>) {
 
     fun uploadChanges() {}
 
-    fun downloadChanges() {}
+    fun downloadChanges() {
+        val newUsers = query.getUsers().execute().body()
+        val newMap = HashMap<User, ArrayList<Task>>()
+
+        val newTasks = query.getTasks().execute().body()
+        if (newUsers == null || newTasks == null) {
+            throw NetworkErrorException("Users or Tasks failed to download")
+        }
+        for (user in newUsers) {
+            val userTasks = ArrayList(newTasks.filter { it.owner == user.username })
+            newMap[user] = userTasks
+        }
+        userMap = newMap
+    }
 
     fun checkDataBaseConnectivity(): Boolean {
-        val result = client.execute(Get.Builder("", "").build())
-        return true
+        val queryCall = query.getServerInfo()
+        val info = queryCall.execute().body()
+        return if (info?.status == null) false else info.status == "green"
     }
 
     fun getUserFromUsername(username: String): User {
@@ -75,8 +82,10 @@ data class UserTaskController(val userMap: HashMap<User, ArrayList<Task>>) {
         } else {
             throw UserDoesNotExistException(username)
         }
-        // end of temporary data
     }
 
-    class UserDoesNotExistException(message: String) : Exception("User: $message does not exist")
 }
+class UserDoesNotExistException(message: String) : Exception("User: $message does not exist")
+
+class UserAlreadyExistsException(message: String) : Exception("User: $message already exists")
+

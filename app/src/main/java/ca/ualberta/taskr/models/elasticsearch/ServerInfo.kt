@@ -1,4 +1,4 @@
-package ca.ualberta.taskr.models
+package ca.ualberta.taskr.models.elasticsearch
 
 /**
  *  ${FILE_NAME}
@@ -8,4 +8,4 @@ package ca.ualberta.taskr.models
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
 
-data class ServerInfo(val clusterName: String, val status: String, val timedOut: Boolean)
+data class ServerInfo(val cluster_name: String, val status: String, val timed_out: Boolean)
