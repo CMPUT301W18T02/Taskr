@@ -1,6 +1,7 @@
 package ca.ualberta.taskr.models.elasticsearch
 
 import ca.ualberta.taskr.models.User
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
@@ -13,17 +14,27 @@ import java.io.IOException
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
-class UserTaskAdapter: TypeAdapter<List<User>>() {
-    val delegate = gson.getDelegateAdapter(this, object : TypeToken<List<User>>() {}.type)
-    val elementAdapter = gson.getAdapter(JsonElement::class.java)
-    val userAdapter = gson.getAdapter(User::class.java)
+class UserTypeAdapter : TypeAdapter<List<User>>() {
+    private val gson = Gson()
+    private val delegate = gson.getAdapter(object : TypeToken<List<User>>(){})
+    private val elementAdapter = gson.getAdapter(JsonElement::class.java)
 
     override fun write(out: JsonWriter?, value: List<User>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        delegate.write(out, value)
+
     }
 
     override fun read(`in`: JsonReader?): List<User> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val jsonElement = elementAdapter.read(`in`)
+        val jsonObject = jsonElement.asJsonObject
+        val users = ArrayList<User>()
+
+        val hits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits")
+
+        for (hit in hits) {
+            users.add(gson.fromJson(hit.asJsonObject.getAsJsonObject("_source"),object : TypeToken<User>(){}.type))
+        }
+        return users
     }
 }
-}
+
