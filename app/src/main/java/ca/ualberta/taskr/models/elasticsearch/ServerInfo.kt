@@ -7,3 +7,5 @@ package ca.ualberta.taskr.models
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
+
+data class ServerInfo(val clusterName: String, val status: String, val timedOut: Boolean)
