@@ -49,7 +49,7 @@ class UserTypeAdapterFactory : TypeAdapterFactory {
                     Gson().fromJson(source,type.type)
                 }
                 else {
-                    delegate.fromJsonTree(jsonElement)
+                    return Gson().fromJson(jsonElement,type?.type)
                 }
 
             }
