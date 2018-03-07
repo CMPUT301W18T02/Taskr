@@ -14,7 +14,7 @@ data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
 
 
     fun doesUserExist(username: String): Boolean {
-        return userMap.keys.none { it.username == username }
+        return userMap.keys.any { it.username == username }
     }
     fun addUser(user: User) {
         if (doesUserExist(user.username)) {
@@ -49,7 +49,9 @@ data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
         return getAllTasks().filter { location.distanceTo(it.location) <= 5000 }
     }
 
-    fun removeTask() {}
+    fun removeTask(user: User, task: Task) {
+
+    }
 
     fun uploadChanges() {}
 
@@ -75,7 +77,7 @@ data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
     }
 
     fun getUserFromUsername(username: String): User {
-        val users = userMap.keys.filter { it.name == (username) }
+        val users = userMap.keys.filter { it.username == (username) }
 
         if (users.isNotEmpty()) {
             return users[0]
