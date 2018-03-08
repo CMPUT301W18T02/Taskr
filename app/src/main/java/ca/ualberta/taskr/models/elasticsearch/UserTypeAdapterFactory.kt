@@ -14,6 +14,9 @@ import com.google.gson.JsonElement
  *  3/6/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
+ *
+ *  UserType AdapterFactory Class. Assembles Usertypes into a useable datatype for elasticsearch
+ *  and retrofit
  */
 class UserTypeAdapterFactory : TypeAdapterFactory {
 
