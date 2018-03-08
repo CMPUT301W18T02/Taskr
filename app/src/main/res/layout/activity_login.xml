@@ -36,7 +36,6 @@
         android:layout_marginEnd="64dp"
         android:layout_marginStart="64dp"
         android:gravity="center"
-        android:justificationMode="gg"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/UsernameText"
         app:layout_constraintEnd_toEndOf="parent"
