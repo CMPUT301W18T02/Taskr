@@ -1,11 +1,14 @@
 package ca.ualberta.taskr.models.elasticsearch
 
 /**
- *  ${FILE_NAME}
+ *  Serverinfo.kt
  *
  *  3/1/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
 
+/**
+ * ServerInfo subclass. Contains various information
+ */
 data class ServerInfo(val cluster_name: String, val status: String, val timed_out: Boolean)

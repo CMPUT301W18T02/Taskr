@@ -17,9 +17,17 @@ import okhttp3.logging.HttpLoggingInterceptor
  *  3/5/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
+ *
+ *  Generates the retrofit profiling that is required
  */
 class GenerateRetrofit {
     companion object {
+
+        var CMPUT301URL = "http://cmput301.softwareprocess.es:8080";
+
+        /**
+         * Generate JSON using googles GSON library
+         */
         @JvmStatic
         fun generateGson(): Gson {
 
@@ -34,14 +42,18 @@ class GenerateRetrofit {
                     .create()
         }
 
+        /**
+         * Generate a Retrofit compatible profile from the elasticsearch information
+         */
         @JvmStatic
         fun generateRetrofit(): ElasticSearch {
-            val baseUrl = "http://cmput301.softwareprocess.es:8080"
+            val baseUrl = CMPUT301URL;
 
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BODY
             val client = OkHttpClient.Builder()
                     .addInterceptor(interceptor).build()
+
             //TODO https://stackoverflow.com/questions/43455825/retrofit-2-gson-and-custom-deserializer
             val retrofit = Retrofit
                     .Builder()
