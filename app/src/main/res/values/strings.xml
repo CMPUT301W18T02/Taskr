@@ -8,5 +8,8 @@
     <string name="activity_login_existing_user_button">"Log In"</string>
     <string name="activity_login_new_user_button">"New User"</string>
 
-
+    <string name="activity_edit_user_name">"Name"</string>
+    <string name="activity_edit_user_email">"Email"</string>
+    <string name="activity_edit_user_phone_number">"Phone Number"</string>
+    <string name="activity_edit_apply_changes">"Apply Changes"</string>
 </resources>
