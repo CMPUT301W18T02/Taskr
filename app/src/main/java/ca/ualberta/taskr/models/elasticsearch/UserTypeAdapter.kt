@@ -13,6 +13,8 @@ import java.io.IOException
  *  3/6/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
+ *  User Type Adapter. Takes the User type and produces a sub class compatible with the
+ *  TaskType class
  */
 class UserTypeAdapter : TypeAdapter<List<User>>() {
     private val gson = Gson()

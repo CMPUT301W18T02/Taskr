@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ca.ualberta.taskr.EditUserActivity"
+    tools:layout_editor_absoluteY="81dp">
+
+    <ImageButton
+        android:id="@+id/ProfileImageButton"
+        android:layout_width="368dp"
+        android:layout_height="241dp"
+        app:srcCompat="@drawable/mapbox_compass_icon"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <EditText
+        android:id="@+id/UserSurnameText"
+        android:layout_width="368dp"
+        android:layout_height="46dp"
+        android:ems="10"
+        android:hint="@string/activity_edit_user_name"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/UserEmailText"
+        app:layout_constraintTop_toBottomOf="@+id/ProfileImageButton"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <EditText
+        android:id="@+id/UserEmailText"
+        android:layout_width="368dp"
+        android:layout_height="46dp"
+        android:ems="10"
+        android:hint="@string/activity_edit_user_email"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/UserPhoneNumberText"
+        app:layout_constraintTop_toBottomOf="@+id/UserSurnameText"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <EditText
+        android:id="@+id/UserPhoneNumberText"
+        android:layout_width="368dp"
+        android:layout_height="46dp"
+        android:ems="10"
+        android:hint="@string/activity_edit_user_phone_number"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/ApplyChangesButton"
+        app:layout_constraintTop_toBottomOf="@+id/UserEmailText"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <Button
+        android:id="@+id/ApplyChangesButton"
+        android:layout_width="368dp"
+        android:layout_height="77dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/UserPhoneNumberText"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/UserProfileText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

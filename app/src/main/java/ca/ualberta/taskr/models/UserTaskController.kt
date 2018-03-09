@@ -1,3 +1,5 @@
+// TODO: For some reason this file isnt recognized as being part of the project. WTF James
+
 package ca.ualberta.taskr.models
 
 import android.accounts.NetworkErrorException
@@ -7,6 +9,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Created by james on 25/02/18.
+ *
+ * UserTaskController Class. This class acts to provide a way to map from users to tasks in
+ * a bidirectional manner. Both directions are searchable.
  */
 data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
 

@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Taskr</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="activity_login_username_text_default">"Username"</string>
+    <string name="activity_login_existing_user_button">"Log In"</string>
+    <string name="activity_login_new_user_button">"New User"</string>
+
+    <string name="activity_edit_user_name">"Name"</string>
+    <string name="activity_edit_user_email">"Email"</string>
+    <string name="activity_edit_user_phone_number">"Phone Number"</string>
+    <string name="activity_edit_apply_changes">"Apply Changes"</string>
 </resources>

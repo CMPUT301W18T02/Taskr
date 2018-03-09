@@ -13,6 +13,9 @@ import com.google.gson.stream.JsonWriter
  *  3/6/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
+ *
+ *  Task Type Adapter. Takes the Task type and produces a sub class compatible with the
+ *  TaskType class
  */
 class TaskTypeAdapter : TypeAdapter<List<Task>>() {
     private val gson = Gson()

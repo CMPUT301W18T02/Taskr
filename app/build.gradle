@@ -32,6 +32,8 @@ repositories {
     mavenCentral()
 }
 
+def AAVersion = '4.4.0'
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -45,4 +47,7 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:3.7.1'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+    annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
 }
