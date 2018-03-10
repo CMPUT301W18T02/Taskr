@@ -22,7 +22,6 @@
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".AddPhotoToTaskActivity" />
         <activity android:name=".AddLocationToTaskActivity" />
-        <activity android:name=".MyTasksActivity"></activity>
     </application>
 
 </manifest>
