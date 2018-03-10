@@ -18,11 +18,11 @@ class LoginActivity : AppCompatActivity() {
 
     @Click(R.id.LoginButton)
     fun LoginClicked() {
-
+        android.util.Log.d("CLICK", "Login button clicked")
     }
 
     @Click(R.id.NewUserButton)
     fun NewUserClicked() {
-
+        android.util.Log.d("CLICK", "NewUser button clicked")
     }
 }
