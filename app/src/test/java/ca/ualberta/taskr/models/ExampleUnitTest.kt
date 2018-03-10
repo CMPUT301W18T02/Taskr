@@ -1,4 +1,4 @@
-package ca.ualberta.taskr
+package ca.ualberta.taskr.models
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package ca.ualberta.taskr
+package ca.ualberta.taskr.models
 
 import ca.ualberta.taskr.models.Bid
 import org.junit.Assert.*

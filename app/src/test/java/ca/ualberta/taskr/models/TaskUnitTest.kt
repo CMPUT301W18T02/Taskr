@@ -1,4 +1,4 @@
-package ca.ualberta.taskr
+package ca.ualberta.taskr.models
 
 /**
  * Created by Jacob Bakker on 2/22/2018.
