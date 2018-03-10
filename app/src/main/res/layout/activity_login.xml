@@ -15,6 +15,7 @@
         android:ems="10"
         android:hint="@string/activity_login_username_text_default"
         android:inputType="textPersonName"
+        android:backgroundTint="@color/colorAccent2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="354dp" />
