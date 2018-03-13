@@ -12,4 +12,6 @@
     <string name="activity_edit_user_email">"Email"</string>
     <string name="activity_edit_user_phone_number">"Phone Number"</string>
     <string name="activity_edit_apply_changes">"Apply Changes"</string>
+
+    <string name="activity_my_tasks_add_task">"+ Add Task"</string>
 </resources>

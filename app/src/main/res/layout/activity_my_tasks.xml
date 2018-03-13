@@ -6,4 +6,30 @@
     android:layout_height="match_parent"
     tools:context="ca.ualberta.taskr.MyTasksActivity">
 
+    <Button
+        android:id="@+id/AddTaskButton"
+        android:layout_width="273dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/activity_my_tasks_add_task"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/MyTasksListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/MyTasksListView"
+        android:layout_width="315dp"
+        android:layout_height="386dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="91dp" />
 </android.support.constraint.ConstraintLayout>
