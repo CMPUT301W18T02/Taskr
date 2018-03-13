@@ -38,4 +38,5 @@
     <string name="access_token">"pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw"</string>
     <string name="style_url">"mapbox://styles/msnihur/cjexeh38k389i2rlqo787jn0y"</string>
 
+    <string name="activity_my_tasks_add_task">"+ Add Task"</string>
 </resources>
