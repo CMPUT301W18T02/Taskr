@@ -14,22 +14,15 @@ import org.androidannotations.annotations.ViewById
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
 
-    inner class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        @ViewById
-        lateinit var taskHeaderImage: ImageView
 
-        @ViewById
-        lateinit var taskTitle: TextView
+        var taskHeaderImage: ImageView = view.findViewById(R.id.taskHeaderImage)
+        var taskTitle: TextView = view.findViewById(R.id.taskTitle)
+        var taskDesc: TextView = view.findViewById(R.id.taskDesc)
+        var taskStatus: TextView = view.findViewById(R.id.taskStatus)
+        var taskLowestBid: TextView = view.findViewById(R.id.taskLowestBid)
 
-        @ViewById
-        lateinit var taskDesc: TextView
-
-        @ViewById
-        lateinit var taskStatus: TextView
-
-        @ViewById
-        lateinit var taskLowestBid: TextView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
@@ -42,6 +35,9 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val task = taskList[position]
         holder.taskTitle.text = task.title
+        holder.taskDesc.text = task.description
+        holder.taskStatus.text = task.status.toString()
+        holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
     }
 
     override fun getItemCount(): Int {
