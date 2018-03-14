@@ -56,7 +56,8 @@ class ListTasksActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
             }
         })
 

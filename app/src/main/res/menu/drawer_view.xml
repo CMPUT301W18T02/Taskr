@@ -3,15 +3,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_tasks"
-            android:title="Tasks" />
+            android:title="Tasks"
+            android:icon="@drawable/ic_assignment" />
         <item
             android:id="@+id/nav_todo"
-            android:title="To do" />
+            android:title="To do"
+            android:icon="@drawable/ic_assignment_late"/>
         <item
             android:id="@+id/nav_myTasks"
-            android:title="My Tasks" />
+            android:title="My Tasks"
+            android:icon="@drawable/ic_assignment_ind"/>
         <item
             android:id="@+id/nav_MyBids"
-            android:title="My bids" />
+            android:title="My bids"
+            android:icon="@drawable/ic_attach_money"/>
     </group>
 </menu>
