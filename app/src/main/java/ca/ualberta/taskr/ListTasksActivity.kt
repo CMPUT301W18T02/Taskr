@@ -7,8 +7,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
+import android.widget.EditText
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -20,10 +23,13 @@ import retrofit2.Response
 class ListTasksActivity : AppCompatActivity() {
 
     private lateinit var taskList: RecyclerView
-    private lateinit var mDrawerLayout: DrawerLayout
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var searchBar: EditText
+    private var searchText: String = ""
 
     private var masterTaskList: ArrayList<Task> = ArrayList()
-    private var taskListAdapter: TaskListAdapter = TaskListAdapter(masterTaskList)
+    private var shownTaskList: ArrayList<Task> = ArrayList()
+    private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var viewManager: RecyclerView.LayoutManager
 
 
@@ -32,7 +38,7 @@ class ListTasksActivity : AppCompatActivity() {
         setContentView(R.layout.activity_list_tasks)
 
         taskList = findViewById(R.id.taskList)
-        mDrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
 
         var toolbar = findViewById<Toolbar>(R.id.taskListToolbar)
         setSupportActionBar(toolbar)
@@ -52,7 +58,7 @@ class ListTasksActivity : AppCompatActivity() {
                 Log.i("network", response.body().toString())
                 masterTaskList.clear()
                 masterTaskList.addAll(response.body() as ArrayList<Task>)
-                taskListAdapter.notifyDataSetChanged()
+                updateSearch(searchText)
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -61,16 +67,39 @@ class ListTasksActivity : AppCompatActivity() {
             }
         })
 
+        searchBar = findViewById<EditText>(R.id.taskSearchBar)
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                // Pass
+            }
 
+            override fun beforeTextChanged(searchText: CharSequence?, start: Int, count: Int, after: Int) {
+                // pass
+            }
+
+            override fun onTextChanged(localSearchText: CharSequence?, start: Int, end: Int, count: Int) {
+                searchText = localSearchText.toString()
+                updateSearch(searchText)
+            }
+
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout.openDrawer(GravityCompat.START)
+                drawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun updateSearch(textToSearch:String){
+        shownTaskList.clear()
+        shownTaskList.addAll(masterTaskList.filter {
+            it -> it.title.contains(textToSearch) || it.description.contains(textToSearch)
+        })
+        taskListAdapter.notifyDataSetChanged()
     }
 }
