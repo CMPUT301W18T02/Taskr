@@ -1,5 +1,6 @@
 package ca.ualberta.taskr
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -36,11 +37,14 @@ class LoginActivity : AppCompatActivity() {
     @Click(R.id.LoginButton)
     fun LoginClicked(v: View) {
         android.util.Log.d("CLICK", "Login button clicked")
+
     }
 
     @Click(R.id.NewUserButton)
     fun NewUserClicked(v: View) {
         android.util.Log.d("CLICK", "NewUser button clicked")
+        val intent = Intent(this, ViewTaskActivity::class.java)
+        startActivity(intent)
     }
 
     @Click(R.id.ImageConnectionStatus)
