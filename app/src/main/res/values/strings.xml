@@ -12,4 +12,9 @@
     <string name="activity_edit_user_email">"Email"</string>
     <string name="activity_edit_user_phone_number">"Phone Number"</string>
     <string name="activity_edit_apply_changes">"Apply Changes"</string>
+
+    <!-- Add Location to Task Strings. -->
+    <string name="activity_add_location_to_task_text">"Choose a Location"</string>
+    <string name="activity_add_location_to_task_button">"Add Location"</string>
+    <string name="access_token">"pk.eyJ1IjoibXNuaWh1ciIsImEiOiJjamVyanR1MmkwaGkxMzNwOTAycmhic2E3In0.6Tnww0qKRCvK_rN-OBVbVw"</string>
 </resources>

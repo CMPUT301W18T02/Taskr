@@ -50,4 +50,5 @@ dependencies {
 
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
 }
