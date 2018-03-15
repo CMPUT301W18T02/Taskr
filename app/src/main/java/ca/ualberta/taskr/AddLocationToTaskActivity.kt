@@ -14,6 +14,10 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
+import ca.ualberta.taskr.R.id.mapView
+
+import com.mapbox.mapboxsdk.constants.Style
+
 
 /**
  * Class adds a Location to task, if no Location is specified returns a null position back to
@@ -42,6 +46,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
@@ -51,25 +56,27 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
         mapView.getMapAsync(this)
 
-
     }
 
-    public override fun onStart() {
+
+
+
+    override fun onStart(){
         super.onStart()
         mapView.onStart()
     }
 
-    public override fun onResume() {
+    override fun onResume(){
         super.onResume()
         mapView.onResume()
     }
 
-    public override fun onPause() {
+    override fun onPause(){
         super.onPause()
         mapView.onPause()
     }
 
-    public override fun onStop() {
+    override fun onStop(){
         super.onStop()
         mapView.onStop()
     }
@@ -82,6 +89,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -113,4 +121,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
         }
     }
+
+
+
 }

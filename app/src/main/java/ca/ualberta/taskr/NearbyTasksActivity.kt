@@ -29,10 +29,10 @@ import android.util.Log
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import com.mapbox.mapboxsdk.location.LocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.mapbox.mapboxsdk.constants.Style
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
@@ -64,26 +64,27 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
 
 
     }
-
-    public override fun onStart() {
+    
+    override fun onStart(){
         super.onStart()
         mapView.onStart()
     }
 
-    public override fun onResume() {
+    override fun onResume(){
         super.onResume()
         mapView.onResume()
     }
 
-    public override fun onPause() {
+    override fun onPause(){
         super.onPause()
         mapView.onPause()
     }
 
-    public override fun onStop() {
+    override fun onStop(){
         super.onStop()
         mapView.onStop()
     }
+
 
     override fun onLowMemory() {
         super.onLowMemory()

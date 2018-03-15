@@ -17,5 +17,4 @@ tools:context="ca.ualberta.taskr.NearbyTasksActivity">
     mapbox:mapbox_cameraZoom="12"
     />
 
-
 </RelativeLayout>
