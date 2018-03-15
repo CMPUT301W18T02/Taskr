@@ -1,6 +1,9 @@
 language: android
 jdk: oraclejdk8
 
+before_install:
+  - yes | sdkmanager "platforms;android-27"
+
 android:
   components:
 
@@ -13,7 +16,7 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-26
+    - addon-google_apis-google-27
 
   licenses:
     - android-sdk-license-.+
