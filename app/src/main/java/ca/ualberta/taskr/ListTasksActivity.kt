@@ -1,5 +1,6 @@
 package ca.ualberta.taskr
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -12,6 +13,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.widget.EditText
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -19,28 +23,42 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
+/**
+ *  The master task list activity
+ *
+ *  @author eyesniper2
+ */
 class ListTasksActivity : AppCompatActivity() {
 
-    private lateinit var taskList: RecyclerView
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var searchBar: EditText
-    private var searchText: String = ""
+    @BindView(R.id.taskList)
+    lateinit var taskList: RecyclerView
 
+    @BindView(R.id.drawer_layout)
+    lateinit var drawerLayout: DrawerLayout
+
+    @BindView(R.id.taskSearchBar)
+    lateinit var searchBar: EditText
+
+    @BindView(R.id.taskListToolbar)
+    lateinit var toolbar: Toolbar
+
+    private lateinit var viewManager: RecyclerView.LayoutManager
+
+    private var searchText: String = ""
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var shownTaskList: ArrayList<Task> = ArrayList()
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
-    private lateinit var viewManager: RecyclerView.LayoutManager
 
-
+    /**
+     * The on create method for the ListTasksActivity.
+     * Will set up the toolbar, base list, setup activity listeners and kick off network requests to get data
+     * from elastic search.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_tasks)
+        ButterKnife.bind(this)
 
-        taskList = findViewById(R.id.taskList)
-        drawerLayout = findViewById(R.id.drawer_layout)
-
-        var toolbar = findViewById<Toolbar>(R.id.taskListToolbar)
         setSupportActionBar(toolbar)
         var actionbar = supportActionBar
         actionbar!!.setDisplayHomeAsUpEnabled(true)
@@ -67,7 +85,6 @@ class ListTasksActivity : AppCompatActivity() {
             }
         })
 
-        searchBar = findViewById<EditText>(R.id.taskSearchBar)
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 // Pass
@@ -81,10 +98,12 @@ class ListTasksActivity : AppCompatActivity() {
                 searchText = localSearchText.toString()
                 updateSearch(searchText)
             }
-
         })
     }
 
+    /**
+     * The android built in listener for the menu button on the toolbar
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -95,11 +114,21 @@ class ListTasksActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Use to update the shownTaskList by applying a search filter to the master list
+     */
     fun updateSearch(textToSearch:String){
         shownTaskList.clear()
         shownTaskList.addAll(masterTaskList.filter {
             it -> it.title.contains(textToSearch) || it.description.contains(textToSearch)
         })
         taskListAdapter.notifyDataSetChanged()
+    }
+
+    @OnClick(R.id.viewTaskMapButton)
+    fun openMapView(){
+        val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
+        startActivity(nearbyTasksIntent)
+        finish()
     }
 }

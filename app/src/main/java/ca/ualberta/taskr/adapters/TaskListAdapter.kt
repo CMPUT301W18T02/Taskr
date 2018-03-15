@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
-import org.androidannotations.annotations.ViewById
 
 
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
