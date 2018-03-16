@@ -1,16 +1,18 @@
 package ca.ualberta.taskr
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.ListView
 import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
+import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
-import org.androidannotations.annotations.Click
-import org.androidannotations.annotations.ViewById
 
 /**
  * The my tasks activity
@@ -20,17 +22,27 @@ import org.androidannotations.annotations.ViewById
 class MyTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.addTaskButton)
-    lateinit var addTaskButton : Button
+    lateinit var addTaskButton: Button
 
-    @BindView(R.id.myTasksList)
-    lateinit var myTasksList : RecyclerView
+    @BindView(R.id.myTasksView)
+    lateinit var myTasksView: RecyclerView
 
-    private var myTasksArrayList : ArrayList<Task> = ArrayList()
-    private var adapter : ArrayAdapter<Task> = ArrayAdapter(this)
+    private lateinit var viewManager: RecyclerView.LayoutManager
+
+    private var myTasksList: ArrayList<Task> = ArrayList()
+    private var myTasksAdapter: TaskListAdapter = TaskListAdapter(myTasksList)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_tasks)
+        ButterKnife.bind(this)
+
+        // Build up recycle view
+        viewManager = LinearLayoutManager(this)
+        myTasksView.apply {
+            layoutManager = viewManager
+            adapter = myTasksAdapter
+        }
 
         populateList()
     }
@@ -46,8 +58,10 @@ class MyTasksActivity : AppCompatActivity() {
     /**
      * On clicking the Add Task Button, open a blank edit task activity.
      */
-    @Click(R.id.AddTaskButton)
-    private fun openEditTaskActivity(v: View){
-        //open a blank edit task activity
+    @OnClick(R.id.addTaskButton)
+    fun openEditTaskActivity(){
+        val editTaskIntent = Intent(applicationContext, EditTaskActivity::class.java)
+        startActivity(editTaskIntent)
+        finish()
     }
 }
