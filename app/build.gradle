@@ -41,7 +41,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:5.4.1'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:5.4.1@aar') {
+        transitive=true
+    }
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.11.0'
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.11.0') {
+        transitive = true
+    }
     implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.7.1'
@@ -50,5 +56,6 @@ dependencies {
 
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
+    //implementation 'com.mapzen.android:lost:3.0.2'
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
 }

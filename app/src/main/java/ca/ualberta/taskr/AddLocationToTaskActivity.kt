@@ -30,12 +30,12 @@ class AddLocationToTaskActivity : AppCompatActivity() {
         mapView.onCreate(savedInstanceState)
         mapView.setStyleUrl(Style.MAPBOX_STREETS)
 
-        fun onMapReady(map: MapboxMap){
-            map.addOnMapClickListener { MapboxMap.OnMapClickListener { point: LatLng ->
-                destCoord = point
-                destMarker = map.addMarker(MarkerOptions().position(destCoord))
-                }
-            } }
+        //fun onMapReady(map: MapboxMap){
+            //map.addOnMapClickListener { MapboxMap.OnMapClickListener { point: LatLng ->
+                //destCoord = point
+                //destMarker = map.addMarker(MarkerOptions().position(destCoord))
+                //}
+            //} }
         }
 
 
