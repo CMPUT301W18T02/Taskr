@@ -1,5 +1,6 @@
 package ca.ualberta.taskr
 
+
 //import com.mapbox.services.android.location.LostLocationEngine;
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
@@ -15,6 +16,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.mapbox.services.android.telemetry.location.LocationEngine
@@ -36,6 +38,7 @@ import com.mapbox.mapboxsdk.constants.Style
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+
 
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
@@ -64,7 +67,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
 
 
     }
-    
+
     override fun onStart(){
         super.onStart()
         mapView.onStart()
