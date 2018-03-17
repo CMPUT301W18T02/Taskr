@@ -1,6 +1,7 @@
 package ca.ualberta.taskr
 
 
+
 //import com.mapbox.services.android.location.LostLocationEngine;
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
@@ -58,32 +59,32 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         PermsUtil.getPermissions(this@NearbyTasksActivity)
         ButterKnife.bind(this)
         currentLocation.latitude = -7.942747
-        currentLocation.longitude =  -14.371925
+        currentLocation.longitude = -14.371925
         initializeLocationEngine()
 
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
-
-
     }
 
-    override fun onStart(){
+
+
+    public override fun onStart() {
         super.onStart()
         mapView.onStart()
     }
 
-    override fun onResume(){
+    public override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
 
-    override fun onPause(){
+    public override fun onPause() {
         super.onPause()
         mapView.onPause()
     }
 
-    override fun onStop(){
+    public override fun onStop() {
         super.onStop()
         mapView.onStop()
     }
@@ -98,6 +99,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         super.onDestroy()
         mapView.onDestroy()
     }
+
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
