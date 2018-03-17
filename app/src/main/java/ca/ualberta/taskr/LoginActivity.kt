@@ -39,6 +39,9 @@ class LoginActivity : AppCompatActivity() {
     @OnClick(R.id.LoginButton)
     fun LoginClicked(v: View) {
         android.util.Log.d("CLICK", "Login button clicked")
+        val myTaskIntent = Intent(applicationContext, MyTasksActivity::class.java)
+        startActivity(myTaskIntent)
+        finish()
 
     }
 

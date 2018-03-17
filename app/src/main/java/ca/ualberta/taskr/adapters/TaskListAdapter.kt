@@ -36,7 +36,12 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskTitle.text = task.title
         holder.taskDesc.text = task.description
         holder.taskStatus.text = task.status.toString()
-        holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
+        if(task.bids.size == 0){
+            holder.taskLowestBid.text = "No bid."
+        }
+        else{
+            holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
+        }
     }
 
     override fun getItemCount(): Int {
