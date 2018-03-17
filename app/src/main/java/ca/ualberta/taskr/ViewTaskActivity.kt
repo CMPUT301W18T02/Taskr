@@ -18,7 +18,6 @@ class ViewTaskActivity: AppCompatActivity() {
     private var displayTask: Task? = null
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_tasks)

@@ -19,7 +19,7 @@
     <Button
         android:id="@+id/markAsDoneButton"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/activity_view_tasks_provider_done"
@@ -30,7 +30,7 @@
     <Button
         android:id="@+id/reopenButton"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/activity_view_tasks_provider_reopen"
