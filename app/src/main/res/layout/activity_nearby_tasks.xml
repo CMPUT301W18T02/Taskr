@@ -8,13 +8,11 @@
     tools:context="ca.ualberta.taskr.NearbyTasksActivity">
 
     <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/rangeMapView"
+        android:id="@+id/rangemapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="38.9098"
-        mapbox:mapbox_cameraTargetLng="-77.0295"
-        mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10"
-        mapbox:mapbox_cameraZoom="12"
-        />
+        mapbox:mapbox_cameraTargetLat="5.916"
+        mapbox:mapbox_cameraTargetLng="-67.7088"
+        mapbox:mapbox_cameraZoom="6" />
 
 </RelativeLayout>
