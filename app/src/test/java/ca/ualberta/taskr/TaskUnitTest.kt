@@ -18,7 +18,7 @@ import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class TaskUnitTest {

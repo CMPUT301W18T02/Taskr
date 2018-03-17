@@ -23,7 +23,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 class GenerateRetrofit {
     companion object {
 
-        var CMPUT301URL = "http://cmput301.softwareprocess.es:8080";
+        var CMPUT301URL = "http://cmput301.softwareprocess.es:8080"
 
         /**
          * Generate JSON using googles GSON library
@@ -35,7 +35,7 @@ class GenerateRetrofit {
             val userListType: Type = object : TypeToken<List<User>>() {}.type
 
             return GsonBuilder()
-                    .registerTypeAdapterFactory(UserTypeAdapterFactory())
+                    .registerTypeAdapterFactory(AdapterFactory())
                     .registerTypeAdapter(taskListType, TaskTypeAdapter())
                     .registerTypeAdapter(userListType, UserTypeAdapter())
                     .serializeNulls()
