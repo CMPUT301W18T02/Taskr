@@ -34,7 +34,6 @@ repositories {
     mavenCentral()
 }
 
-def AAVersion = '4.4.0'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
