@@ -2,8 +2,9 @@ package ca.ualberta.taskr.models.elasticsearch
 
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
+import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.GET
+import retrofit2.http.*
 
 /**
  *  ${FILE_NAME}
@@ -36,8 +37,42 @@ interface ElasticSearch {
     fun getTasks(): Call<List<Task>>
 
     /**
-     * Returns a User from the server based on a given username
+     * Returns user's elasticsearch id from the server based on a user query body
      */
-    @GET()
-    fun getUserFromUsername()
+    @POST("cmput301w18t02/user/_search?filter_path=hits.hits._id,aggregations.*")
+    fun getUserID(@Body userQueryBody: RequestBody): Call<ElasticsearchID>
+
+
+    /**
+     * Returns task's elasticsearch id from the server based on a task query body
+     */
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
+    fun getTaskID(@Body taskQueryBody: RequestBody): Call<ElasticsearchID>
+
+
+    /**
+     * Update a task using its id and a new task
+     */
+    @PUT("cmput301w18t02/task/{id}")
+    fun updateTask(@Path("id") id: String, @Body task: Task)
+
+    /**
+     * Update a user using its id and a new user
+     */
+    @PUT("cmput301w18t02/user/{id}")
+    fun updateUser(@Path("id") id: String, @Body user: User)
+
+    /**
+     * Add a new task
+     */
+    @POST("cmput301w18t02/task")
+    fun createTask(@Body task: Task)
+
+    /**
+     * Add a new user
+     */
+    @POST("cmput301w18t02/user")
+    fun createUser(@Body user: User)
+
+
 }

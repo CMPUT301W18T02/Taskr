@@ -18,7 +18,7 @@ import com.google.gson.JsonElement
  *  UserType AdapterFactory Class. Assembles Usertypes into a useable datatype for elasticsearch
  *  and retrofit
  */
-class UserTypeAdapterFactory : TypeAdapterFactory {
+class AdapterFactory : TypeAdapterFactory {
 
     override fun <T : Any?> create(gson: Gson?, type: TypeToken<T>?): TypeAdapter<T> {
         if (gson == null) {
@@ -26,9 +26,10 @@ class UserTypeAdapterFactory : TypeAdapterFactory {
         }
         val delegate = gson.getDelegateAdapter(this, type)
         val elementAdapter = gson.getAdapter(JsonElement::class.java)
+        val finalConverter = Gson()
         val userListType = object : TypeToken<List<@JvmSuppressWildcards User>>() {}
         val taskListType = object : TypeToken<List<@JvmSuppressWildcards Task>>() {}
-
+        val elasticsearchIDType = object : TypeToken<ElasticsearchID>() {}
 
 
         return object : TypeAdapter<T>() {
@@ -43,19 +44,28 @@ class UserTypeAdapterFactory : TypeAdapterFactory {
                 val jsonObject = jsonElement.asJsonObject
 
 
-                return if (type == userListType || type == taskListType) {
+                if (type == userListType || type == taskListType) {
                     val hits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits")
                     val source = JsonArray()
                     for (hit in hits) {
                         source.add(hit.asJsonObject.getAsJsonObject("_source"))
                     }
-                    Gson().fromJson(source,type.type)
+                    return finalConverter.fromJson(source,type.type)
+                }
+                else if (type == elasticsearchIDType) {
+                    if (jsonObject.size() == 0) {
+                        throw ResourceDoesNotExistException()
+                    }
+                    val hits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits")
+                    return finalConverter.fromJson(hits[0].asJsonObject, type.type)
                 }
                 else {
-                    return Gson().fromJson(jsonElement,type?.type)
+                    return finalConverter.fromJson(jsonElement,type?.type)
                 }
 
             }
         }.nullSafe()
     }
 }
+
+class ResourceDoesNotExistException : Exception()

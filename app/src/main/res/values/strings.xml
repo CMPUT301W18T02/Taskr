@@ -25,4 +25,6 @@
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
     <string name="activity_view_tasks_requester">Add Bid</string>
 
+    <string name="prefs_name">"TaskrPrefs"</string>
+
 </resources>
