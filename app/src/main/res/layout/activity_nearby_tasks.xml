@@ -12,7 +12,7 @@ tools:context="ca.ualberta.taskr.NearbyTasksActivity">
     android:layout_height="match_parent"
     mapbox:mapbox_cameraTargetLat="41.885"
     mapbox:mapbox_cameraTargetLng="-87.679"
-    mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
+    mapbox:mapbox_styleUrl="@string/style_url"
     mapbox:mapbox_cameraTilt="60"
     mapbox:mapbox_cameraZoom="12"
     />
