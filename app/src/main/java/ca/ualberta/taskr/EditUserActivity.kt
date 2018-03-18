@@ -9,7 +9,6 @@ import butterknife.BindView
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
-
 class EditUserActivity : AppCompatActivity() {
 
     lateinit var CurrentUser: User
@@ -37,6 +36,7 @@ class EditUserActivity : AppCompatActivity() {
         if (IsNewUser) ApplyChangesButton.setText("Create User")
         else ApplyChangesButton.setText("Edit User")
     }
+
 
     fun DisplayErrorMessage(message: String) {
     }
@@ -78,7 +78,7 @@ class EditUserActivity : AppCompatActivity() {
         }
         //TODO: GET USERNAME FROM SHARED PREFS
         //TODO: Images
-        CurrentUser = User(Name, PhoneNumber,null,Email, username = "blah")
+        CurrentUser = User(Name, PhoneNumber, null, Email, username = "blah")
 
     }
 
