@@ -5,6 +5,7 @@ package ca.ualberta.taskr
  */
 
 import android.content.Context
+import android.content.Intent
 import android.media.Image
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -20,12 +21,14 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import butterknife.OnItemClick
 import ca.ualberta.taskr.R.attr.layoutManager
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import kotlinx.android.synthetic.main.activity_view_tasks.*
 
 class ViewTaskActivity: AppCompatActivity() {
@@ -53,6 +56,16 @@ class ViewTaskActivity: AppCompatActivity() {
     lateinit var reopenButton : Button
     @BindView(R.id.addBids)
     lateinit var addBidsButton : Button
+
+    @OnItemClick(R.id.bidListView)
+    fun onItemCLick(position: Int) {
+        var index = bidListAdapter.getItemId(position) as Int
+        val stringBid = GenerateRetrofit.generateGson().toJson(taskBidList[index], Bid::class.java)
+
+        var intent = Intent(this, EditBidFragment::class.java)
+        intent.putExtra("BID", stringBid)
+        startActivity(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
