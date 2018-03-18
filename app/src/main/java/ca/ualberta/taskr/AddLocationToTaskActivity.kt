@@ -8,6 +8,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Marker
 
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -22,7 +23,8 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     private var mapboxMap: MapboxMap? = null
     @BindView(R.id.add_location)
     lateinit var button: Button
-    private lateinit var position: LatLng
+    private var position: LatLng? = null
+    private lateinit var marker: Marker
 
 
     @OnClick(R.id.add_location)
@@ -41,8 +43,6 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)
-
-        //TODO implement onMapClickListener - then done.
 
         mapView.getMapAsync(this)
 
@@ -91,11 +91,21 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     }
 
     override fun onMapClick(point: LatLng) {
-        mapboxMap!!.addMarker(MarkerOptions()
-                .position(point)
-                .title("Location")
-                .snippet("YOU ARE HERE"))
-        position = point
+        if (position == null) {
+            marker = mapboxMap!!.addMarker(MarkerOptions()
+                    .position(point)
+                    .title("Location")
+                    .snippet("YOU ARE HERE"))
+            position = point
+        }
+        else {
+            marker.remove()
+            marker = mapboxMap!!.addMarker(MarkerOptions()
+                    .position(point)
+                    .title("Location")
+                    .snippet("YOU ARE HERE"))
+            position = point
+        }
     }
 
 }
