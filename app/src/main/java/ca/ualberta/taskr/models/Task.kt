@@ -33,4 +33,5 @@ data class Task(val owner: String, val title: String, var status: TaskStatus?,
     fun addPhoto(newPhoto: String) {
         this.photos.add(newPhoto)
     }
+
 }

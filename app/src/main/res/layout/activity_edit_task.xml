@@ -7,7 +7,7 @@
     tools:context="ca.ualberta.taskr.EditTaskActivity">
 
     <ImageView
-        android:id="@+id/TaskImageView"
+        android:id="@+id/taskImageView"
         android:layout_width="363dp"
         android:layout_height="128dp"
         android:layout_marginEnd="8dp"
@@ -20,7 +20,7 @@
         app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
-        android:id="@+id/PostTaskButton"
+        android:id="@+id/postTaskButton"
         android:layout_width="318dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -30,10 +30,10 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GetLocationButton" />
+        app:layout_constraintTop_toBottomOf="@+id/getLocationButton" />
 
     <Button
-        android:id="@+id/GetLocationButton"
+        android:id="@+id/getLocationButton"
         android:layout_width="314dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -43,10 +43,10 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LocationEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/locationEditText" />
 
     <EditText
-        android:id="@+id/TaskTitleEditText"
+        android:id="@+id/taskTitleEditText"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -57,10 +57,10 @@
         android:text="@string/activity_edit_task_task_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TaskImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/taskImageView" />
 
     <EditText
-        android:id="@+id/DetailsEditText"
+        android:id="@+id/detailsEditText"
         android:layout_width="356dp"
         android:layout_height="137dp"
         android:layout_marginEnd="8dp"
@@ -71,10 +71,10 @@
         android:text="@string/activity_edit_task_details"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TaskTitleEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/taskTitleEditText" />
 
     <EditText
-        android:id="@+id/LocationEditText"
+        android:id="@+id/locationEditText"
         android:layout_width="356dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -85,6 +85,6 @@
         android:text="@string/activity_edit_task_address"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/DetailsEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/detailsEditText" />
 
 </android.support.constraint.ConstraintLayout>
