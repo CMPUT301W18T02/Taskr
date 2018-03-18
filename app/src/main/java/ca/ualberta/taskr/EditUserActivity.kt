@@ -10,26 +10,25 @@ import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 
-
 class EditUserActivity : AppCompatActivity() {
 
-    lateinit var CurrentUser : User
+    lateinit var CurrentUser: User
     var IsNewUser = false
-    lateinit var Username : String
+    lateinit var Username: String
     @BindView(R.id.UserSurnameText)
-    lateinit var UserSurnameText : EditText
+    lateinit var UserSurnameText: EditText
 
     @BindView(R.id.UserPhoneNumberText)
-    lateinit var UserPhoneNumberText : EditText
+    lateinit var UserPhoneNumberText: EditText
 
     @BindView(R.id.UserEmailText)
-    lateinit var UserEmailText : EditText
+    lateinit var UserEmailText: EditText
 
     @BindView(R.id.ApplyChangesButton)
     lateinit var ApplyChangesButton: Button
 
     @BindView(R.id.EditUserErrorTextView)
-    lateinit var EditUSerErrorTextView : TextView
+    lateinit var EditUSerErrorTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,23 +38,23 @@ class EditUserActivity : AppCompatActivity() {
         else ApplyChangesButton.setText("Edit User")
     }
 
-    fun DisplayErrorMessage(message : String) {
+    fun DisplayErrorMessage(message: String) {
     }
 
-    fun CheckNameFormatting(name : String) : Boolean {
+    fun CheckNameFormatting(name: String): Boolean {
         return false
     }
 
-    fun CheckPhoneNumberFormatting(PhoneNumber : String) : Boolean {
+    fun CheckPhoneNumberFormatting(PhoneNumber: String): Boolean {
         return false
     }
 
-    fun CheckEmailFormatting(Email : String) : Boolean {
+    fun CheckEmailFormatting(Email: String): Boolean {
         return false
     }
 
     fun onApplyChangesClicked() {
-        lateinit var Name : String
+        lateinit var Name: String
         lateinit var PhoneNumber: String
         lateinit var Email: String
 
@@ -77,19 +76,18 @@ class EditUserActivity : AppCompatActivity() {
             DisplayErrorMessage("Invalid Email")
             return
         }
-
-        CurrentUser = User()
+        //TODO: GET USERNAME FROM SHARED PREFS
+        //TODO: Images
+        CurrentUser = User(Name, PhoneNumber,null,Email, username = "blah")
 
     }
 
-    fun UpdateUser(user : User) {
-
+    fun UpdateUser(user: User) {
 
 
         if (IsNewUser) {
 
-        }
-        else {
+        } else {
 
         }
     }

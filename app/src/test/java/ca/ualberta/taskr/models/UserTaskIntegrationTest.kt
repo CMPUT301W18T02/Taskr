@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.Ignore
 
 /**
  * ${FILE_NAME}
@@ -27,6 +28,7 @@ class UserTaskIntegrationTest {
     private var username = "jsmith"
     private var image: Image? = null
 
+    @Ignore
     @Test
     fun uploadChanges() {
         controller.addUser(User(name, phoneNumber, image, email, username))

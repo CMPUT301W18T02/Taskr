@@ -1,3 +1,4 @@
 ca.ualberta.taskr
+ca.ualberta.taskr.adapters
 ca.ualberta.taskr.models
 ca.ualberta.taskr.models.elasticsearch
