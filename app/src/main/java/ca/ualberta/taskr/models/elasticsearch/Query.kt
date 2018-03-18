@@ -8,6 +8,12 @@ import okhttp3.RequestBody
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
+
+/**
+ * Query class.
+ * Allows for the querying of lists of objects, returning the Elasticsearch ID of the object
+ * in question in the event that it is found
+ */
 class Query {
     companion object {
         @JvmStatic

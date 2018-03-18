@@ -87,4 +87,7 @@ interface ElasticSearch {
     @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
     fun getUserBids(@Body userBidsQuery: RequestBody): Call<ElasticsearchID>
 
+    // TODO: Implement deletion methods for various types
+    // TODO: Implement searching implementations so searches do not occur locally
+
 }

@@ -1,14 +1,31 @@
 package ca.ualberta.taskr
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+<<<<<<< HEAD
 
+=======
+import ca.ualberta.taskr.models.elasticsearch.Query
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+/**
+ * EditUserActivity
+ * This Activity allows for the creation and editing of a user to occur
+ */
+>>>>>>> master
 class EditUserActivity : AppCompatActivity() {
 
     lateinit var CurrentUser: User
@@ -32,9 +49,13 @@ class EditUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_user)
+        ButterKnife.bind(this)
 
         if (IsNewUser) ApplyChangesButton.setText("Create User")
         else ApplyChangesButton.setText("Edit User")
+
+        var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
+        Username = editor.getString("Username", null)
     }
 
 
@@ -53,6 +74,7 @@ class EditUserActivity : AppCompatActivity() {
         return false
     }
 
+    @OnClick(R.id.ApplyChangesButton)
     fun onApplyChangesClicked() {
         lateinit var Name: String
         lateinit var PhoneNumber: String
@@ -76,20 +98,35 @@ class EditUserActivity : AppCompatActivity() {
             DisplayErrorMessage("Invalid Email")
             return
         }
-        //TODO: GET USERNAME FROM SHARED PREFS
-        //TODO: Images
-        CurrentUser = User(Name, PhoneNumber, null, Email, username = "blah")
 
+        CurrentUser = User(Name, PhoneNumber, null, Email, Username)
+        UpdateUser(CurrentUser)
     }
 
-    fun UpdateUser(user: User) {
-
-
+    fun UpdateUser(user : User) {
         if (IsNewUser) {
+            GenerateRetrofit.generateRetrofit().createUser(user)
+        }
+        else {
+            lateinit var id : ElasticsearchID
+            GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(user.username)).enqueue(object : Callback<ElasticsearchID> {
+                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                    Log.i("network", response.body().toString())
+                    id = response.body() as ElasticsearchID
+                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user)
+                }
 
-        } else {
+                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                    Log.e("network", "Network Failed!")
+                    t.printStackTrace()
+                    return
+                }
+            })
 
         }
+
+        var intent = Intent(this, ListTasksActivity::class.java)
+        startActivity(intent)
     }
 
     fun onPhotoClicked() {

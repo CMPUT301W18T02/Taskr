@@ -48,5 +48,4 @@ class UserTaskIntegrationTest {
     fun checkDataBaseConnectivity() {
         println("Is the database available: " + controller.checkDataBaseConnectivity())
     }
-
 }

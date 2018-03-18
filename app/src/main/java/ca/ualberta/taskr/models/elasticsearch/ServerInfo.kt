@@ -9,6 +9,6 @@ package ca.ualberta.taskr.models.elasticsearch
  */
 
 /**
- * ServerInfo subclass. Contains various information
+ * ServerInfo subclass. Contains various information relating to connection status
  */
 data class ServerInfo(val cluster_name: String, val status: String, val timed_out: Boolean)

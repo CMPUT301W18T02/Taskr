@@ -16,6 +16,12 @@ import java.io.IOException
  *  User Type Adapter. Takes the User type and produces a sub class compatible with the
  *  TaskType class
  */
+
+/**
+ * UserTypeAdapter
+ *
+ * Allows for the serializtion of Lists of users using GSON and JSON
+ */
 class UserTypeAdapter : TypeAdapter<List<User>>() {
     private val gson = Gson()
     private val delegate = gson.getAdapter(object : TypeToken<List<User>>(){})
