@@ -15,22 +15,19 @@
         android:theme="@style/AppTheme">
         <activity android:name=".LoginActivity">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".EditUserActivity" />
         <activity android:name=".NearbyTasksActivity"
-            android:exported="true"/>
+            android:exported="true" android:theme="@style/FuckMapBox"/>
+        <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
         <activity android:name=".ListTasksActivity" />
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".AddPhotoToTaskActivity" />
-        <activity android:name=".AddLocationToTaskActivity" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
+        <activity android:name=".AddLocationToTaskActivity" />
     </application>
 
 </manifest>
