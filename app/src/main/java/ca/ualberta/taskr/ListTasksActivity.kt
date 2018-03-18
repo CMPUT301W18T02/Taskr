@@ -18,6 +18,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import retrofit2.Call
 import retrofit2.Callback
@@ -120,7 +121,8 @@ class ListTasksActivity : AppCompatActivity() {
     fun updateSearch(textToSearch:String){
         shownTaskList.clear()
         shownTaskList.addAll(masterTaskList.filter {
-            it -> it.title.contains(textToSearch) || it.description.contains(textToSearch)
+            it -> (it.status != TaskStatus.ASSIGNED || it.status != TaskStatus.DONE) &&
+                (it.title.contains(textToSearch) || it.description.contains(textToSearch))
         })
         taskListAdapter.notifyDataSetChanged()
     }
