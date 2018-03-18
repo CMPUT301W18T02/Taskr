@@ -31,7 +31,7 @@ class Task:
         self.owner = owner_username
         self.title = f.bs()
         self.status = random.choice(["REQUESTED", "BID", "ASSIGNED", "DONE"])
-        self.bids = [Bid(bidder) for bidder in bidders]
+        self.bids = [Bid(bidder) for bidder in bidders if random.choice([True,False])]
         self.description = f.text()
         # self.photos = [str(base64.encodebytes(bytes(f.text(), "utf-8"))) for i in range(random.randint(0, 10))]
         self.photos = []

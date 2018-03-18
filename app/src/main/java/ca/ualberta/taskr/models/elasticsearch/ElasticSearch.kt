@@ -74,5 +74,17 @@ interface ElasticSearch {
     @POST("cmput301w18t02/user")
     fun createUser(@Body user: User)
 
+    /**
+     * Returns user's owned task
+     */
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
+    fun getUserTasks(@Body userTasksQueryBody: RequestBody): Call<List<Task>>
+
+
+    /**
+     * Returns task's elasticsearch id from the server based on a task query body
+     */
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
+    fun getUserBids(@Body userBidsQuery: RequestBody): Call<ElasticsearchID>
 
 }
