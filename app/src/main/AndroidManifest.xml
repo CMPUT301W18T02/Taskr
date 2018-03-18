@@ -22,7 +22,7 @@
         </activity>
         <activity android:name=".EditUserActivity" />
         <activity android:name=".NearbyTasksActivity"
-            android:exported="true" android:theme="@style/FuckMapBox"/>
+            android:exported="true" android:theme="@style/MapBoxSpecific"/>
         <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
         <activity android:name=".ListTasksActivity" />
         <activity android:name=".EditTaskActivity" />

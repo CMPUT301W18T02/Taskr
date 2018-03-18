@@ -15,7 +15,7 @@
         <item name="android:actionMenuTextColor">@color/colorTextWhite</item>
     </style>
 
-    <style name="FuckMapBox" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="MapBoxSpecific" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:titleTextColor">@color/colorText</item>
         <item name="colorPrimary">@color/colorPrimary</item>
