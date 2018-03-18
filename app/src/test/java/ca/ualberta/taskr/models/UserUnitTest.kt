@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner
 
 import ca.ualberta.taskr.models.User
 
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 
 /**
  * Created by marissasnihur on 2018-02-22.
