@@ -2,6 +2,7 @@ package ca.ualberta.taskr.models
 
 import android.media.Image
 import com.mapbox.mapboxsdk.geometry.LatLng
+import java.io.Serializable
 
 
 data class Task(val owner: String, val title: String, var status: TaskStatus?,
@@ -31,4 +32,5 @@ data class Task(val owner: String, val title: String, var status: TaskStatus?,
     fun addPhoto(newPhoto: Image) {
         this.photos.add(newPhoto)
     }
+
 }
