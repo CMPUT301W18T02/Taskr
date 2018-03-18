@@ -1,7 +1,12 @@
 package ca.ualberta.taskr.models
 
 /**
- * Bid class. Contains the name of the individual that produced the bid as well as the amount
- * that they bid
+ * A bid for a task
+ *
+ * Data class for representing bids
+ *
+ * @param owner user that bidded on the task
+ * @param amount the value of the bid in dollars
+ * @constructor creates a new bid
  */
 data class Bid(val owner: String, val amount: Double)
