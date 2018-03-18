@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import butterknife.OnClick
+import butterknife.OnItemClick
 import ca.ualberta.taskr.R.id.mapView
 import com.mapbox.mapboxsdk.Mapbox
 
@@ -28,11 +30,22 @@ class AddLocationToTaskActivity : AppCompatActivity() {
         Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
         setContentView(R.layout.activity_add_location_to_task)
         mapView = findViewById<View>(R.id.rangeMapView) as MapView
-        //button = findViewById(R.id.add_location)
+        button = findViewById(R.id.add_location)
         println("HERE")
         mapView!!.onCreate(savedInstanceState)
 
         //TODO implement onMapClickListener - then done.
+
+        /*@OnClick(R.id.rangeMapView)
+        fun mapClicked(view: View) {
+            println("CLICKED")
+            mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
+                mapboxMap.addMarker(MarkerOptions()
+                        .position(point)
+                        .title("Location")
+                        .snippet("YOU ARE HERE"))
+            })
+        }*/
 
         mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
             mapboxMap.addMarker(MarkerOptions()
@@ -41,13 +54,13 @@ class AddLocationToTaskActivity : AppCompatActivity() {
                     .snippet("YOU ARE HERE"))
         })
 
-        /*button.setOnClickListener(object: View.OnClickListener {
+        button.setOnClickListener(object: View.OnClickListener {
             override fun onClick(view: View): Unit {
                 val intent = Intent(applicationContext, AddLocationToTaskActivity::class.java)
                 intent.putExtra("LatLng", point)
                 //TODO send intent back [with coords] .
             }
-        })*/
+        })
 
 
     }
