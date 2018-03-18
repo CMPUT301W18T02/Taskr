@@ -86,6 +86,6 @@ class MyTasksActivity : AppCompatActivity() {
     fun openEditTaskActivity(){
         val editTaskIntent = Intent(applicationContext, EditTaskActivity::class.java)
         startActivity(editTaskIntent)
-        finish()
+        myTasksAdapter.notifyDataSetChanged()
     }
 }

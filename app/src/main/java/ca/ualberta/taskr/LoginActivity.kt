@@ -1,10 +1,8 @@
 package ca.ualberta.taskr
 
 import android.content.Intent
-<<<<<<< HEAD
-=======
+
 import android.content.SharedPreferences
->>>>>>> master
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -114,12 +112,10 @@ class LoginActivity : AppCompatActivity() {
 
 
         android.util.Log.d("CLICK", "NewUser button clicked")
-<<<<<<< HEAD
-        val intent = Intent(this, ViewTaskActivity::class.java)
-=======
+
         AddUserToSharedPreferences(Username)
         var intent = Intent(this, EditUserActivity::class.java)
->>>>>>> master
+
         startActivity(intent)
     }
 
