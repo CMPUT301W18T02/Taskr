@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.ualberta.taskr">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -17,7 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditUserActivity" />
-        <activity android:name=".NearbyTasksActivity" />
+        <activity android:name=".NearbyTasksActivity"
+            android:exported="true" android:theme="@style/MapBoxSpecific"/>
+        <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
         <activity android:name=".ListTasksActivity" />
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".AddPhotoToTaskActivity" />

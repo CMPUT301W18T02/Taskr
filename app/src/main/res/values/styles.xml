@@ -15,6 +15,21 @@
         <item name="android:actionMenuTextColor">@color/colorTextWhite</item>
     </style>
 
+    <style name="MapBoxSpecific" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:titleTextColor">@color/colorText</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorTextWhite</item>
+        <!--<item name="android:background">@color/colorBackground</item>-->
+        <item name="android:colorButtonNormal">@color/colorButton</item>
+        <item name="android:textColorHint">@color/colorHint</item>
+        <item name="android:editTextColor">@color/colorText</item>
+        <item name="android:actionMenuTextColor">@color/colorTextWhite</item>
+    </style>
+
+
     <style name="Toolbar" parent="AppTheme">
         <item name="titleTextColor">@color/colorTextWhite</item>
         <item name="android:background">@color/colorPrimary</item>
