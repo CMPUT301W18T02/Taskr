@@ -15,5 +15,10 @@
 
     <string name="activity_view_tasks_provider_done">Mark as Done</string>
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
-    <string name="activity_view_tasks_requester">Add Bid</string>
+    <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
+
+    <string name="fragment_edit_bid_enter_amount">Amount:</string>
+    <string name="fragment_edit_bid_new">Bid!</string>
+    <string name="fragment_edit_bid_cancel">Cancel</string>
+    <string name="fragment_edit_bid_save_changes">Save</string>
 </resources>

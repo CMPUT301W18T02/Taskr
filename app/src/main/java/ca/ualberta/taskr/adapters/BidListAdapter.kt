@@ -18,11 +18,12 @@ import javax.security.auth.callback.Callback
 /**
  * Created by Jacob Bakker on 3/15/2018.
  */
+
 class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
     private var bidList: ArrayList<Bid> = taskBidList
 
-    class LocalViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var bidderImage: ImageView = view.findViewById(R.id.bidderImage)
         var bidderName: TextView = view.findViewById(R.id.bidderName)
         var bidderAmount: TextView = view.findViewById(R.id.bidAmount)
@@ -36,14 +37,11 @@ class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListA
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val bid = bidList[position]
         holder.bidderName.text = bid.owner
-        GenerateRetrofit.generateRetrofit().getUserFromUsername().enqueue(object: Callback<User>) {
-            Log.i("network")
-
-        }
-        holder.bidderAmount.text = String.format("%.2f", bid.amount)
+        holder.bidderAmount.text = bid.amount.toString()
     }
 
     override fun getItemCount(): Int {
         return bidList.size
     }
+
 }

@@ -2,11 +2,12 @@ package ca.ualberta.taskr.models
 
 import android.media.Image
 import com.mapbox.mapboxsdk.geometry.LatLng
+import java.io.Serializable
 
 
 data class Task(val owner: String, val title: String, var status: TaskStatus?,
                 val bids: ArrayList<Bid>, val description: String, val photos: ArrayList<Image>,
-                val location: LatLng?, val chosenBidder: String ) {
+                val location: LatLng?, val chosenBidder: String ): Serializable {
 
     fun getBidAtIndex(index: Int): Bid {
         return this.bids[index]
