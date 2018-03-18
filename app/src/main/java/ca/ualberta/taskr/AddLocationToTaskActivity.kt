@@ -12,9 +12,19 @@ import com.mapbox.mapboxsdk.annotations.Marker
 
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+
+/**
+ * Class adds a Location to task, if no Location is specified returns a null position back to
+ * the EditTask activity.
+ *
+ * If Location is specified, returns position (LatLng) when add_location button is pressed.
+ *
+ * //TODO: Upon clicking on the marker - marker should delete itself.
+ * //TODO: Change marker color from red to purple hue - stretch goal.
+ */
 
 
 class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
