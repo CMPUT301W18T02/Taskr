@@ -117,7 +117,7 @@ class ListTasksActivity : AppCompatActivity() {
     /**
      * Use to update the shownTaskList by applying a search filter to the master list
      */
-    fun updateSearch(textToSearch:String){
+    fun updateSearch(textToSearch : String){
         shownTaskList.clear()
         shownTaskList.addAll(masterTaskList.filter {
             it -> it.title.contains(textToSearch) || it.description.contains(textToSearch)
