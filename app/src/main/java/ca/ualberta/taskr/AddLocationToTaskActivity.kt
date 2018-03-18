@@ -17,7 +17,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 
 
-class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
     @BindView(R.id.rangeMapView)
     lateinit var mapView: MapView
     private var mapboxMap: MapboxMap? = null
@@ -90,21 +90,23 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     }
 
+    override fun onMarkerClick(marker: Marker): Boolean {
+        return true
+    }
+
+
     override fun onMapClick(point: LatLng) {
         if (position == null) {
             marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point)
-                    .title("Location")
-                    .snippet("YOU ARE HERE"))
+                    .position(point))
             position = point
         }
         else {
             marker.remove()
             marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point)
-                    .title("Location")
-                    .snippet("YOU ARE HERE"))
+                    .position(point))
             position = point
+
         }
     }
 
