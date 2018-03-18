@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="ca.ualberta.taskr.AddLocationToTaskActivity">
 
-    <com.google.android.gms.maps.MapView
+    <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="343dp"
         android:layout_height="347dp"

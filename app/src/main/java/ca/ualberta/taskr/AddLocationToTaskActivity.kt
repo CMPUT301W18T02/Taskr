@@ -61,13 +61,13 @@ class AddLocationToTaskActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
+        Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_add_location_to_task)
         mapView = findViewById<MapView>(R.id.mapView)
         button = findViewById<Button>(R.id.add_location)
         mapView.onCreate(savedInstanceState)
-        mapView.setStyleUrl("mapbox://styles/barnabusthebenign/cjeueb9xh0f872sl7fa70cgzb")
-
+        mapView.setStyleUrl(getString(R.string.style_url))
+        //TODO implement onMapClickListener - then done.
         mapView.getMapAsync(OnMapReadyCallback { mapboxMap ->
             mapboxMap.addMarker(MarkerOptions()
                     .position(LatLng(52.4631, -113.7286))
@@ -79,7 +79,7 @@ class AddLocationToTaskActivity : AppCompatActivity() {
             override fun onClick(view: View): Unit {
                 val intent = Intent(applicationContext, AddLocationToTaskActivity::class.java)
                 intent.putExtra("LatLng", point)
-                //send intent back.
+                //TODO send intent back [with coords] .
             }
         })
     }

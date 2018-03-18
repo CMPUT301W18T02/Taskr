@@ -34,6 +34,14 @@ repositories {
     mavenCentral()
 }
 
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+
 def AAVersion = '4.4.0'
 
 dependencies {
@@ -43,11 +51,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile ('com.mapbox.mapboxsdk:mapbox-android-sdk:5.0.2@aar')
-            {
-                transitive=true
-            }
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:5.5.0'
+
+//    compile ('com.mapbox.mapboxsdk:mapbox-android-sdk:5.2.0@aar')
+//            {
+//                transitive=true
+//            }
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.7.1'
     testImplementation "org.robolectric:shadows-multidex:3.0"

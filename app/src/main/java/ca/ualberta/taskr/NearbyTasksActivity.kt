@@ -2,6 +2,9 @@ package ca.ualberta.taskr
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import butterknife.BindView
+import butterknife.ButterKnife
 
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.constants.Style
@@ -12,7 +15,9 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 
 class NearbyTasksActivity : AppCompatActivity() {
 
-    private var mapView: MapView? = null
+//    @BindView(R.id.rangemapView)
+//    lateinit var mapView: MapView
+private var mapView: MapView? = null
 
 
     public override fun onStart() {
@@ -51,11 +56,20 @@ class NearbyTasksActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        Mapbox.getInstance(this, getString(R.string.access_token))
+//        setContentView(R.layout.activity_nearby_tasks)
+//        ButterKnife.bind(this)
+//
+//        mapView.onCreate(savedInstanceState)
+//        mapView.setStyleUrl(getString(R.string.style_url))
+
+        //TODO - track location of user && include the 5KM range.
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
         setContentView(R.layout.activity_nearby_tasks)
-        mapView = findViewById<MapView>(R.id.mapView)
+        mapView = findViewById<View>(R.id.rangemapView) as MapView
         mapView!!.onCreate(savedInstanceState)
-        mapView!!.setStyleUrl("mapbox://styles/barnabusthebenign/cjeueb9xh0f872sl7fa70cgzb")
+
     }
 }
