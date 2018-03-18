@@ -13,9 +13,6 @@ import butterknife.OnClick
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-<<<<<<< HEAD
-
-=======
 import ca.ualberta.taskr.models.elasticsearch.Query
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,7 +22,6 @@ import retrofit2.Response
  * EditUserActivity
  * This Activity allows for the creation and editing of a user to occur
  */
->>>>>>> master
 class EditUserActivity : AppCompatActivity() {
 
     lateinit var CurrentUser: User
