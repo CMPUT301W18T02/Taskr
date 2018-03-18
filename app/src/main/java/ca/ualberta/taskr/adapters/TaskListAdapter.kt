@@ -9,10 +9,16 @@ import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
 
-
+/**
+ * TaskListAdapter class. Take in a task list and produce an adapter subclass that allows
+ * lists of tasks to be used with the recyclerview view
+ */
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
 
+    /**
+     * LocalViewHolder function
+     */
     class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
 
@@ -24,6 +30,9 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
 
     }
 
+    /**
+     * Create the LocalViewHolder
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.row_task_item, parent, false)
@@ -31,6 +40,9 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         return LocalViewHolder(itemView)
     }
 
+    /**
+     * Bind a subset window of the dataset to the LocalViewHolder
+     */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val task = taskList[position]
         holder.taskTitle.text = task.title
@@ -39,6 +51,9 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
     }
 
+    /**
+     * Return the size of the dataset
+     */
     override fun getItemCount(): Int {
         return taskList.size
     }

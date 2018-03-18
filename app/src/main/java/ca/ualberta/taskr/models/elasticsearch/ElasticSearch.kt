@@ -75,4 +75,7 @@ interface ElasticSearch {
     fun createUser(@Body user: User)
 
 
+    // TODO: Implement deletion methods for various types
+    // TODO: Implement searching implementations so searches do not occur locally
+
 }

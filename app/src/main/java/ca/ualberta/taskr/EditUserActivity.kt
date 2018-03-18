@@ -18,7 +18,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
+/**
+ * EditUserActivity
+ * This Activity allows for the creation and editing of a user to occur
+ */
 class EditUserActivity : AppCompatActivity() {
 
     lateinit var CurrentUser : User

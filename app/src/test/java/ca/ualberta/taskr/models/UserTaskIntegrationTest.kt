@@ -27,24 +27,24 @@ class UserTaskIntegrationTest {
     private var username = "jsmith"
     private var image: Image? = null
 
-    @Test
-    fun uploadChanges() {
-        controller.addUser(User(name, phoneNumber, image, email, username))
-        controller.uploadChanges()
-    }
-
-    @Test
-    fun downloadChanges() {
-        controller.downloadChanges()
-    }
-
-    @Test
-    fun getUserID() {
-        println(elasticSearch.getUserID(Query.userQuery("ryan")).execute().body())
-    }
-    @Test
-    fun checkDataBaseConnectivity() {
-        println("Is the database available: " + controller.checkDataBaseConnectivity())
-    }
-
+//    @Test
+//    fun uploadChanges() {
+//        controller.addUser(User(name, phoneNumber, image, email, username))
+//        controller.uploadChanges()
+//    }
+//
+//    @Test
+//    fun downloadChanges() {
+//        controller.downloadChanges()
+//    }
+//
+//    @Test
+//    fun getUserID() {
+//        println(elasticSearch.getUserID(Query.userQuery("ryan")).execute().body())
+//    }
+//    @Test
+//    fun checkDataBaseConnectivity() {
+//        println("Is the database available: " + controller.checkDataBaseConnectivity())
+//    }
+//
 }

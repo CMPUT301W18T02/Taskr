@@ -20,6 +20,12 @@ import okhttp3.logging.HttpLoggingInterceptor
  *
  *  Generates the retrofit profiling that is required
  */
+
+/**
+ * GenerateRetrofit Class
+ * This class acts as a wrapper to the REST api functionality and ElasticSearch calls, as well
+ * as providing data serialization using GSON and JSON for queried objects
+ */
 class GenerateRetrofit {
     companion object {
 
