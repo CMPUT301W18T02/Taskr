@@ -3,7 +3,7 @@ package ca.ualberta.taskr
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-
+import android.widget.Button
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -21,6 +21,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     lateinit var mapView: MapView
     private var mapboxMap: MapboxMap? = null
     @BindView(R.id.add_location)
+    lateinit var button: Button
     private lateinit var position: LatLng
 
 
@@ -40,6 +41,8 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)
+
+        //TODO implement onMapClickListener - then done.
 
         mapView.getMapAsync(this)
 
