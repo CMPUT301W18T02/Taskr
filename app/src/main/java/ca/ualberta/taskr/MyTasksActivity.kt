@@ -1,12 +1,17 @@
 package ca.ualberta.taskr
 
+import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+
 import android.util.Log
+
 import android.widget.Button
+
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -17,11 +22,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-/**
- * The my tasks activity
- *
- * @author James Cook
- */
 class MyTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.addTaskButton)
@@ -85,7 +85,19 @@ class MyTasksActivity : AppCompatActivity() {
     @OnClick(R.id.addTaskButton)
     fun openEditTaskActivity(){
         val editTaskIntent = Intent(applicationContext, EditTaskActivity::class.java)
-        startActivity(editTaskIntent)
+        startActivityForResult(editTaskIntent, 1)
         myTasksAdapter.notifyDataSetChanged()
+    }
+
+    /**
+     * Process return from the EditTaskActivity
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent:Intent){
+        if(requestCode == 1){
+            if(resultCode == Activity.RESULT_OK){
+                //process returned code
+                populateList()
+            }
+        }
     }
 }
