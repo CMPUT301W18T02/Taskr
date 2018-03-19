@@ -83,7 +83,8 @@ class EditBidFragment : DialogFragment() {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        fun bidUpdate(bidAmount : Double, case : Int)
+        fun bidUpdate(bidAmount : Double)
+        fun bidAdd(bidAmount : Double)
     }
 
     companion object {
@@ -126,7 +127,11 @@ class EditBidFragment : DialogFragment() {
         }
         if (inputAmount > 0 && mListener != null) {
             Log.i("Accept", "Sending to ViewTasks...")
-            mListener!!.bidUpdate(inputAmount, 0)
+            if (displayBid == null) {
+                mListener!!.bidAdd(inputAmount)
+            } else {
+                mListener!!.bidUpdate(inputAmount)
+            }
             this.dismiss()
         }
     }

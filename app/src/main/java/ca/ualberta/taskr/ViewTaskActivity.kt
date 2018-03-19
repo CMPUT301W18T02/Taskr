@@ -17,6 +17,7 @@ import android.provider.ContactsContract
 import android.support.constraint.ConstraintSet
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.telecom.Call
 import android.util.Log
 import android.view.View
 import android.view.ViewStub
@@ -32,19 +33,20 @@ import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import com.google.android.gms.common.api.Response
 import kotlinx.android.synthetic.main.activity_view_tasks.*
 import org.jetbrains.annotations.Nullable
+import javax.security.auth.callback.Callback
 
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteractionListener,
                         AcceptBidFragment.OnFragmentInteractionListener{
 
     private var isRequester: Boolean = false
-    private var taskOwner: String = ""
+    private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
     private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList)
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var displayTask: Task? = null
-    private var manager : android.support.v4.app.FragmentManager = supportFragmentManager
     private var editBidFragment: EditBidFragment? = null
     private var acceptBidFragment: AcceptBidFragment? = null
 
@@ -62,11 +64,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     lateinit var bidListView:RecyclerView
     @BindView(R.id.reopenButton)
     lateinit var reopenButton : Button
-    @BindView(R.id.addBids)
-    lateinit var addBidsButton : Button
-    @Nullable
-    @BindView(R.id.enterAmountEdit)
-    lateinit var enterBidAmount : EditText
+    @BindView(R.id.addBidOrMarkDone)
+    lateinit var addOrMarkButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +78,14 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
             if (taskStr != null) {
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 updateDetails()
+                taskBidList = displayTask!!.bids
             }
         }
+
         updateDetails()
         getUserType()
         if (isRequester) {
-            addBidsButton.text = getResources().getString(R.string.activity_view_tasks_provider_done)
+            addOrMarkButton.text = getResources().getString(R.string.activity_view_tasks_provider_done)
             reopenButton.visibility = View.VISIBLE
         }
 
@@ -102,20 +103,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
             layoutManager = viewManager
             adapter = bidListAdapter
         }
-
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        taskBidList.add(Bid("Bob", 4.20))
-        bidListAdapter.notifyDataSetChanged()
     }
 
     private fun startAcceptBidFragment(bid : Bid) {
@@ -129,7 +116,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
 
     private fun getUserType() {
         var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        var username = editor.getString("Username", null)
+        username = editor.getString("Username", null)
         if (username == displayTask?.owner) {
             isRequester = true
         }
@@ -142,8 +129,16 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         taskStatus.text = displayTask?.status?.name
     }
 
-    override fun bidUpdate(bidAmount : Double, case : Int) {
-        Log.i("SHIT", bidAmount.toString());
+    override fun bidUpdate(bidAmount : Double) {
+
+    }
+
+    override fun bidAdd(bidAmount : Double) {
+        var newBid = Bid(username, bidAmount)
+        if (displayTask != null) {
+            displayTask!!.bids.add(newBid)
+            updateDisplayTask()
+        }
     }
 
     override fun declinedBid(bid: Bid) {
@@ -154,11 +149,19 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         Log.i("MESSAGE", "RE")
     }
 
-    @OnClick(R.id.addBids)
+    @OnClick(R.id.addBidOrMarkDone)
     fun addBid(view : View) {
-        editBidFragment = EditBidFragment()
-        var args = Bundle()
-        editBidFragment!!.arguments = args
-        editBidFragment!!.show(fragmentManager, "DialogFragment")
+        if (isRequester) {
+            Log.i("G", "G")
+        } else {
+            editBidFragment = EditBidFragment()
+            var args = Bundle()
+            editBidFragment!!.arguments = args
+            editBidFragment!!.show(fragmentManager, "DialogFragment")
+        }
+    }
+
+    private fun updateDisplayTask() {
+        GenerateRetrofit.generateRetrofit().ge
     }
 }
