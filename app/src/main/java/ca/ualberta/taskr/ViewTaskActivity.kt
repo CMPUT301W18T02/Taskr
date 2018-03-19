@@ -33,7 +33,6 @@ import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import com.google.android.gms.common.api.Response
 import kotlinx.android.synthetic.main.activity_view_tasks.*
 import org.jetbrains.annotations.Nullable
 import javax.security.auth.callback.Callback
@@ -116,7 +115,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
 
     private fun getUserType() {
         var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        username = editor.getString("Username", null)
+        //username = editor.getString("Username", null)
         if (username == displayTask?.owner) {
             isRequester = true
         }
@@ -129,7 +128,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         taskStatus.text = displayTask?.status?.name
     }
 
-    override fun bidUpdate(bidAmount : Double) {
+    override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
 
     }
 
@@ -162,6 +161,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     }
 
     private fun updateDisplayTask() {
-        GenerateRetrofit.generateRetrofit().ge
+        GenerateRetrofit.generateRetrofit()
     }
 }
