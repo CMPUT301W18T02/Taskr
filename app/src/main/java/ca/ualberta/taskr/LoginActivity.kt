@@ -106,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
                     showLoginError("Username: " + " Already exists")
                 }
                 else{
-                    lauchEditUserActivity()
+                    launchEditUserActivity(Username)
                 }
             }
 
@@ -119,8 +119,9 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    fun lauchEditUserActivity() {
+    fun launchEditUserActivity(username:String) {
         var intent = Intent(this, EditUserActivity::class.java)
+        intent.putExtra("username", username)
         startActivity(intent)
     }
 
