@@ -9,12 +9,11 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.Marker
-
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 
 /**
  * Class adds a Location to task, if no Location is specified returns a null position back to
@@ -25,8 +24,6 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
  * //TODO: Upon clicking on the marker - marker should delete itself.
  * //TODO: Change marker color from red to purple hue - stretch goal.
  */
-
-
 class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
     @BindView(R.id.rangeMapView)
     lateinit var mapView: MapView
@@ -38,7 +35,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
 
     @OnClick(R.id.add_location)
-    fun sendBack(){
+    fun sendBack() {
         val intent = Intent(applicationContext, EditTaskActivity::class.java)
         intent.putExtra("LatLng", position)
         startActivity(intent)
@@ -108,8 +105,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
             marker = mapboxMap!!.addMarker(MarkerOptions()
                     .position(point))
             position = point
-        }
-        else {
+        } else {
             marker.remove()
             marker = mapboxMap!!.addMarker(MarkerOptions()
                     .position(point))
@@ -117,5 +113,4 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
         }
     }
-
 }
