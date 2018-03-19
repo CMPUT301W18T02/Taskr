@@ -19,7 +19,7 @@ data class Task(val owner: String, val title: String, var status: TaskStatus?,
     }
 
     fun setBidAtIndex(newBid: Bid, index: Int) {
-        this.bids[index] = newBid;
+        this.bids[index] = newBid
     }
 
     fun getPhotoAtIndex(index: Int): String {
@@ -33,4 +33,5 @@ data class Task(val owner: String, val title: String, var status: TaskStatus?,
     fun addPhoto(newPhoto: String) {
         this.photos.add(newPhoto)
     }
+
 }
