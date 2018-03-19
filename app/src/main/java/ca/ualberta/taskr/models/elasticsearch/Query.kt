@@ -18,12 +18,12 @@ class Query {
     companion object {
         @JvmStatic
         fun taskQuery(owner: String, title: String, description: String): RequestBody {
-            return RequestBody.create(MediaType.parse("text/plain"),"{\"_source\": false,\"query\": {\"bool\": {\"should\": [{\"match\" : {\"owner\": \"$owner\"}},{\"match\" : {\"title\": \"$title\"}},{\"match\" : {\"description\": \"$description\"}}]}}}")
+            return RequestBody.create(MediaType.parse("text/plain"),"{\"_source\": false,\"query\": {\"bool\": {\"must\": [{\"match\" : {\"owner\": \"$owner\"}},{\"match\" : {\"title\": \"$title\"}},{\"match\" : {\"description\": \"$description\"}}]}}}")
         }
 
         @JvmStatic
         fun userQuery(username: String): RequestBody {
-            return RequestBody.create(MediaType.parse("text/plain"),"{\"_source\": false,\"query\": {\"bool\": {\"should\": [{\"match\" : {\"username\": \"$username\"}}]}}}")
+            return RequestBody.create(MediaType.parse("text/plain"),"{\"_source\": false,\"query\": {\"bool\": {\"must\": [{\"match\" : {\"username\": \"$username\"}}]}}}")
         }
 
         @JvmStatic
