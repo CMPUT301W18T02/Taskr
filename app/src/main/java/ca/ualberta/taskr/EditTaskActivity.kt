@@ -1,7 +1,6 @@
 package ca.ualberta.taskr
 
 import android.content.Intent
-import android.media.Image
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -86,7 +85,9 @@ class EditTaskActivity : AppCompatActivity() {
         val taskStatus: TaskStatus = TaskStatus.REQUESTED
         val taskBids: ArrayList<Bid> = ArrayList()
         val taskDetails: String = detailsEditText.text.toString()
-        val taskPhotos: ArrayList<Image> = ArrayList()
+
+        // TODO: Grab images
+        val taskPhotos: ArrayList<String> = ArrayList()
 
         // Convert String to latlng
         val locationList: List<String> = locationEditText.text.toString().split(",")

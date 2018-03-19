@@ -15,18 +15,25 @@ import ca.ualberta.taskr.models.Task
  */
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
+    var itemClickListener : TaskListAdapter.OnItemClickListener? = null
 
     /**
      * LocalViewHolder function
      */
-    class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-
+    inner class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         var taskHeaderImage: ImageView = view.findViewById(R.id.taskHeaderImage)
         var taskTitle: TextView = view.findViewById(R.id.taskTitle)
         var taskDesc: TextView = view.findViewById(R.id.taskDesc)
         var taskStatus: TextView = view.findViewById(R.id.taskStatus)
         var taskLowestBid: TextView = view.findViewById(R.id.taskLowestBid)
+
+        init {
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            this@TaskListAdapter.itemClickListener?.onItemClick(v, adapterPosition)
+        }
 
     }
 
@@ -38,6 +45,14 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
                 .inflate(R.layout.row_task_item, parent, false)
 
         return LocalViewHolder(itemView)
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(view : View, position : Int)
+    }
+
+    fun setOnItemClickListener(itemClickListener : OnItemClickListener) {
+        this.itemClickListener = itemClickListener
     }
 
     /**
@@ -56,10 +71,12 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
             holder.taskLowestBid.text = "No bid!"
         }
     }
+
     /**
      * Return the size of the dataset
      */
     override fun getItemCount(): Int {
         return taskList.size
     }
+
 }

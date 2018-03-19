@@ -9,12 +9,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
 import android.util.Log
+import android.view.View
 
 import android.widget.Button
 
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -47,6 +49,16 @@ class MyTasksActivity : AppCompatActivity() {
             adapter = myTasksAdapter
         }
 
+        myTasksAdapter.setOnItemClickListener(object : TaskListAdapter.OnItemClickListener {
+            override fun onItemClick(view : View, position : Int) {
+                var detailsIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+                var bundle = Bundle()
+                var strTask = GenerateRetrofit.generateGson().toJson(myTasksList[position])
+                bundle.putString("DISPLAYTASK", strTask)
+                detailsIntent.putExtras(bundle)
+                startActivityForResult(detailsIntent, 2)
+            }
+        })
         populateList()
     }
 
@@ -93,11 +105,8 @@ class MyTasksActivity : AppCompatActivity() {
      * Process return from the EditTaskActivity
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent:Intent){
-        if(requestCode == 1){
-            if(resultCode == Activity.RESULT_OK){
-                //process returned code
-                populateList()
-            }
+        if (resultCode == RESULT_OK) {
+            populateList()
         }
     }
 }
