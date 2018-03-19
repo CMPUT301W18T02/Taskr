@@ -55,13 +55,13 @@ interface ElasticSearch {
      * Update a task using its id and a new task
      */
     @PUT("cmput301w18t02/task/{id}")
-    fun updateTask(@Path("id") id: String, @Body task: Task)
+    fun updateTask(@Path("id") id: String, @Body task: Task) : Call<Void>
 
     /**
      * Update a user using its id and a new user
      */
     @PUT("cmput301w18t02/user/{id}")
-    fun updateUser(@Path("id") id: String, @Body user: User)
+    fun updateUser(@Path("id") id: String, @Body user: User) : Call<Void>
 
     /**
      * Add a new task

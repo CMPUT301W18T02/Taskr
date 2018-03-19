@@ -130,7 +130,7 @@ class EditBidFragment : DialogFragment() {
             if (displayBid == null) {
                 mListener!!.bidAdd(inputAmount)
             } else {
-                mListener!!.bidUpdate(inputAmount, displayBid)
+                mListener!!.bidUpdate(inputAmount, displayBid!!)
             }
             this.dismiss()
         }

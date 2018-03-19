@@ -92,12 +92,10 @@ class LoginActivity : AppCompatActivity() {
 
 
         android.util.Log.d("CLICK", "Login button clicked")
-
         AddUserToSharedPreferences(Username)
 
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
-
     }
 
     @OnClick(R.id.NewUserButton)
@@ -115,10 +113,8 @@ class LoginActivity : AppCompatActivity() {
 
 
         android.util.Log.d("CLICK", "NewUser button clicked")
-
         AddUserToSharedPreferences(Username)
         var intent = Intent(this, EditUserActivity::class.java)
-
         startActivity(intent)
     }
 
