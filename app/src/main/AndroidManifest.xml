@@ -29,6 +29,7 @@
         <activity android:name=".AddPhotoToTaskActivity" />
         <activity android:name=".AddLocationToTaskActivity"
             android:theme="@style/MapBoxSpecific"/>
+        <activity android:name=".ViewTaskActivity"/>
     </application>
 
 </manifest>

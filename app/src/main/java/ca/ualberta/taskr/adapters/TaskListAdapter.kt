@@ -48,9 +48,14 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskTitle.text = task.title
         holder.taskDesc.text = task.description
         holder.taskStatus.text = task.status.toString()
-        holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
+        val lowestBid = task.bids.minBy { it ->  it.amount }
+        if (lowestBid != null){
+            holder.taskLowestBid.text = lowestBid.amount.toString()
+        }
+        else{
+            holder.taskLowestBid.text = "No bid!"
+        }
     }
-
     /**
      * Return the size of the dataset
      */

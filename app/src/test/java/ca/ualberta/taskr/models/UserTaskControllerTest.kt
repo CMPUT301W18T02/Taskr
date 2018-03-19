@@ -1,12 +1,9 @@
 package ca.ualberta.taskr.models
 
-import android.media.Image
-import ca.ualberta.taskr.models.User
-import ca.ualberta.taskr.models.UserTaskController
+import ca.ualberta.taskr.controllers.UserTaskController
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import ca.ualberta.taskr.models.Task
 import org.junit.Assert.assertEquals
 
 /**
@@ -21,7 +18,7 @@ class UserTaskControllerTest {
     var email = "jsmith@ualberta.ca"
     var phoneNumber = "1234567890"
     var username = "jsmith"
-    var image: Image? = null
+    var image: String? = null
 
     private val usr = User(name, phoneNumber, image, email, username)
 

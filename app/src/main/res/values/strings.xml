@@ -12,11 +12,30 @@
     <string name="activity_edit_user_email">"Email"</string>
     <string name="activity_edit_user_phone_number">"Phone Number"</string>
     <string name="activity_edit_apply_changes">"Apply Changes"</string>
+
+    <string name="activity_view_tasks_provider_done">Mark as Done</string>
+    <string name="activity_view_tasks_provider_reopen">Reopen</string>
+    <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
+    <string name="activity_view_tasks_requester_edit_task">Edit Task</string>
+
+    <string name="row_bid_amount">$%.2f</string>
+
+    <string name="fragment_edit_bid_enter_amount">Amount:</string>
+    <string name="fragment_edit_bid_new">Bid!</string>
+    <string name="fragment_edit_bid">Edit Bid</string>
+    <string name="fragment_edit_bid_save_changes">Save</string>
+    <string name="fragment_accept_bid_title">Accept Bid</string>
+    <string name="fragment_accept_bid_username">from %1$s?</string>
+    <string name="fragment_accept_bid_remove">Remove</string>
+    <string name="fragment_accept_bid_yes">Yes</string>
+
     <string name="prefs_name">"TaskrPrefs"</string>
+    <string name="sf_username_key">Username</string>
 
     <!-- Add Location to Task Strings. -->
     <string name="activity_add_location_to_task_text">"Choose a Location"</string>
     <string name="activity_add_location_to_task_button">"Add Location"</string>
     <string name="access_token">"pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw"</string>
     <string name="style_url">"mapbox://styles/msnihur/cjexeh38k389i2rlqo787jn0y"</string>
+
 </resources>
