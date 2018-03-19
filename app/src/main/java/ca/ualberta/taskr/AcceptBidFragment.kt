@@ -4,7 +4,6 @@ import android.app.ActionBar
 import android.app.DialogFragment
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +16,7 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [AcceptBidFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [AcceptBidFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Allows Task Requesters to accept or decline a bid on one of tasks.
  */
 class AcceptBidFragment : DialogFragment() {
 
@@ -31,8 +25,12 @@ class AcceptBidFragment : DialogFragment() {
     lateinit var bidAmountView : TextView
     @BindView(R.id.requesterBidUsername)
     lateinit var bidUsernameView : TextView
-    private var mListener: OnFragmentInteractionListener? = null
+    private var mListener: AcceptBidFragmentInteractionListener? = null
 
+    /**
+     * Initializes the AcceptBidFragment. Obtains bid selected by Requester through the class
+     * which instantiated this fragment.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
@@ -41,65 +39,65 @@ class AcceptBidFragment : DialogFragment() {
         }
     }
 
+    /**
+     * Creates the view for AcceptBidFragment's layout, then updates displayed Bid attributes with
+     * those obtained from a provided Bid object.
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
+        // Update Bid attribute views using received Bid.
         bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid.amount)
         bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid.owner)
         return view
     }
 
+    /**
+     * Update layout width to MATCH_PARENT so that fragment width expands to fit screen width.
+     */
     override fun onStart() {
         super.onStart()
         dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
     }
 
+    /**
+     * Default onAttach function.
+     */
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is AcceptBidFragmentInteractionListener) {
             mListener = context
         } else {
             throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
+    /**
+     * Default onDetach function
+     */
     override fun onDetach() {
         super.onDetach()
         mListener = null
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
+     * Defines stubs for accept/decline bid methods.
      */
-    interface OnFragmentInteractionListener {
+    interface AcceptBidFragmentInteractionListener {
         fun declinedBid(bid: Bid)
         fun acceptedBid(bid: Bid)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private val ARG_DISPLAYBID = "DISPLAYBID"
 
         /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EditBidFragment.
+         * Factory method for creating instance of AcceptBidFragment given a Bid object.
          */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(bid: Bid): EditBidFragment {
-            val fragment = EditBidFragment()
+        fun newInstance(bid: Bid): AcceptBidFragment {
+            val fragment = AcceptBidFragment()
             val args = Bundle()
             val strBid = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java )
             args.putString(ARG_DISPLAYBID, strBid)
@@ -108,21 +106,29 @@ class AcceptBidFragment : DialogFragment() {
         }
     }
 
+    /**
+     * Cancels accept/decline of bid by closing AcceptBidFragment.
+     */
     @OnClick(R.id.requesterCancel)
     fun cancel(view : View) {
         this.dismiss()
     }
 
+    /**
+     * Declines bid by calling declineBid method in container activity, then closes AcceptBidFragment.
+     */
     @OnClick(R.id.requesterDecline)
     fun decline(view : View) {
         mListener?.declinedBid(displayBid)
         this.dismiss()
     }
 
+    /**
+     * Accepts bid by calling acceptBid method in container activity, then closes AcceptBidFragment.
+     */
     @OnClick(R.id.requesterAccept)
     fun accept(view : View) {
         mListener?.acceptedBid(displayBid)
         this.dismiss()
     }
-
-}// Required empty public constructor
+}
