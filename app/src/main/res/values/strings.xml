@@ -13,4 +13,5 @@
     <string name="activity_edit_user_phone_number">"Phone Number"</string>
     <string name="activity_edit_apply_changes">"Apply Changes"</string>
     <string name="prefs_name">"TaskrPrefs"</string>
+    <string name="sf_username_key">Username</string>
 </resources>
