@@ -1,6 +1,5 @@
 package ca.ualberta.taskr
 
-//import com.mapbox.services.android.location.LostLocationEngine;
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.location.Location
@@ -24,18 +23,20 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.annotations.PolygonOptions
 import android.content.DialogInterface
 import android.content.DialogInterface.BUTTON_NEUTRAL
+import android.content.Intent
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit.Companion.generateRetrofit
 import com.mapbox.mapboxsdk.location.LocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
@@ -55,7 +56,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         PermsUtil.getPermissions(this@NearbyTasksActivity)
         ButterKnife.bind(this)
         currentLocation.latitude = -7.942747
-        currentLocation.longitude =  -14.371925
+        currentLocation.longitude = -14.371925
         initializeLocationEngine()
 
         mapView.onCreate(savedInstanceState)
@@ -116,7 +117,6 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
             }
         })
 
-        mapboxMap.addOnMapClickListener(this)
         updateCurrentLocation()
         setCameraPosition(currentLocation)
 
@@ -139,14 +139,34 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
     private fun addTasksToMap() {
         mapboxMap.removeAnnotations()
         mapboxMap.addMarker(MarkerOptions()
-                .position(latLngFromLocation(currentLocation)))
+                .position(latLngFromLocation(currentLocation))
+                .title("Current Location"))
         mapboxMap.addPolygon(generatePerimeter(latLngFromLocation(currentLocation), 5.0, 100))
 
 
-        for (task in masterTaskList.filter { latLngFromLocation(currentLocation).distanceTo(it.location) <= 5000 }) {
+        for (task in masterTaskList.filter { it.location != null && latLngFromLocation(currentLocation).distanceTo(it.location) <= 5000 }) {
             if (task.location != null) {
-            mapboxMap.addMarker(MarkerOptions()
-                    .position(task.location))
+                mapboxMap.addMarker(MarkerOptions()
+                        .position(task.location)
+                        .title(task.title)
+                        .snippet("owner: " + task.owner))
+                mapboxMap.setOnInfoWindowClickListener(
+                            fun (marker: Marker): Boolean {
+                                for (task1 in masterTaskList) {
+                                    if (task1.title == marker.title) {
+                                        var intent = Intent(this, ViewTaskActivity::class.java)
+                                        var bundle = Bundle()
+                                        var strTask = GenerateRetrofit.generateGson().toJson(task1)
+                                        bundle.putString("DISPLAYTASK", strTask)
+                                        intent.putExtras(bundle)
+                                        startActivity(intent)
+                                    }
+                                }
+                                return true
+                            })
+
+
+
             }
         }
 
@@ -157,19 +177,19 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
     }*/
 
 
-    override fun onMapClick(point: LatLng) {
-        if (position == null) {
-            marker = mapboxMap.addMarker(MarkerOptions()
-                    .position(point))
-            position = point
-        } else {
-            marker.remove()
-            marker = mapboxMap.addMarker(MarkerOptions()
-                    .position(point))
-            position = point
-
-        }
-    }
+//    override fun onMapClick(point: LatLng) {
+//        if (position == null) {
+//            marker = mapboxMap.addMarker(MarkerOptions()
+//                    .position(point))
+//            position = point
+//        } else {
+//            marker.remove()
+//            marker = mapboxMap.addMarker(MarkerOptions()
+//                    .position(point))
+//            position = point
+//
+//        }
+//    }
 
     private fun initializeLocationEngine() {
         locationEngine = Mapbox.getLocationEngine()
@@ -212,3 +232,4 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
                 .alpha(0.1f)
     }
 }
+

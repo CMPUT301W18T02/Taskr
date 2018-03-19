@@ -32,12 +32,12 @@ class Task:
         self.title = f.bs()
         self.status = random.choice(["REQUESTED", "BID", "ASSIGNED", "DONE"])
         self.bids = [Bid(bidder) for bidder in bidders if random.choice([True,False])]
-        self.description = f.text()
+        self.description = f.text().replace("\n", "")
         # self.photos = [str(base64.encodebytes(bytes(f.text(), "utf-8"))) for i in range(random.randint(0, 10))]
         self.photos = []
         self.location = {
-            "latitude": random.uniform(54.237022, 52.713658) + random.random(),
-            "longitude": random.uniform(-115.094366, -111.748048) + random.random(),
+            "latitude": random.uniform(53.237022, 52.713658) + random.random(),
+            "longitude": random.uniform(-114.094366, -112.748048) + random.random(),
             "altitude": 0.0}
         self.chosenBidder = self.choose_bid(bidders)
 
