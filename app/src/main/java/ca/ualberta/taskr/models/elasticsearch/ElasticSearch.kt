@@ -37,7 +37,6 @@ interface ElasticSearch {
     /**
      * Returns user's elasticsearch id from the server based on a user query body
      */
-
     @POST("cmput301w18t02/user/_search?filter_path=hits.hits._id,aggregations.*")
     fun getUserID(@Body userQueryBody: RequestBody): Call<ElasticsearchID>
 
