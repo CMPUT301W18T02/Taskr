@@ -7,8 +7,6 @@ import retrofit2.Call
 import retrofit2.http.*
 
 /**
- *  ${FILE_NAME}
- *
  *  3/1/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
@@ -54,25 +52,25 @@ interface ElasticSearch {
      * Update a task using its id and a new task
      */
     @PUT("cmput301w18t02/task/{id}")
-    fun updateTask(@Path("id") id: String, @Body task: Task)
+    fun updateTask(@Path("id") id: String, @Body task: Task) : Call<Void>
 
     /**
      * Update a user using its id and a new user
      */
     @PUT("cmput301w18t02/user/{id}")
-    fun updateUser(@Path("id") id: String, @Body user: User)
+    fun updateUser(@Path("id") id: String, @Body user: User) : Call<Void>
 
     /**
      * Add a new task
      */
     @POST("cmput301w18t02/task")
-    fun createTask(@Body task: Task)
+    fun createTask(@Body task: Task) : Call<Void>
 
     /**
      * Add a new user
      */
     @POST("cmput301w18t02/user")
-    fun createUser(@Body user: User)
+    fun createUser(@Body user: User) : Call<Void>
 
     /**
      * Returns user's owned task
@@ -91,13 +89,13 @@ interface ElasticSearch {
      * Deletes a task from elasticsearch, DOES NOT CHECK DELETION CRITERIA
      */
     @DELETE("cmput301w18t02/task/{id}")
-    fun deleteTask(@Path("id") taskID: String)
+    fun deleteTask(@Path("id") taskID: String) : Call<Void>
 
     /**
      * Deletes a user from elasticsearch,
      */
     @DELETE("cmput301w18t02/user/{id}")
-    fun deleteUser(@Path("id") userID: String)
+    fun deleteUser(@Path("id") userID: String) : Call<Void>
 
 
     // TODO: Implement deletion methods for various types
