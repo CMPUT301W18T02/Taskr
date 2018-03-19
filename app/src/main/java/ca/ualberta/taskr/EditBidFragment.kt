@@ -5,6 +5,7 @@ import android.app.DialogFragment
 import android.content.Context
 import android.os.Bundle
 import android.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,8 +37,10 @@ class EditBidFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            var strBid = arguments.getString("DISPLAYBID")
-            displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
+            if (arguments.getString("DISPLAYBID") != null) {
+                var strBid = arguments.getString("DISPLAYBID")
+                displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
+            }
         }
     }
 
@@ -47,8 +50,12 @@ class EditBidFragment : DialogFragment() {
 
         var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
         ButterKnife.bind(this, view)
-        if (displayBid.amount > 0) {
-            enterAmountView.setText(displayBid.amount.toString())
+        try {
+            if (displayBid?.amount > 0) {
+                enterAmountView.setText(displayBid.amount.toString())
+            }
+        } catch (e : UninitializedPropertyAccessException) {
+            Log.e("DisplayBid Object", "No Bid object provided")
         }
         return view
     }

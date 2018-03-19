@@ -4,6 +4,7 @@ package ca.ualberta.taskr
  * Created by Jacob Bakker on 3/12/2018.
  */
 
+import android.graphics.Camera
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import butterknife.*
+import ca.ualberta.taskr.Perms.PermsUtil
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
@@ -20,12 +22,26 @@ import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Marker
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdate
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
+import com.mapbox.services.android.telemetry.location.LocationEngine
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
 
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteractionListener,
-                        AcceptBidFragment.OnFragmentInteractionListener{
+                        AcceptBidFragment.OnFragmentInteractionListener, OnMapReadyCallback,
+                        MapboxMap.OnMapClickListener{
 
     private var isRequester: Boolean = false
     private var username : String = ""
@@ -53,13 +69,24 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     lateinit var reopenButton : Button
     @BindView(R.id.addBidOrMarkDone)
     lateinit var addOrMarkButton : Button
+    @BindView(R.id.taskMapView)
+    lateinit var mapView : MapView
+    private lateinit var mapboxMap : MapboxMap
+    private lateinit var position : LatLng
+    private lateinit var marker: Marker
+    private lateinit var locationPlugin: LocationLayerPlugin
+    private lateinit var locationEngine: LocationEngine
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
         setContentView(R.layout.activity_view_tasks)
+        PermsUtil.getPermissions(this@ViewTaskActivity)
         ButterKnife.bind(this)
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync(this)
 
-        // TODO - Test getting Tasks via Intent
         if (intent != null) {
             val taskStr = intent.getStringExtra("TASK")
             if (taskStr != null) {
@@ -69,7 +96,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
                 updateBidAmount()
             }
         }
-
         updateDetails()
         getUserType()
         if (isRequester) {
@@ -86,11 +112,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
                 }
             }
         })
-
         bidListView.apply {
             layoutManager = viewManager
             adapter = bidListAdapter
         }
+
     }
 
     private fun startAcceptBidFragment(bid : Bid) {
@@ -184,6 +210,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         bidListAdapter.notifyDataSetChanged()
         updateDetails()
         updateBidAmount()
+        updateLocationInfo()
     }
 
     private fun updateBidAmount() {
@@ -197,5 +224,58 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
             }
         }
         lowestBidView.text = String.format(getString(R.string.row_bid_amount), lowestBidAmount)
+    }
+
+    public override fun onStart() {
+        super.onStart()
+        mapView.onStart()
+    }
+    public override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+    public override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+    public override fun onStop() {
+        super.onStop()
+        mapView.onStop()
+    }
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView.onLowMemory()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
+    }
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState!!)
+    }
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        this.mapboxMap = mapboxMap
+        mapboxMap.addOnMapClickListener(this)
+        updateLocationInfo()
+    }
+
+    private fun updateLocationInfo() {
+        if (displayTask.location != null) {
+            mapView.visibility = View.VISIBLE
+            position = displayTask.location as LatLng
+            marker = mapboxMap.addMarker(MarkerOptions().position(position))
+            var cameraPosition : CameraPosition = CameraPosition.Builder()
+                    .target(position)
+                    .build()
+            var camera : CameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition)
+            mapboxMap.animateCamera(camera)
+        } else {
+            mapView.visibility = View.GONE
+        }
+    }
+
+    override fun onMapClick(point : LatLng) {
+        Log.i("Hello", position.toString())
     }
 }
