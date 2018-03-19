@@ -38,7 +38,7 @@ class EditBidFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            var strBid = arguments.getString("DISPLAYBID")
+            var strBid = arguments!!.getString("DISPLAYBID")
             displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
         }
     }
@@ -53,13 +53,6 @@ class EditBidFragment : DialogFragment() {
             if (displayBid!!.amount > 0) { enterAmountView.setText(displayBid?.amount.toString()) }
         }
         return view
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
     }
 
     override fun onStart() {
@@ -90,9 +83,7 @@ class EditBidFragment : DialogFragment() {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-        fun bidUpdate()
+        fun bidUpdate(bidAmount : Double, case : Int)
     }
 
     companion object {
@@ -133,8 +124,10 @@ class EditBidFragment : DialogFragment() {
         } catch (e : Exception) {
             return
         }
-        if (inputAmount > 0) {
-            Log.i("INPUT", "You entered " + inputAmountString)
+        if (inputAmount > 0 && mListener != null) {
+            Log.i("Accept", "Sending to ViewTasks...")
+            mListener!!.bidUpdate(inputAmount, 0)
+            this.dismiss()
         }
     }
 }// Required empty public constructor

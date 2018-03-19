@@ -1,5 +1,7 @@
 package ca.ualberta.taskr
 
+import android.app.ActionBar
+import android.app.DialogFragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import butterknife.OnClick
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
@@ -22,7 +25,7 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
  * Use the [AcceptBidFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AcceptBidFragment : Fragment() {
+class AcceptBidFragment : DialogFragment() {
 
     private var displayBid: Bid? = null
     @BindView(R.id.requesterBidAmount)
@@ -34,7 +37,7 @@ class AcceptBidFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            var strBid = arguments.getString("DISPLAYBID")
+            var strBid = arguments!!.getString("DISPLAYBID")
             displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
         }
     }
@@ -44,14 +47,14 @@ class AcceptBidFragment : Fragment() {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
+        bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid?.amount)
+        bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid?.owner)
         return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
+    override fun onStart() {
+        super.onStart()
+        dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onAttach(context: Context?) {
@@ -78,15 +81,14 @@ class AcceptBidFragment : Fragment() {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+        fun declinedBid(bid: Bid)
+        fun acceptedBid(bid: Bid)
     }
 
     companion object {
         // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
+        private val ARG_DISPLAYBID = "DISPLAYBID"
 
         /**
          * Use this factory method to create a new instance of
@@ -94,16 +96,38 @@ class AcceptBidFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AcceptBidFragment.
+         * @return A new instance of fragment EditBidFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): AcceptBidFragment {
-            val fragment = AcceptBidFragment()
+        fun newInstance(bid: Bid): EditBidFragment {
+            val fragment = EditBidFragment()
             val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
+            val strBid = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java )
+            args.putString(ARG_DISPLAYBID, strBid)
             fragment.arguments = args
             return fragment
         }
     }
+
+    @OnClick(R.id.requesterCancel)
+    fun cancel(view : View) {
+        this.dismiss()
+    }
+
+    @OnClick(R.id.requesterDecline)
+    fun decline(view : View) {
+        if (mListener != null) {
+            mListener!!.declinedBid(displayBid!!)
+            this.dismiss()
+        }
+    }
+
+    @OnClick(R.id.requesterAccept)
+    fun accept(view : View) {
+        if (mListener != null) {
+            mListener!!.acceptedBid(displayBid!!)
+            this.dismiss()
+        }
+    }
+
 }// Required empty public constructor

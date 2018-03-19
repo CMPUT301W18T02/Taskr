@@ -35,7 +35,8 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import kotlinx.android.synthetic.main.activity_view_tasks.*
 import org.jetbrains.annotations.Nullable
 
-class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteractionListener {
+class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteractionListener,
+                        AcceptBidFragment.OnFragmentInteractionListener{
 
     private var isRequester: Boolean = false
     private var taskOwner: String = ""
@@ -90,8 +91,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         viewManager = LinearLayoutManager(this)
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
-                val bid = taskBidList[position]
-                startBidFragment(bid)
+                if (isRequester) {
+                    val bid = taskBidList[position]
+                    startAcceptBidFragment(bid)
+                }
             }
         })
 
@@ -115,11 +118,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         bidListAdapter.notifyDataSetChanged()
     }
 
-    private fun startBidFragment(bid : Bid) {
-        editBidFragment = EditBidFragment()
+    private fun startAcceptBidFragment(bid : Bid) {
+        acceptBidFragment = AcceptBidFragment()
         var args = Bundle()
-        editBidFragment!!.arguments = args
-        editBidFragment!!.show(fragmentManager, "DialogFragment")
+        var bidStr = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java)
+        args.putString("DISPLAYBID", bidStr)
+        acceptBidFragment!!.arguments = args
+        acceptBidFragment!!.show(fragmentManager, "DialogFragment")
     }
 
     private fun getUserType() {
@@ -137,13 +142,18 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         taskStatus.text = displayTask?.status?.name
     }
 
-    override fun onFragmentInteraction(uri : Uri) {
-        Log.i("FRAGMENT", "Something was hit")
+    override fun bidUpdate(bidAmount : Double, case : Int) {
+        Log.i("SHIT", bidAmount.toString());
     }
 
-    override fun bidUpdate() {
-        Log.i("SHIT", "FUCK")
+    override fun declinedBid(bid: Bid) {
+        Log.i("Hit", "Decline")
     }
+
+    override fun acceptedBid(bid: Bid) {
+        Log.i("MESSAGE", "RE")
+    }
+
     @OnClick(R.id.addBids)
     fun addBid(view : View) {
         editBidFragment = EditBidFragment()
@@ -151,7 +161,4 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         editBidFragment!!.arguments = args
         editBidFragment!!.show(fragmentManager, "DialogFragment")
     }
-
-
-
 }
