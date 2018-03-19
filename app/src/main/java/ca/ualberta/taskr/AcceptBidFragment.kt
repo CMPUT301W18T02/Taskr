@@ -3,7 +3,6 @@ package ca.ualberta.taskr
 import android.app.ActionBar
 import android.app.DialogFragment
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -27,7 +26,7 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
  */
 class AcceptBidFragment : DialogFragment() {
 
-    private var displayBid: Bid? = null
+    private lateinit var displayBid: Bid
     @BindView(R.id.requesterBidAmount)
     lateinit var bidAmountView : TextView
     @BindView(R.id.requesterBidUsername)
@@ -37,18 +36,18 @@ class AcceptBidFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            var strBid = arguments!!.getString("DISPLAYBID")
+            var strBid = arguments.getString("DISPLAYBID")
             displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
-        bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid?.amount)
-        bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid?.owner)
+        bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid.amount)
+        bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid.owner)
         return view
     }
 
@@ -62,7 +61,7 @@ class AcceptBidFragment : DialogFragment() {
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
@@ -116,18 +115,14 @@ class AcceptBidFragment : DialogFragment() {
 
     @OnClick(R.id.requesterDecline)
     fun decline(view : View) {
-        if (mListener != null) {
-            mListener!!.declinedBid(displayBid!!)
-            this.dismiss()
-        }
+        mListener?.declinedBid(displayBid)
+        this.dismiss()
     }
 
     @OnClick(R.id.requesterAccept)
     fun accept(view : View) {
-        if (mListener != null) {
-            mListener!!.acceptedBid(displayBid!!)
-            this.dismiss()
-        }
+        mListener?.acceptedBid(displayBid)
+        this.dismiss()
     }
 
 }// Required empty public constructor

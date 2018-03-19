@@ -4,38 +4,22 @@ package ca.ualberta.taskr
  * Created by Jacob Bakker on 3/12/2018.
  */
 
-import android.app.Fragment
-import android.app.FragmentManager
-import android.app.FragmentTransaction
-import android.content.Context
-import android.content.Intent
-import android.media.Image
-import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.support.constraint.ConstraintSet
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import android.view.ViewStub
 import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.*
-import ca.ualberta.taskr.R.attr.layoutManager
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
-import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
-import kotlinx.android.synthetic.main.activity_view_tasks.*
-import org.jetbrains.annotations.Nullable
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
@@ -48,9 +32,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     private var taskBidList: ArrayList<Bid> = ArrayList()
     private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList)
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private var displayTask: Task? = null
-    private var editBidFragment: EditBidFragment? = null
-    private var acceptBidFragment: AcceptBidFragment? = null
+    private lateinit var displayTask: Task
+    private lateinit var editBidFragment: EditBidFragment
+    private lateinit var acceptBidFragment: AcceptBidFragment
+    private var lowestBidAmount : Double = Double.POSITIVE_INFINITY
 
     @BindView(R.id.taskAuthorText)
     lateinit var taskAuthor: TextView
@@ -61,7 +46,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     @BindView(R.id.taskStatus)
     lateinit var taskStatus: TextView
     @BindView(R.id.taskPay)
-    lateinit var taskPay: TextView
+    lateinit var lowestBidView: TextView
     @BindView(R.id.bidListView)
     lateinit var bidListView:RecyclerView
     @BindView(R.id.reopenButton)
@@ -80,7 +65,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
             if (taskStr != null) {
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 updateDetails()
-                taskBidList.addAll(displayTask!!.bids)
+                taskBidList.addAll(displayTask.bids)
+                updateBidAmount()
             }
         }
 
@@ -112,41 +98,37 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
         var args = Bundle()
         var bidStr = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java)
         args.putString("DISPLAYBID", bidStr)
-        acceptBidFragment!!.arguments = args
-        acceptBidFragment!!.show(fragmentManager, "DialogFragment")
+        acceptBidFragment.arguments = args
+        acceptBidFragment.show(fragmentManager, "DialogFragment")
     }
 
     private fun getUserType() {
         var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
         username = editor.getString("Username", null)
-        if (username == displayTask?.owner) {
+        if (username == displayTask.owner) {
             isRequester = true
         }
     }
 
     private fun updateDetails() {
-        taskAuthor.text = displayTask?.owner
-        taskTitle.text = displayTask?.title
-        taskDetails.text = displayTask?.description
-        taskStatus.text = displayTask?.status?.name
+        taskAuthor.text = displayTask.owner
+        taskTitle.text = displayTask.title
+        taskDetails.text = displayTask.description
+        taskStatus.text = displayTask.status?.name
     }
 
     override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
-        if (displayTask != null) {
-            var index: Int = displayTask!!.bids.indexOf(originalBid)
-            var changedBid = Bid(displayTask!!.bids[index].owner, bidAmount)
-            displayTask!!.bids[index] = changedBid
-            updateDisplayTask()
-        }
-
+        var index: Int = displayTask.bids.indexOf(originalBid)
+        var changedBid = Bid(displayTask.bids[index].owner, bidAmount)
+        displayTask.bids[index] = changedBid
+        updateDisplayTask()
     }
 
     override fun bidAdd(bidAmount : Double) {
         var newBid = Bid(username, bidAmount)
-        if (displayTask != null) {
-            displayTask!!.bids.add(newBid)
-            updateDisplayTask()
-        }
+        displayTask.bids.add(newBid)
+        updateDisplayTask()
+
     }
 
     override fun declinedBid(bid: Bid) {
@@ -154,46 +136,66 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     }
 
     override fun acceptedBid(bid: Bid) {
-        Log.i("MESSAGE", "RE")
+        displayTask.chosenBidder = bid.owner
+        displayTask.status = TaskStatus.ASSIGNED
+        updateDisplayTask()
     }
 
     @OnClick(R.id.addBidOrMarkDone)
     fun addBid(view : View) {
         if (isRequester) {
-            Log.i("G", "G")
+            displayTask.status = TaskStatus.DONE
+            updateDisplayTask()
         } else {
             editBidFragment = EditBidFragment()
             var args = Bundle()
-            editBidFragment!!.arguments = args
-            editBidFragment!!.show(fragmentManager, "DialogFragment")
+            editBidFragment.arguments = args
+            editBidFragment.show(fragmentManager, "DialogFragment")
         }
+    }
+
+    @OnClick(R.id.reopenButton)
+    fun reopen(view: View) {
+        if (displayTask.bids.size == 0) {
+            displayTask.status = TaskStatus.REQUESTED
+        } else {
+            displayTask.status = TaskStatus.BID
+        }
+        updateDisplayTask()
     }
 
     private fun updateDisplayTask() {
-        if (displayTask != null) {
-            lateinit var id: ElasticsearchID
-            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(displayTask!!.owner, displayTask!!.title, displayTask!!.description)).enqueue(object : Callback<ElasticsearchID> {
-                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
-                    Log.i("network", response.body().toString())
-                    id = response.body() as ElasticsearchID
-                    GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask!!)
-                }
+        lateinit var id: ElasticsearchID
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(displayTask.owner, displayTask.title, displayTask.description)).enqueue(object : Callback<ElasticsearchID> {
+            override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                Log.i("network", response.body().toString())
+                id = response.body() as ElasticsearchID
+                GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask)
+            }
 
-                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
-                    Log.e("network", "Network Failed!")
-                    t.printStackTrace()
-                    Log.i("HEY", "FUCKHEAD")
-                    return
-                }
-            })
-            taskBidList.clear()
-            taskBidList.addAll(displayTask!!.bids)
-            bidListAdapter.notifyDataSetChanged()
-        }
+            override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
+        taskBidList.clear()
+        taskBidList.addAll(displayTask.bids)
+        bidListAdapter.notifyDataSetChanged()
+        updateDetails()
+        updateBidAmount()
     }
 
-    @OnClick(R.id.taskMapView)
-    fun logPrint() {
-        Log.i("BIDLIST", "IS " + taskBidList.size + "WHILE THE TASK HAS " + displayTask?.bids?.size)
+    private fun updateBidAmount() {
+        if (taskBidList.size == 0) {
+            lowestBidView.text = ""
+            return
+        }
+        for (bid : Bid in taskBidList) {
+            if (lowestBidAmount > bid.amount) {
+                lowestBidAmount = bid.amount
+            }
+        }
+        lowestBidView.text = String.format(getString(R.string.row_bid_amount), lowestBidAmount)
     }
 }

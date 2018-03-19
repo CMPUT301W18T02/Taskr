@@ -3,10 +3,8 @@ package ca.ualberta.taskr
 import android.app.ActionBar
 import android.app.DialogFragment
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +28,7 @@ import java.lang.Exception
 class EditBidFragment : DialogFragment() {
 
     // TODO: Rename and change types of parameters
-    private var displayBid : Bid? = null
+    private lateinit var displayBid : Bid
     @BindView(R.id.enterAmountEdit)
     lateinit var enterAmountView : EditText
     private var mListener: OnFragmentInteractionListener? = null
@@ -38,19 +36,19 @@ class EditBidFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            var strBid = arguments!!.getString("DISPLAYBID")
+            var strBid = arguments.getString("DISPLAYBID")
             displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
 
         var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
         ButterKnife.bind(this, view)
-        if (displayBid != null) {
-            if (displayBid!!.amount > 0) { enterAmountView.setText(displayBid?.amount.toString()) }
+        if (displayBid.amount > 0) {
+            enterAmountView.setText(displayBid.amount.toString())
         }
         return view
     }
@@ -59,7 +57,7 @@ class EditBidFragment : DialogFragment() {
         super.onStart()
         dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
     }
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context
@@ -125,12 +123,11 @@ class EditBidFragment : DialogFragment() {
         } catch (e : Exception) {
             return
         }
-        if (inputAmount > 0 && mListener != null) {
-            Log.i("Accept", "Sending to ViewTasks...")
-            if (displayBid == null) {
-                mListener!!.bidAdd(inputAmount)
-            } else {
-                mListener!!.bidUpdate(inputAmount, displayBid!!)
+        if (inputAmount > 0) {
+            try {
+                mListener?.bidUpdate(inputAmount, displayBid)
+            } catch (e : UninitializedPropertyAccessException) {
+                mListener?.bidAdd(inputAmount)
             }
             this.dismiss()
         }
