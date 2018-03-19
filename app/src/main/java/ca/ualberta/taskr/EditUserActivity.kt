@@ -24,23 +24,23 @@ import retrofit2.Response
  */
 class EditUserActivity : AppCompatActivity() {
 
-    lateinit var CurrentUser : User
+    lateinit var CurrentUser: User
     var IsNewUser = false
-    lateinit var Username : String
+    lateinit var Username: String
     @BindView(R.id.UserSurnameText)
-    lateinit var UserSurnameText : EditText
+    lateinit var UserSurnameText: EditText
 
     @BindView(R.id.UserPhoneNumberText)
-    lateinit var UserPhoneNumberText : EditText
+    lateinit var UserPhoneNumberText: EditText
 
     @BindView(R.id.UserEmailText)
-    lateinit var UserEmailText : EditText
+    lateinit var UserEmailText: EditText
 
     @BindView(R.id.ApplyChangesButton)
     lateinit var ApplyChangesButton: Button
 
     @BindView(R.id.EditUserErrorTextView)
-    lateinit var EditUSerErrorTextView : TextView
+    lateinit var EditUSerErrorTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,24 +54,25 @@ class EditUserActivity : AppCompatActivity() {
         Username = editor.getString("Username", null)
     }
 
-    fun DisplayErrorMessage(message : String) {
+
+    fun DisplayErrorMessage(message: String) {
     }
 
-    fun CheckNameFormatting(name : String) : Boolean {
+    fun CheckNameFormatting(name: String): Boolean {
         return false
     }
 
-    fun CheckPhoneNumberFormatting(PhoneNumber : String) : Boolean {
+    fun CheckPhoneNumberFormatting(PhoneNumber: String): Boolean {
         return false
     }
 
-    fun CheckEmailFormatting(Email : String) : Boolean {
+    fun CheckEmailFormatting(Email: String): Boolean {
         return false
     }
 
     @OnClick(R.id.ApplyChangesButton)
     fun onApplyChangesClicked() {
-        lateinit var Name : String
+        lateinit var Name: String
         lateinit var PhoneNumber: String
         lateinit var Email: String
 

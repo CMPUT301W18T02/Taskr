@@ -26,6 +26,16 @@ class Query {
             return RequestBody.create(MediaType.parse("text/plain"),"{\"_source\": false,\"query\": {\"bool\": {\"should\": [{\"match\" : {\"username\": \"$username\"}}]}}}")
         }
 
+        @JvmStatic
+        fun userOwnedTasksQuery(username: String): RequestBody {
+            return RequestBody.create(MediaType.parse("text/plain"),"{\"query\": {\"match\" : {\"owner\": \"$username\"}}}")
+        }
+
+        @JvmStatic
+        fun userBiddedTasksQuery(username: String): RequestBody {
+            return RequestBody.create(MediaType.parse("text/plain"),"{\"query\": {\"match\" : {\"bids.owner\": \"$username\"}}}")
+        }
+
 
     }
 }
