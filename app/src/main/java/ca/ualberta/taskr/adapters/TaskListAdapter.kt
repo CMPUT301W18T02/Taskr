@@ -50,7 +50,6 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskStatus.text = task.status.toString()
         holder.taskLowestBid.text = task.bids.minBy { it ->  it.amount }!!.amount.toString()
     }
-
     /**
      * Return the size of the dataset
      */

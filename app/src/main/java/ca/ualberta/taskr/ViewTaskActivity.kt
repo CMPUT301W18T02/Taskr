@@ -5,6 +5,8 @@ package ca.ualberta.taskr
  */
 
 
+import android.app.Activity
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -74,6 +76,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var reopenButton : Button
     @BindView(R.id.addBidOrMarkDone)
     lateinit var addOrMarkButton : Button
+    @BindView(R.id.editTaskButton)
+    lateinit var editTaskButton : Button
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -81,7 +85,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private lateinit var mapboxMap : MapboxMap
     private lateinit var position : LatLng
     private lateinit var marker: Marker
-
 
     /**
      * Initializes the Mapbox mapview, obtains the displayTask, populates and displays list of all
@@ -108,11 +111,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 updateLowestBidAmount()
             }
         }
+
         // Obtain user type and reformat display accordingly.
         getUserType()
         if (isRequester) {
             addOrMarkButton.text = getResources().getString(R.string.activity_view_tasks_provider_done)
             reopenButton.visibility = View.VISIBLE
+            editTaskButton.visibility = View.VISIBLE
         }
 
         // Build up RecyclerView
@@ -123,9 +128,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
          */
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
+                val bid = taskBidList[position]
                 if (isRequester) {
-                    val bid = taskBidList[position]
                     startAcceptBidFragment(bid)
+                } else if (username == bid.owner) {
+                    startEditBidFragment(bid)
                 }
             }
         })
@@ -133,9 +140,21 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             layoutManager = viewManager
             adapter = bidListAdapter
         }
-
     }
 
+    /**
+     * Displays pop-up fragment that allows Task Provider to update their selected bid.
+     */
+    private fun startEditBidFragment(bid : Bid?) {
+        editBidFragment = EditBidFragment()
+        if (bid != null) {
+            var args = Bundle()
+            var bidStr = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java)
+            args.putString("DISPLAYBID", bidStr)
+            editBidFragment.arguments = args
+        }
+        editBidFragment.show(fragmentManager, "DialogFragment")
+    }
     /**
      * Displays pop-up fragment that allows Task Requester to accept/decline a selected Bid.
      */
@@ -177,7 +196,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
         var index: Int = displayTask.bids.indexOf(originalBid)
         var changedBid = Bid(displayTask.bids[index].owner, bidAmount)
-        displayTask.bids[index] = changedBid
+        displayTask.setBidAtIndex(changedBid, index)
         updateDisplayTask()
     }
 
@@ -187,7 +206,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     override fun bidAdd(bidAmount : Double) {
         var newBid = Bid(username, bidAmount)
-        displayTask.bids.add(newBid)
+        displayTask.addBid(newBid)
         updateDisplayTask()
 
     }
@@ -220,10 +239,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             displayTask.status = TaskStatus.DONE
             updateDisplayTask()
         } else if (!isRequester){
-            editBidFragment = EditBidFragment()
-            var args = Bundle()
-            editBidFragment.arguments = args
-            editBidFragment.show(fragmentManager, "DialogFragment")
+            startEditBidFragment(null)
         }
     }
 
@@ -245,6 +261,26 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
+    @OnClick(R.id.editTaskButton)
+    fun editTask() {
+        var editTaskIntent = Intent(this, EditTaskActivity::class.java)
+        var editTaskBundle = Bundle()
+        var strTask = GenerateRetrofit.generateGson().toJson(displayTask)
+        editTaskBundle.putString("Task", strTask)
+        editTaskIntent.putExtras(editTaskBundle)
+        startActivityForResult(editTaskIntent, Activity.RESULT_OK)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            var displayTaskStr = data?.extras?.getString("Task")
+            displayTask = GenerateRetrofit.generateGson().fromJson(displayTaskStr, Task::class.java)
+            updateDetails()
+            updateLowestBidAmount()
+            updateLocationInfo()
+        }
+    }
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.

@@ -46,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun CheckIfUsernameExists(username: String) : Boolean {
-
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
