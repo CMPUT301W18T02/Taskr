@@ -1,40 +1,20 @@
 package ca.ualberta.taskr
 
-import android.content.Intent
-import android.location.Location
-import android.support.v7.app.AppCompatActivity
+//import com.mapbox.services.android.location.LostLocationEngine;
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
-import android.util.Log
-import android.view.View
-
+import android.support.v7.app.AppCompatActivity
+import butterknife.BindView
+import butterknife.ButterKnife
+import ca.ualberta.taskr.Perms.PermsUtil
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Marker
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.mapbox.services.android.telemetry.location.LocationEngine
-import com.mapbox.services.android.telemetry.permissions.PermissionsManager
-import ca.ualberta.taskr.R.id.mapView
-import com.mapbox.services.android.telemetry.location.LocationEngineListener
-import com.mapbox.services.android.telemetry.permissions.PermissionsListener
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerMode;
-//import com.mapbox.services.android.location.LostLocationEngine;
-import com.mapbox.services.android.telemetry.location.LocationEnginePriority;
-import ca.ualberta.taskr.R.id.mapView
-import com.mapbox.services.android.telemetry.location.LostLocationEngine
-import android.widget.Toast
-import android.support.annotation.NonNull
-import android.widget.Button
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import ca.ualberta.taskr.Perms.PermsUtil
-import com.mapbox.mapboxsdk.annotations.Marker
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
