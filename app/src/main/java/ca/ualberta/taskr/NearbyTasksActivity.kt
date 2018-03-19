@@ -1,5 +1,7 @@
 package ca.ualberta.taskr
 
+
+
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.location.Location
@@ -14,6 +16,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.mapbox.services.android.telemetry.location.LocationEngine
@@ -34,9 +37,12 @@ import com.mapbox.mapboxsdk.location.LocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.mapbox.mapboxsdk.constants.Style
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
+
+
 
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
@@ -62,9 +68,9 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
-
-
     }
+
+
 
     public override fun onStart() {
         super.onStart()
@@ -86,6 +92,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         mapView.onStop()
     }
 
+
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
@@ -95,6 +102,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         super.onDestroy()
         mapView.onDestroy()
     }
+
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)

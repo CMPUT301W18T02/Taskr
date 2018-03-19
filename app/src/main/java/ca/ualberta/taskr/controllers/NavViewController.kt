@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.support.design.widget.NavigationView
 import android.support.v4.widget.DrawerLayout
+import android.widget.ImageView
 import android.widget.TextView
+import ca.ualberta.taskr.EditUserActivity
 import ca.ualberta.taskr.ListTasksActivity
 import ca.ualberta.taskr.MyTasksActivity
 import ca.ualberta.taskr.R
@@ -37,9 +39,15 @@ class NavViewController(var navView: NavigationView,
                 })
 
         var userController : UserController = UserController(context)
-        val headerView =  navView.getHeaderView(0);
+        val headerView =  navView.getHeaderView(0)
         var usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
         usernameTextView.text = userController.getLocalUserName()
+        var userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
+        userPhoto.setOnClickListener({
+            val editUserIntent = Intent(context,
+                    EditUserActivity::class.java)
+            context.startActivity(editUserIntent)
+        })
 
     }
 }

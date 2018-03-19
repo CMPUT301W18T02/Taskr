@@ -292,7 +292,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                 Log.i("network", response.body().toString())
                 id = response.body() as ElasticsearchID
-                GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask)
+                GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask).enqueue(object : Callback<Void>{
+                    override fun onFailure(call: Call<Void>?, t: Throwable?) {
+
+                    }
+
+                    override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
+
+                    }
+                })
             }
 
             override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {

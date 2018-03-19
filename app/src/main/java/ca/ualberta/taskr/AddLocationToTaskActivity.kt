@@ -1,19 +1,27 @@
 package ca.ualberta.taskr
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.widget.Button
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
+import ca.ualberta.taskr.R.id.mapView
+
+import com.mapbox.mapboxsdk.constants.Style
+
 
 /**
  * Class adds a Location to task, if no Location is specified returns a null position back to
@@ -32,6 +40,9 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     lateinit var button: Button
     private var position: LatLng? = null
     private lateinit var marker: Marker
+    private lateinit var iconFactory: IconFactory
+    private lateinit var iconDrawable: Drawable
+    private lateinit var icon: Icon
 
 
     @OnClick(R.id.add_location)
@@ -42,6 +53,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
@@ -51,25 +63,27 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
         mapView.getMapAsync(this)
 
-
     }
 
-    public override fun onStart() {
+
+
+
+    override fun onStart(){
         super.onStart()
         mapView.onStart()
     }
 
-    public override fun onResume() {
+    override fun onResume(){
         super.onResume()
         mapView.onResume()
     }
 
-    public override fun onPause() {
+    override fun onPause(){
         super.onPause()
         mapView.onPause()
     }
 
-    public override fun onStop() {
+    override fun onStop(){
         super.onStop()
         mapView.onStop()
     }
@@ -82,6 +96,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -101,9 +116,13 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
 
     override fun onMapClick(point: LatLng) {
+        /*iconFactory = IconFactory.getInstance(this)
+        iconDrawable = ContextCompat.getDrawable(this, R.drawable.purple_marker)
+        icon = iconFactory.fromDrawable(iconDrawable)*/
         if (position == null) {
             marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point))
+                    .position(point)
+                    .icon(icon))
             position = point
         } else {
             marker.remove()
@@ -113,4 +132,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
         }
     }
+
+
+
 }

@@ -149,7 +149,7 @@ class ListTasksActivity : AppCompatActivity() {
 
     @OnClick(R.id.viewTaskMapButton)
     fun openMapView(){
-        val nearbyTasksIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+        val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
         finish()
     }
