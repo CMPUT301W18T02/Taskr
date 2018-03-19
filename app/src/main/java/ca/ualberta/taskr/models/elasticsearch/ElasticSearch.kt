@@ -77,15 +77,28 @@ interface ElasticSearch {
     /**
      * Returns user's owned task
      */
-    @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getUserTasks(@Body userTasksQueryBody: RequestBody): Call<List<Task>>
 
 
     /**
      * Returns task's elasticsearch id from the server based on a task query body
      */
-    @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getUserBids(@Body userBidsQuery: RequestBody): Call<ElasticsearchID>
+
+    /**
+     * Deletes a task from elasticsearch, DOES NOT CHECK DELETION CRITERIA
+     */
+    @DELETE("cmput301w18t02/task/{id}")
+    fun deleteTask(@Path("id") taskID: String)
+
+    /**
+     * Deletes a user from elasticsearch,
+     */
+    @DELETE("cmput301w18t02/user/{id}")
+    fun deleteUser(@Path("id") userID: String)
+
 
     // TODO: Implement deletion methods for various types
     // TODO: Implement searching implementations so searches do not occur locally
