@@ -129,6 +129,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     }
 
     override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
+        if (displayTask != null) {
+            var index: Int = displayTask!!.bids.indexOf(originalBid)
+            var changedBid = Bid(displayTask!!.bids[index].owner, bidAmount)
+            displayTask!!.bids[index] = changedBid
+            updateDisplayTask()
+        }
 
     }
 

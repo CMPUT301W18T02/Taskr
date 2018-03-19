@@ -83,7 +83,7 @@ class EditBidFragment : DialogFragment() {
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnFragmentInteractionListener {
-        fun bidUpdate(bidAmount : Double)
+        fun bidUpdate(bidAmount : Double, originalBid : Bid)
         fun bidAdd(bidAmount : Double)
     }
 
@@ -130,7 +130,7 @@ class EditBidFragment : DialogFragment() {
             if (displayBid == null) {
                 mListener!!.bidAdd(inputAmount)
             } else {
-                mListener!!.bidUpdate(inputAmount)
+                mListener!!.bidUpdate(inputAmount, displayBid)
             }
             this.dismiss()
         }
