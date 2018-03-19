@@ -12,7 +12,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -128,15 +127,8 @@ class ListTasksActivity : AppCompatActivity() {
 
     @OnClick(R.id.viewTaskMapButton)
     fun openMapView(){
-        /**val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
+        val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
-        finish()*/
-        var viewIntent = Intent(this, ViewTaskActivity::class.java)
-        var bundle = Bundle()
-        var someTask = shownTaskList[0]
-        var strTask = GenerateRetrofit.generateGson().toJson(someTask)
-        bundle.putString("TASK", strTask)
-        viewIntent.putExtras(bundle)
-        startActivity(viewIntent)
+        finish()
     }
 }

@@ -4,14 +4,16 @@ package ca.ualberta.taskr
  * Created by Jacob Bakker on 3/12/2018.
  */
 
-import android.graphics.Camera
+
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import butterknife.*
 import ca.ualberta.taskr.Perms.PermsUtil
@@ -29,12 +31,9 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdate
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
-import com.mapbox.services.android.telemetry.location.LocationEngine
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
@@ -74,8 +73,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     private lateinit var mapboxMap : MapboxMap
     private lateinit var position : LatLng
     private lateinit var marker: Marker
-    private lateinit var locationPlugin: LocationLayerPlugin
-    private lateinit var locationEngine: LocationEngine
+    @BindView(R.id.viewTasks_scrollView)
+    lateinit var taskScrollView : ScrollView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
