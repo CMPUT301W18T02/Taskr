@@ -19,7 +19,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "ca.ualberta.taskr"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -78,6 +78,11 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.android.support:design:26.1.0'
+
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile "org.robolectric:robolectric:3.7.1"
 }
 
 dokka {
