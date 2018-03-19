@@ -98,6 +98,13 @@ interface ElasticSearch {
     @DELETE("cmput301w18t02/user/{id}")
     fun deleteUser(@Path("id") userID: String) : Call<Void>
 
+    /**
+     * Returns user's owned task
+     */
+    @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
+    fun getWonTasks(@Body userTasksQueryBody: RequestBody): Call<List<Task>>
+
+
 
     // TODO: Implement deletion methods for various types
     // TODO: Implement searching implementations so searches do not occur locally

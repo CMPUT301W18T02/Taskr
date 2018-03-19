@@ -36,6 +36,11 @@ class Query {
             return RequestBody.create(MediaType.parse("text/plain"),"{\"query\": {\"match\" : {\"bids.owner\": \"$username\"}}}")
         }
 
+        @JvmStatic
+        fun userWonTasksQuery(username: String): RequestBody {
+            return RequestBody.create(MediaType.parse("text/plain"),"{\"query\": {\"match\" : {\"bids.chosenBidder\": \"$username\"}}}")
+        }
+
 
     }
 }
