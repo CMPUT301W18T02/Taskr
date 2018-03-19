@@ -61,20 +61,27 @@ class EditUserActivity : AppCompatActivity() {
 
 
     fun DisplayErrorMessage(message: String) {
+        // TODO
     }
 
     fun CheckNameFormatting(name: String): Boolean {
+        // TODO
         return false
     }
 
     fun CheckPhoneNumberFormatting(PhoneNumber: String): Boolean {
+        // TODO
         return false
     }
 
     fun CheckEmailFormatting(Email: String): Boolean {
+        // TODO
         return false
     }
 
+    /**
+     * Apply changes to a user with error checking
+     */
     @OnClick(R.id.ApplyChangesButton)
     fun onApplyChangesClicked() {
         val name: String = UserSurnameText.text.toString()
@@ -100,6 +107,11 @@ class EditUserActivity : AppCompatActivity() {
         UpdateUser(CurrentUser)
     }
 
+    /**
+     * Update the user using async network calls
+     *
+     * @param user The user object to get updated
+     */
     fun UpdateUser(user : User) {
         if (isNewUser) {
             GenerateRetrofit.generateRetrofit().createUser(user).enqueue(object: Callback<Void> {
@@ -118,8 +130,18 @@ class EditUserActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                     Log.i("network", response.body().toString())
                     id = response.body() as ElasticsearchID
-                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user)
-                    openListTasksActivity()
+                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user).enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            Log.i("network", response.body().toString())
+                            openListTasksActivity()
+                        }
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Log.e("network", "Network Failed!")
+                            t.printStackTrace()
+                            return
+                        }
+                    })
                 }
 
                 override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
@@ -131,6 +153,9 @@ class EditUserActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Open the list tasks activity
+     */
     fun openListTasksActivity(){
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
