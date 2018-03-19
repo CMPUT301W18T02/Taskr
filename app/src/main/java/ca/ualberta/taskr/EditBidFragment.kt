@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -27,6 +28,8 @@ class EditBidFragment : DialogFragment() {
     private lateinit var displayBid : Bid
     @BindView(R.id.enterAmountEdit)
     lateinit var enterAmountView : EditText
+    @BindView(R.id.fragmentTitle)
+    lateinit var fragmentTitle : TextView
     private var mListener: EditBidFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +37,7 @@ class EditBidFragment : DialogFragment() {
         if (arguments != null) {
             if (arguments.getString("DISPLAYBID") != null) {
                 var strBid = arguments.getString("DISPLAYBID")
+                fragmentTitle.text = getString(R.string.fragment_edit_bid)
                 displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
             }
         }

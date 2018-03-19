@@ -130,10 +130,6 @@ class ListTasksActivity : AppCompatActivity() {
     @OnClick(R.id.viewTaskMapButton)
     fun openMapView(){
         val nearbyTasksIntent = Intent(applicationContext, ViewTaskActivity::class.java)
-        var b = Bundle()
-        var strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[0])
-        b.putString("TASK", strTask)
-        nearbyTasksIntent.putExtras(b)
         startActivity(nearbyTasksIntent)
         finish()
     }
