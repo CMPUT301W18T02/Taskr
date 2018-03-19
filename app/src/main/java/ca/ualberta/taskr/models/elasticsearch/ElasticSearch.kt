@@ -7,8 +7,6 @@ import retrofit2.Call
 import retrofit2.http.*
 
 /**
- *  ${FILE_NAME}
- *
  *  3/1/2018
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
@@ -39,7 +37,6 @@ interface ElasticSearch {
     /**
      * Returns user's elasticsearch id from the server based on a user query body
      */
-
     @POST("cmput301w18t02/user/_search?filter_path=hits.hits._id,aggregations.*")
     fun getUserID(@Body userQueryBody: RequestBody): Call<ElasticsearchID>
 
@@ -67,13 +64,13 @@ interface ElasticSearch {
      * Add a new task
      */
     @POST("cmput301w18t02/task")
-    fun createTask(@Body task: Task)
+    fun createTask(@Body task: Task) : Call<Void>
 
     /**
      * Add a new user
      */
     @POST("cmput301w18t02/user")
-    fun createUser(@Body user: User): Call<Void>
+    fun createUser(@Body user: User) : Call<Void>
 
     /**
      * Returns user's owned task
@@ -92,13 +89,13 @@ interface ElasticSearch {
      * Deletes a task from elasticsearch, DOES NOT CHECK DELETION CRITERIA
      */
     @DELETE("cmput301w18t02/task/{id}")
-    fun deleteTask(@Path("id") taskID: String)
+    fun deleteTask(@Path("id") taskID: String) : Call<Void>
 
     /**
      * Deletes a user from elasticsearch,
      */
     @DELETE("cmput301w18t02/user/{id}")
-    fun deleteUser(@Path("id") userID: String)
+    fun deleteUser(@Path("id") userID: String) : Call<Void>
 
 
     // TODO: Implement deletion methods for various types
