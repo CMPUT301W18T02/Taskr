@@ -1,5 +1,7 @@
 package ca.ualberta.taskr
 
+
+
 //import com.mapbox.services.android.location.LostLocationEngine;
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
@@ -15,6 +17,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.mapbox.services.android.telemetry.location.LocationEngine
@@ -29,13 +32,15 @@ import android.util.Log
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import com.mapbox.mapboxsdk.location.LocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.mapbox.mapboxsdk.constants.Style
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+
+
 
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
@@ -55,15 +60,15 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         PermsUtil.getPermissions(this@NearbyTasksActivity)
         ButterKnife.bind(this)
         currentLocation.latitude = -7.942747
-        currentLocation.longitude =  -14.371925
+        currentLocation.longitude = -14.371925
         initializeLocationEngine()
 
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
-
-
     }
+
+
 
     public override fun onStart() {
         super.onStart()
@@ -85,6 +90,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         mapView.onStop()
     }
 
+
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
@@ -94,6 +100,7 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap
         super.onDestroy()
         mapView.onDestroy()
     }
+
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
