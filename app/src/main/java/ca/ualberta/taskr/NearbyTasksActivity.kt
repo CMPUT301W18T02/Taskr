@@ -1,8 +1,11 @@
 package ca.ualberta.taskr
 
+import android.content.Intent
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 
@@ -26,33 +29,38 @@ import ca.ualberta.taskr.R.id.mapView
 import com.mapbox.services.android.telemetry.location.LostLocationEngine
 import android.widget.Toast
 import android.support.annotation.NonNull
+import android.widget.Button
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import ca.ualberta.taskr.Perms.PermsUtil
+import com.mapbox.mapboxsdk.annotations.Marker
 
 
-class NearbyTasksActivity : AppCompatActivity() {
-    private var mapView: MapView? = null
+class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+      //, LocationEngineListener, OnMapReadyCallback, MapboxMap.OnMapClickListener
+
+    /*@BindView(R.id.mapView)
+    lateinit var mapView: MapView
+
     private lateinit var locationPlugin: LocationLayerPlugin
     private lateinit var locationEngine: LocationEngine
-    private lateinit var mapboxMap: MapboxMap
-    private lateinit var permissionsManager: PermissionsManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
-        setContentView(R.layout.activity_nearby_tasks)
-        PermsUtil.getPermissions(this@NearbyTasksActivity)
-        mapView = findViewById<View>(R.id.mapView) as MapView
-        println("HERE")
-        mapView!!.onCreate(savedInstanceState)
-        //TODO: implement range & user location services
-        /*mapView!!.getMapAsync{ mapboxMap ->
-            this@NearbyTasksActivity.mapboxMap = mapboxMap
-            enableLocationPlugin()
-
-        }
-
-
+    private lateinit var mapboxMap: MapboxMap*/
+/*
+    override fun onConnected() {
+        PermsUtil.checkPermission(this@NearbyTasksActivity)
+        locationEngine.requestLocationUpdates()
     }
+
+    override fun onLocationChanged(location: Location?) {
+        if (location != null) {
+            setCameraPosition(location)
+            locationEngine.removeLocationEngineListener(this)
+        }
+    }
+
+
+
 
     private fun enableLocationPlugin() {
         // Check if permissions are enabled and if not request
@@ -60,12 +68,10 @@ class NearbyTasksActivity : AppCompatActivity() {
             // Create an instance of LOST location engine
             initializeLocationEngine()
 
-            locationPlugin = LocationLayerPlugin(mapView!!, mapboxMap, locationEngine)
-            //PermsUtil.checkPermission(this@NearbyTasksActivity)
+            locationPlugin = LocationLayerPlugin(mapView!!, mapboxMap!!, locationEngine)
             locationPlugin.setLocationLayerEnabled(LocationLayerMode.TRACKING)
         } else {
-            permissionsManager = PermissionsManager(this)
-            permissionsManager.requestLocationPermissions(this)
+            PermsUtil.getPermissions(this@NearbyTasksActivity)
         }
     }
 
@@ -78,76 +84,95 @@ class NearbyTasksActivity : AppCompatActivity() {
         if (lastLocation != null) {
             setCameraPosition(lastLocation)
         } else {
-            locationEngine.addLocationEngineListener(this)
+            //locationEngine.addLocationEngineListener(this)
         }
     }
 
     private fun setCameraPosition(location: Location) {
-        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+        mapboxMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 LatLng(location.getLatitude(), location.getLongitude()), 16.0))
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-
-    }
-
-    override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            enableLocationPlugin()
-        } else {
-            Toast.makeText(this, "You didn't grant location permissions.", Toast.LENGTH_LONG).show()
-            finish()
-        }
-    }
-
-    override fun onConnected() {
-        PermsUtil.checkPermission(this@NearbyTasksActivity)
-        locationEngine.requestLocationUpdates()
-    }
-
-    override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            setCameraPosition(location)
-            locationEngine.removeLocationEngineListener(this)
-        }
     }*/
+
+    @BindView(R.id.mapView)
+    lateinit var mapView: MapView
+    private var mapboxMap: MapboxMap? = null
+    private var position: LatLng? = null
+    private lateinit var marker: Marker
+    private lateinit var locationPlugin: LocationLayerPlugin
+    private lateinit var locationEngine: LocationEngine
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
+        setContentView(R.layout.activity_nearby_tasks)
+        PermsUtil.getPermissions(this@NearbyTasksActivity)
+        ButterKnife.bind(this)
+        mapView.onCreate(savedInstanceState)
+
+        mapView.getMapAsync(this)
+
+
     }
-    override fun onStart() {
+
+    public override fun onStart() {
         super.onStart()
-        mapView!!.onStart()
+        mapView.onStart()
     }
 
-    override fun onResume() {
+    public override fun onResume() {
         super.onResume()
-        mapView!!.onResume()
+        mapView.onResume()
     }
 
-    override fun onPause() {
+    public override fun onPause() {
         super.onPause()
-        mapView!!.onPause()
+        mapView.onPause()
     }
 
-    override fun onStop() {
+    public override fun onStop() {
         super.onStop()
-        mapView!!.onStop()
+        mapView.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView!!.onLowMemory()
+        mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView!!.onDestroy()
+        mapView.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        mapView!!.onSaveInstanceState(outState!!)
+        mapView.onSaveInstanceState(outState!!)
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        this.mapboxMap = mapboxMap
+        mapboxMap.addOnMapClickListener(this)
+
+    }
+
+    /*override fun onMarkerClick(marker: Marker): Boolean {
+        return true
+    }*/
+
+
+    override fun onMapClick(point: LatLng) {
+        if (position == null) {
+            marker = mapboxMap!!.addMarker(MarkerOptions()
+                    .position(point))
+            position = point
+        } else {
+            marker.remove()
+            marker = mapboxMap!!.addMarker(MarkerOptions()
+                    .position(point))
+            position = point
+
+        }
     }
 }
