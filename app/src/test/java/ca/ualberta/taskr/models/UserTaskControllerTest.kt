@@ -21,7 +21,7 @@ class UserTaskControllerTest {
     var email = "jsmith@ualberta.ca"
     var phoneNumber = "1234567890"
     var username = "jsmith"
-    var image: Image? = null
+    var image: String? = null
 
     private val usr = User(name, phoneNumber, image, email, username)
 

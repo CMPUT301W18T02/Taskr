@@ -26,7 +26,7 @@ class UserTaskIntegrationTest {
     private var email = "jsmith@ualberta.ca"
     private var phoneNumber = "1234567890"
     private var username = "jsmith"
-    private var image: Image? = null
+    private var image: String? = null
 
     @Ignore
     @Test

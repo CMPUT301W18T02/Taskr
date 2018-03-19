@@ -1,15 +1,13 @@
 package ca.ualberta.taskr.models.elasticsearch
 
-import android.media.Image
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
 import com.google.gson.reflect.TypeToken
 import com.mapbox.mapboxsdk.geometry.LatLng
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 import java.lang.reflect.Type
 import java.util.*
 
@@ -26,7 +24,7 @@ class GSONTest {
     private var title = "I'm a wot"
     private var status: TaskStatus? = TaskStatus.ASSIGNED
     private var description = "4 mana 7/7"
-    private var photos = ArrayList<Image>()
+    private var photos = ArrayList<String>()
     private var location: LatLng = LatLng(40.1231, 12.12321)
     private var chosenBidder = "The Mask"
     private var newBidName1 = "Mr. MoneyBags McGee's Monetary Mmmm"

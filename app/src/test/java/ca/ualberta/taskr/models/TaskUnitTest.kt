@@ -27,7 +27,7 @@ class TaskUnitTest {
     private var status: TaskStatus? = null
     private var bids = ArrayList<Bid>()
     private var description = "4 mana 7/7"
-    private var photos = ArrayList<Image>()
+    private var photos = ArrayList<String>()
     private var location: LatLng? = null
     private var chosenBidder = "The Mask"
 
