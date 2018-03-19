@@ -2,9 +2,15 @@
 // TODO: Deletion from server
 // TODO: Upload changes to server
 
-package ca.ualberta.taskr.models
+package ca.ualberta.taskr.controllers
 
 import android.accounts.NetworkErrorException
+import ca.ualberta.taskr.exceptions.InvalidTypeException
+import ca.ualberta.taskr.exceptions.ResourceDoesNotExistException
+import ca.ualberta.taskr.exceptions.UserAlreadyExistsException
+import ca.ualberta.taskr.exceptions.UserDoesNotExistException
+import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.*
 import com.google.gson.reflect.TypeToken
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -158,10 +164,3 @@ data class UserTaskController(var userMap: HashMap<User, ArrayList<Task>>) {
     }
 
 }
-
-class InvalidTypeException : Exception()
-
-class UserDoesNotExistException(message: String) : Exception("User: $message does not exist")
-
-class UserAlreadyExistsException(message: String) : Exception("User: $message already exists")
-

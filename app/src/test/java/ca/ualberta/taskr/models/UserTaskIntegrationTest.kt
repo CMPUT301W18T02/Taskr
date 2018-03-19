@@ -1,13 +1,10 @@
 package ca.ualberta.taskr.models
 
-import android.media.Image
+import ca.ualberta.taskr.controllers.UserTaskController
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.junit.Ignore
 
 /**
