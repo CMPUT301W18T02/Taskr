@@ -21,4 +21,4 @@ android:
     
 
 script:
-    - ./gradlew clean test
+    - ./gradlew clean assemble test -Dpre-dex=false --stacktrace
