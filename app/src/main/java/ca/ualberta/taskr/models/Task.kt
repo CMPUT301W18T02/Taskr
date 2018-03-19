@@ -7,7 +7,7 @@ import java.io.Serializable
  * Task Class
  */
 data class Task(val owner: String, val title: String, var status: TaskStatus?,
-                val bids: ArrayList<Bid>, val description: String, val photos: ArrayList<Image>,
+                val bids: ArrayList<Bid>, val description: String, val photos: ArrayList<String>,
                 val location: LatLng?, var chosenBidder: String ): Serializable {
 
     fun getBidAtIndex(index: Int): Bid {
