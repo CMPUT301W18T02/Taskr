@@ -17,7 +17,6 @@ import android.provider.ContactsContract
 import android.support.constraint.ConstraintSet
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.telecom.Call
 import android.util.Log
 import android.view.View
 import android.view.ViewStub
@@ -27,15 +26,21 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.*
 import ca.ualberta.taskr.R.attr.layoutManager
+import ca.ualberta.taskr.R.id.id
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.ElasticSearch
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
 import kotlinx.android.synthetic.main.activity_view_tasks.*
 import org.jetbrains.annotations.Nullable
-import javax.security.auth.callback.Callback
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteractionListener,
                         AcceptBidFragment.OnFragmentInteractionListener{
@@ -167,6 +172,23 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.OnFragmentInteracti
     }
 
     private fun updateDisplayTask() {
-        GenerateRetrofit.generateRetrofit()
+        if (displayTask != null) {
+            lateinit var id : ElasticsearchID
+            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(displayTask!!.owner, displayTask!!.title, displayTask!!.description)).enqueue(object : Callback<ElasticsearchID> {
+                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                    Log.i("network", response.body().toString())
+                    id = response.body() as ElasticsearchID
+                    GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask!!)
+                }
+
+                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                    Log.e("network", "Network Failed!")
+                    t.printStackTrace()
+                    return
+                }
+            })
+            taskBidList = displayTask!!.bids
+            bidListAdapter.notifyDataSetChanged()
+        }
     }
 }
