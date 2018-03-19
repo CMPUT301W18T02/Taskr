@@ -17,8 +17,15 @@
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
     <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
 
+    <string name="row_bid_amount">$%.2f</string>
+
     <string name="fragment_edit_bid_enter_amount">Amount:</string>
     <string name="fragment_edit_bid_new">Bid!</string>
-    <string name="fragment_edit_bid_cancel">Cancel</string>
     <string name="fragment_edit_bid_save_changes">Save</string>
+    <string name="fragment_accept_bid_title">Accept Bid</string>
+    <string name="fragment_accept_bid_username">from %s?</string>
+    <string name="fragment_accept_bid_remove">Remove</string>
+    <string name="fragment_accept_bid_yes">Yes</string>
+
+    <string name="prefs_name">TaskrPrefs</string>
 </resources>

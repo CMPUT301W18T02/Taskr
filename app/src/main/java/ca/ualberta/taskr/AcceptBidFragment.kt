@@ -1,38 +1,34 @@
 package ca.ualberta.taskr
 
-import android.app.ActionBar
-import android.app.DialogFragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.app.Fragment
-import android.util.Log
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnClick
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import java.lang.Exception
 
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [EditBidFragment.OnFragmentInteractionListener] interface
+ * [AcceptBidFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [EditBidFragment.newInstance] factory method to
+ * Use the [AcceptBidFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EditBidFragment : DialogFragment() {
+class AcceptBidFragment : Fragment() {
 
-    // TODO: Rename and change types of parameters
-    private var displayBid : Bid? = null
-    @BindView(R.id.enterAmountEdit)
-    lateinit var enterAmountView : EditText
+    private var displayBid: Bid? = null
+    @BindView(R.id.requesterBidAmount)
+    lateinit var bidAmountView : TextView
+    @BindView(R.id.requesterBidUsername)
+    lateinit var bidUsernameView : TextView
     private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,12 +42,8 @@ class EditBidFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-
-        var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
+        var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
-        if (displayBid != null) {
-            if (displayBid!!.amount > 0) { enterAmountView.setText(displayBid?.amount.toString()) }
-        }
         return view
     }
 
@@ -62,16 +54,12 @@ class EditBidFragment : DialogFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
-    }
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
@@ -92,13 +80,13 @@ class EditBidFragment : DialogFragment() {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
-        fun bidUpdate()
     }
 
     companion object {
         // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_DISPLAYBID = "DISPLAYBID"
+        private val ARG_PARAM1 = "param1"
+        private val ARG_PARAM2 = "param2"
 
         /**
          * Use this factory method to create a new instance of
@@ -106,35 +94,16 @@ class EditBidFragment : DialogFragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment EditBidFragment.
+         * @return A new instance of fragment AcceptBidFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(bid: Bid): EditBidFragment {
-            val fragment = EditBidFragment()
+        fun newInstance(param1: String, param2: String): AcceptBidFragment {
+            val fragment = AcceptBidFragment()
             val args = Bundle()
-            val strBid = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java )
-            args.putString(ARG_DISPLAYBID, strBid)
+            args.putString(ARG_PARAM1, param1)
+            args.putString(ARG_PARAM2, param2)
             fragment.arguments = args
             return fragment
-        }
-    }
-
-    @OnClick(R.id.cancel)
-    fun cancel(view : View) {
-        this.dismiss()
-    }
-
-    @OnClick(R.id.confirm)
-    fun confirm(view : View) {
-        var inputAmount : Double
-        var inputAmountString = enterAmountView.text.toString()
-        try {
-            inputAmount = inputAmountString.toDouble()
-        } catch (e : Exception) {
-            return
-        }
-        if (inputAmount > 0) {
-            Log.i("INPUT", "You entered " + inputAmountString)
         }
     }
 }// Required empty public constructor
