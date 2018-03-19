@@ -1,13 +1,17 @@
 package ca.ualberta.taskr
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.widget.Button
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.MapView
@@ -36,6 +40,9 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     lateinit var button: Button
     private var position: LatLng? = null
     private lateinit var marker: Marker
+    private lateinit var iconFactory: IconFactory
+    private lateinit var iconDrawable: Drawable
+    private lateinit var icon: Icon
 
 
     @OnClick(R.id.add_location)
@@ -109,9 +116,13 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
 
     override fun onMapClick(point: LatLng) {
+        /*iconFactory = IconFactory.getInstance(this)
+        iconDrawable = ContextCompat.getDrawable(this, R.drawable.purple_marker)
+        icon = iconFactory.fromDrawable(iconDrawable)*/
         if (position == null) {
             marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point))
+                    .position(point)
+                    .icon(icon))
             position = point
         } else {
             marker.remove()

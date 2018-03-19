@@ -41,6 +41,7 @@ import com.mapbox.mapboxsdk.constants.Style
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
 
+
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
