@@ -1,13 +1,10 @@
 package ca.ualberta.taskr.models
 
-import android.media.Image
+import ca.ualberta.taskr.controllers.UserTaskController
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.junit.Ignore
 
 /**
@@ -26,7 +23,7 @@ class UserTaskIntegrationTest {
     private var email = "jsmith@ualberta.ca"
     private var phoneNumber = "1234567890"
     private var username = "jsmith"
-    private var image: Image? = null
+    private var image: String? = null
 
     @Ignore
     @Test

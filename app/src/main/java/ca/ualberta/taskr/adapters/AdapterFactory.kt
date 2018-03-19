@@ -1,7 +1,9 @@
-package ca.ualberta.taskr.models.elasticsearch
+package ca.ualberta.taskr.adapters
 
+import ca.ualberta.taskr.exceptions.ResourceDoesNotExistException
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
@@ -67,5 +69,3 @@ class AdapterFactory : TypeAdapterFactory {
         }.nullSafe()
     }
 }
-
-class ResourceDoesNotExistException : Exception()

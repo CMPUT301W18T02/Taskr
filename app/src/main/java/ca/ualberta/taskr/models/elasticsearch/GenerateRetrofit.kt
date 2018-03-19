@@ -1,5 +1,8 @@
 package ca.ualberta.taskr.models.elasticsearch
 
+import ca.ualberta.taskr.adapters.AdapterFactory
+import ca.ualberta.taskr.adapters.TaskTypeAdapter
+import ca.ualberta.taskr.adapters.UserTypeAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import com.google.gson.Gson

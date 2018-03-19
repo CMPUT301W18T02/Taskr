@@ -28,6 +28,7 @@
     <string name="fragment_accept_bid_yes">Yes</string>
 
     <string name="prefs_name">"TaskrPrefs"</string>
+    <string name="sf_username_key">Username</string>
 
     <!-- Add Location to Task Strings. -->
     <string name="activity_add_location_to_task_text">"Choose a Location"</string>

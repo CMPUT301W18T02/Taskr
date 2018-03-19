@@ -1,6 +1,5 @@
 package ca.ualberta.taskr.models
 
-import android.media.Image
 import com.mapbox.mapboxsdk.geometry.LatLng
 import java.io.Serializable
 
@@ -23,15 +22,15 @@ data class Task(val owner: String, val title: String, var status: TaskStatus?,
         this.bids[index] = newBid;
     }
 
-    fun getPhotoAtIndex(index: Int): Image {
+    fun getPhotoAtIndex(index: Int): String {
         return this.photos[index]
     }
 
-    fun setPhotoAtIndex(newPhoto: Image, index: Int) {
+    fun setPhotoAtIndex(newPhoto: String, index: Int) {
         this.photos[index] = newPhoto
     }
 
-    fun addPhoto(newPhoto: Image) {
+    fun addPhoto(newPhoto: String) {
         this.photos.add(newPhoto)
     }
 }
