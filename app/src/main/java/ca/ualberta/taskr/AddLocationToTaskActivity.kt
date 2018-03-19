@@ -46,6 +46,15 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     }
 
 
+<<<<<<< HEAD
+=======
+/**
+ * AddLocationToTaskActivity class
+ *
+ * This class contains the activity that allows for a MapBox GPS location to be added to a task
+ */
+class AddLocationToTaskActivity : AppCompatActivity() {
+>>>>>>> origin/databasing
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

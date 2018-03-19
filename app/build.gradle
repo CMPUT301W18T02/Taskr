@@ -1,8 +1,17 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.16"
+    }
+}
+
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka-android'
 
 apply plugin: 'kotlin-kapt'
 
@@ -29,6 +38,7 @@ android {
         }
     }
 }
+
 
 repositories {
     mavenCentral()
@@ -69,4 +79,9 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.android.support:design:26.1.0'
+}
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
 }
