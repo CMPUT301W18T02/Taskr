@@ -1,7 +1,6 @@
 package ca.ualberta.taskr
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -12,6 +11,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import retrofit2.Call
@@ -38,33 +38,12 @@ class LoginActivity : AppCompatActivity() {
     lateinit var UsernameText   : EditText
 
     var MasterUserList : ArrayList<User> = ArrayList<User>()
+    var userController: UserController = UserController(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         ButterKnife.bind(this)
-    }
-
-    fun CheckIfUsernameExists(username: String) : Boolean {
-        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                Log.i("network", response.body().toString())
-                MasterUserList.addAll(response.body() as ArrayList<User>)
-
-            }
-
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-                return
-            }
-        })
-
-        for (user in MasterUserList) {
-            // TODO: This is t/otally not how this should be done but im doing it anyways yolo
-            if (user.username == username) return true
-        }
-        return false
     }
 
     fun getConnectivityStatus() {
@@ -73,26 +52,40 @@ class LoginActivity : AppCompatActivity() {
 
     fun showLoginError(message: String) {
         Log.d("Username", message)
-        LoginErrorText.setText(message)
+        LoginErrorText.text = message
     }
 
     @OnClick(R.id.LoginButton)
     fun LoginClicked(v: View) {
 
-        var Username : String = UsernameText.text.toString()
+        val Username : String = UsernameText.text.toString()
 
-        if (CheckIfUsernameExists(Username)) {
-            showLoginError("Username: " + " Already exists")
-        }
-        else {
-            showLoginError("Username: " + " Doesnt exist")
-            return
-        }
+        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                Log.i("network", response.body().toString())
+                MasterUserList.addAll(response.body() as ArrayList<User>)
+                val exisiting = MasterUserList.firstOrNull {
+                    it -> it.username == Username
+                }
+                if (exisiting != null) {
+                    userController.setLocalUsername(Username)
+                    launchTaskList()
+                }
+                else{
+                    showLoginError("Username " + "doesn't exist")
+                }
+            }
 
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                showLoginError("Network failed")
+                t.printStackTrace()
+                return
+            }
+        })
+    }
 
-        android.util.Log.d("CLICK", "Login button clicked")
-        AddUserToSharedPreferences(Username)
-
+    fun launchTaskList(){
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
     }
@@ -102,17 +95,31 @@ class LoginActivity : AppCompatActivity() {
 
         var Username : String = UsernameText.text.toString()
 
-        if (CheckIfUsernameExists(Username)) {
-            showLoginError("Username: " + " Already exists")
-            return
-        }
-        else {
-            showLoginError("Username: " + " Doesnt exist")
-        }
+        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                Log.i("network", response.body().toString())
+                MasterUserList.addAll(response.body() as ArrayList<User>)
+                val exisiting = MasterUserList.firstOrNull {
+                    it -> it.username == Username
+                }
+                if (exisiting != null) {
+                    showLoginError("Username: " + " Already exists")
+                }
+                else{
+                    lauchEditUserActivity()
+                }
+            }
 
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                showLoginError("Network failed")
+                t.printStackTrace()
+                return
+            }
+        })
+    }
 
-        android.util.Log.d("CLICK", "NewUser button clicked")
-        AddUserToSharedPreferences(Username)
+    fun lauchEditUserActivity() {
         var intent = Intent(this, EditUserActivity::class.java)
         startActivity(intent)
     }
@@ -122,11 +129,4 @@ class LoginActivity : AppCompatActivity() {
         // TODO: Implement clicking on the logo in part 5
     }
 
-    fun AddUserToSharedPreferences(username : String){
-        lateinit var editor : SharedPreferences.Editor
-        editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE).edit()
-
-        editor.putString("Username", username)
-        editor.apply()
-    }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -25,7 +26,7 @@ import retrofit2.Response
 class EditUserActivity : AppCompatActivity() {
 
     lateinit var CurrentUser: User
-    var IsNewUser = false
+    private var isNewUser = false
     lateinit var Username: String
     @BindView(R.id.UserSurnameText)
     lateinit var UserSurnameText: EditText
@@ -42,66 +43,86 @@ class EditUserActivity : AppCompatActivity() {
     @BindView(R.id.EditUserErrorTextView)
     lateinit var EditUSerErrorTextView: TextView
 
+    var userController : UserController = UserController(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_user)
         ButterKnife.bind(this)
 
-        if (IsNewUser) ApplyChangesButton.setText("Create User")
+        Username = userController.getLocalUserName()
+
+        isNewUser = (Username == "")
+
+        if (isNewUser) ApplyChangesButton.setText("Create User")
         else ApplyChangesButton.setText("Edit User")
 
-        var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        Username = editor.getString("Username", null)
     }
 
 
     fun DisplayErrorMessage(message: String) {
+        // TODO
     }
 
     fun CheckNameFormatting(name: String): Boolean {
+        // TODO
         return false
     }
 
     fun CheckPhoneNumberFormatting(PhoneNumber: String): Boolean {
+        // TODO
         return false
     }
 
     fun CheckEmailFormatting(Email: String): Boolean {
+        // TODO
         return false
     }
 
+    /**
+     * Apply changes to a user with error checking
+     */
     @OnClick(R.id.ApplyChangesButton)
     fun onApplyChangesClicked() {
-        lateinit var Name: String
-        lateinit var PhoneNumber: String
-        lateinit var Email: String
+        val name: String = UserSurnameText.text.toString()
+        val phoneNumber: String = UserPhoneNumberText.text.toString()
+        val email: String = UserEmailText.text.toString()
 
-        Name = UserSurnameText.text.toString()
-        PhoneNumber = UserPhoneNumberText.text.toString()
-        Email = UserEmailText.text.toString()
-
-        if (CheckNameFormatting(Name)) {
+        if (CheckNameFormatting(name)) {
             DisplayErrorMessage("Invalid Name")
             return
         }
 
-        if (CheckPhoneNumberFormatting(PhoneNumber)) {
+        if (CheckPhoneNumberFormatting(phoneNumber)) {
             DisplayErrorMessage("Invalid PhoneNumber")
             return
         }
 
-        if (CheckEmailFormatting(Email)) {
+        if (CheckEmailFormatting(email)) {
             DisplayErrorMessage("Invalid Email")
             return
         }
 
-        CurrentUser = User(Name, PhoneNumber, null, Email, Username)
+        CurrentUser = User(name, phoneNumber, null, email, Username)
         UpdateUser(CurrentUser)
     }
 
+    /**
+     * Update the user using async network calls
+     *
+     * @param user The user object to get updated
+     */
     fun UpdateUser(user : User) {
-        if (IsNewUser) {
-            GenerateRetrofit.generateRetrofit().createUser(user)
+        if (isNewUser) {
+            GenerateRetrofit.generateRetrofit().createUser(user).enqueue(object: Callback<Void> {
+                override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
+                    openListTasksActivity()
+                }
+
+                override fun onFailure(call: Call<Void>?, t: Throwable?) {
+                    Log.e("network", "Network Failed!")
+                }
+            })
         }
         else {
             lateinit var id : ElasticsearchID
@@ -109,7 +130,18 @@ class EditUserActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                     Log.i("network", response.body().toString())
                     id = response.body() as ElasticsearchID
-                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user)
+                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user).enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            Log.i("network", response.body().toString())
+                            openListTasksActivity()
+                        }
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Log.e("network", "Network Failed!")
+                            t.printStackTrace()
+                            return
+                        }
+                    })
                 }
 
                 override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
@@ -118,9 +150,13 @@ class EditUserActivity : AppCompatActivity() {
                     return
                 }
             })
-
         }
+    }
 
+    /**
+     * Open the list tasks activity
+     */
+    fun openListTasksActivity(){
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
     }

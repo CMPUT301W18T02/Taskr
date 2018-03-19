@@ -73,7 +73,7 @@ interface ElasticSearch {
      * Add a new user
      */
     @POST("cmput301w18t02/user")
-    fun createUser(@Body user: User)
+    fun createUser(@Body user: User): Call<Void>
 
     /**
      * Returns user's owned task
