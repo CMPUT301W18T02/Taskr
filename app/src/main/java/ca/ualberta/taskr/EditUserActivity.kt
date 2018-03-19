@@ -54,7 +54,10 @@ class EditUserActivity : AppCompatActivity() {
 
         isNewUser = (Username == "")
 
-        if (isNewUser) ApplyChangesButton.setText("Create User")
+        if (isNewUser) {
+            ApplyChangesButton.setText("Create User")
+            Username = intent.getStringExtra("username")
+        }
         else ApplyChangesButton.setText("Edit User")
 
     }
