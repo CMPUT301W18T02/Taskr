@@ -3,6 +3,8 @@ package ca.ualberta.taskr.models.UserCases
 import ca.ualberta.taskr.AddLocationToTaskActivity
 import ca.ualberta.taskr.models.Bid
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +21,8 @@ class AddGeoLocationToTaskTest  {
 
     @Test
     fun testOnMapClick(){
-        val point: LatLng?
+        val point = LatLng(54.56,-113.56)
+        val mapboxMap: MapboxMap
 
     }
 
