@@ -18,10 +18,16 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.support.design.widget.NavigationView
+import android.view.View
+import android.widget.TextView
+import ca.ualberta.taskr.controllers.NavViewController
+
 
 /**
  *  The master task list activity
@@ -41,6 +47,9 @@ class ListTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.taskListToolbar)
     lateinit var toolbar: Toolbar
+
+    @BindView(R.id.nav_view)
+    lateinit var navView: NavigationView
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -71,6 +80,8 @@ class ListTasksActivity : AppCompatActivity() {
             adapter = taskListAdapter
         }
 
+        NavViewController(navView, drawerLayout, applicationContext)
+
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 Log.i("network", response.body().toString())
@@ -99,6 +110,16 @@ class ListTasksActivity : AppCompatActivity() {
                 updateSearch(searchText)
             }
         })
+
+        taskListAdapter.setClickListener(View.OnClickListener {
+            val position = taskList.indexOfChild(it)
+            val nearbyTasksIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+            val bundle = Bundle()
+            val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
+            bundle.putString("TASK", strTask)
+            nearbyTasksIntent.putExtras(bundle)
+            startActivity(nearbyTasksIntent)
+        })
     }
 
     /**
@@ -117,10 +138,11 @@ class ListTasksActivity : AppCompatActivity() {
     /**
      * Use to update the shownTaskList by applying a search filter to the master list
      */
-    fun updateSearch(textToSearch:String){
+    fun updateSearch(textToSearch : String){
         shownTaskList.clear()
         shownTaskList.addAll(masterTaskList.filter {
-            it -> it.title.contains(textToSearch) || it.description.contains(textToSearch)
+            it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE) &&
+                (it.title.contains(textToSearch) || it.description.contains(textToSearch))
         })
         taskListAdapter.notifyDataSetChanged()
     }

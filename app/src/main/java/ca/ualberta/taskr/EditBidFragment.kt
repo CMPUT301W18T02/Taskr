@@ -1,101 +1,153 @@
 package ca.ualberta.taskr
 
+import android.app.ActionBar
+import android.app.DialogFragment
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
+import ca.ualberta.taskr.models.Bid
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import java.lang.Exception
 
 
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [EditBidFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [EditBidFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * EditBidFragment class
+ *
+ * Allows task providers to add/edit Bids on some Task.
  */
-class EditBidFragment : Fragment() {
+class EditBidFragment : DialogFragment() {
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-
-    private var mListener: OnFragmentInteractionListener? = null
+    private lateinit var displayBid : Bid
+    @BindView(R.id.enterAmountEdit)
+    lateinit var enterAmountView : EditText
+    @BindView(R.id.fragmentTitle)
+    lateinit var fragmentTitle : TextView
+    private var mListener: EditBidFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
+            if (arguments.getString("DISPLAYBID") != null) {
+                var strBid = arguments.getString("DISPLAYBID")
+                fragmentTitle.text = getString(R.string.fragment_edit_bid)
+                displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
+            }
         }
     }
 
+    /**
+     * Creates the view for EditBidFragment's layout, then updates displayed bid amount with
+     * value obtained from a provided Bid object. If no Bid was provided, no update is made.
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_bid, container, false)
-    }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
+        var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
+        ButterKnife.bind(this, view)
+        try {
+            if (displayBid?.amount > 0) {
+                enterAmountView.setText(displayBid.amount.toString())
+            }
+        } catch (e : UninitializedPropertyAccessException) {
+            // If displayBid not initialized, then no Bid object was provided by
+            // container activity.
+            Log.e("DisplayBid Object", "No Bid object provided")
         }
+        return view
     }
 
-    override fun onAttach(context: Context) {
+    /**
+     * Update layout width to MATCH_PARENT so that fragment width expands to fit screen width.
+     */
+    override fun onStart() {
+        super.onStart()
+        dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
+    }
+
+    /**
+     * Default onAttach function.
+     */
+    override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is EditBidFragmentInteractionListener) {
             mListener = context
         } else {
             throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
     }
 
+    /**
+     * Default onDetach function
+     */
     override fun onDetach() {
         super.onDetach()
         mListener = null
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
+     * Defines stub for bid add/update methods.
      */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    interface EditBidFragmentInteractionListener {
+        fun bidUpdate(bidAmount : Double, originalBid : Bid)
+        fun bidAdd(bidAmount : Double)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
+        private val ARG_DISPLAYBID = "DISPLAYBID"
 
         /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EditBidFragment.
+         * Factory method for creating instance of EditBidFragment given a Bid object.
          */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): EditBidFragment {
+        fun newInstance(bid: Bid): EditBidFragment {
             val fragment = EditBidFragment()
             val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
+            val strBid = GenerateRetrofit.generateGson().toJson(bid, Bid::class.java )
+            args.putString(ARG_DISPLAYBID, strBid)
             fragment.arguments = args
             return fragment
         }
     }
-}// Required empty public constructor
+
+    /**
+     * Cancels adding/editing bid by closing EditBidFragment.
+     */
+    @OnClick(R.id.cancel)
+    fun cancel(view : View) {
+        this.dismiss()
+    }
+
+    /**
+     * Verifies that inputted bid amount is a valid Double, then passes it back to container activity
+     * using bidUpdate to allow bid to be created/edited. Closes EditBidFragment afterwards.
+     */
+    @OnClick(R.id.confirm)
+    fun confirm(view : View) {
+        var inputAmount : Double
+        var inputAmountString = enterAmountView.text.toString()
+        try {
+            inputAmount = inputAmountString.toDouble()
+        } catch (e : Exception) {
+            // Exit function if inputted bid amount is invalid.
+            return
+        }
+        if (inputAmount > 0) {
+            try {
+                // If displayBid is initialized, then Provider is updating a bid.
+                mListener?.bidUpdate(inputAmount, displayBid)
+            } catch (e : UninitializedPropertyAccessException) {
+                // If displayBid is not initialized, then Provider is creating a new bid.
+                mListener?.bidAdd(inputAmount)
+            }
+            this.dismiss()
+        }
+    }
+}

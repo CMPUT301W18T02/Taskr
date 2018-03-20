@@ -1,5 +1,8 @@
 package ca.ualberta.taskr.models.elasticsearch
 
+import ca.ualberta.taskr.adapters.AdapterFactory
+import ca.ualberta.taskr.adapters.TaskTypeAdapter
+import ca.ualberta.taskr.adapters.UserTypeAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import com.google.gson.Gson
@@ -20,10 +23,16 @@ import okhttp3.logging.HttpLoggingInterceptor
  *
  *  Generates the retrofit profiling that is required
  */
+
+/**
+ * GenerateRetrofit Class
+ * This class acts as a wrapper to the REST api functionality and ElasticSearch calls, as well
+ * as providing data serialization using GSON and JSON for queried objects
+ */
 class GenerateRetrofit {
     companion object {
 
-        var CMPUT301URL = "http://cmput301.softwareprocess.es:8080";
+        var CMPUT301URL = "http://cmput301.softwareprocess.es:8080"
 
         /**
          * Generate JSON using googles GSON library
@@ -35,7 +44,7 @@ class GenerateRetrofit {
             val userListType: Type = object : TypeToken<List<User>>() {}.type
 
             return GsonBuilder()
-                    .registerTypeAdapterFactory(UserTypeAdapterFactory())
+                    .registerTypeAdapterFactory(AdapterFactory())
                     .registerTypeAdapter(taskListType, TaskTypeAdapter())
                     .registerTypeAdapter(userListType, UserTypeAdapter())
                     .serializeNulls()

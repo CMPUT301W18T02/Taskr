@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner
 
 import ca.ualberta.taskr.models.User
 
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 
 /**
  * Created by marissasnihur on 2018-02-22.
@@ -20,7 +20,7 @@ class UserUnitTest {
     private var email = "jsmith@ualberta.ca"
     private var phoneNumber = "1234567890"
     private var username = "jsmith"
-    private var image: Image? = null
+    private var image: String? = null
 
 
     @Test

@@ -18,7 +18,7 @@ import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class TaskUnitTest {
@@ -27,7 +27,7 @@ class TaskUnitTest {
     private var status: TaskStatus? = null
     private var bids = ArrayList<Bid>()
     private var description = "4 mana 7/7"
-    private var photos = ArrayList<Image>()
+    private var photos = ArrayList<String>()
     private var location: LatLng? = null
     private var chosenBidder = "The Mask"
 

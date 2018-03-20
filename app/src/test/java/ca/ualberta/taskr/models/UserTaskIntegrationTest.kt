@@ -1,10 +1,11 @@
 package ca.ualberta.taskr.models
 
-import org.junit.After
-import org.junit.Before
+import ca.ualberta.taskr.controllers.UserTaskController
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
 import org.junit.Test
 
-import org.junit.Assert.*
+import org.junit.Ignore
 
 /**
  * ${FILE_NAME}
@@ -17,9 +18,18 @@ import org.junit.Assert.*
  */
 class UserTaskIntegrationTest {
     private val controller = UserTaskController(HashMap())
+    private val elasticSearch = GenerateRetrofit.generateRetrofit()
+    private var name = "John"
+    private var email = "jsmith@ualberta.ca"
+    private var phoneNumber = "1234567890"
+    private var username = "jsmith"
+    private var image: String? = null
 
+    @Ignore
     @Test
     fun uploadChanges() {
+        controller.addUser(User(name, phoneNumber, image, email, username))
+        controller.uploadChanges()
     }
 
     @Test
@@ -28,8 +38,11 @@ class UserTaskIntegrationTest {
     }
 
     @Test
-    fun checkDataBaseConnectivity() {
-        print("Is the database available: " + controller.checkDataBaseConnectivity())
+    fun getUserID() {
+        println(elasticSearch.getUserID(Query.userQuery("ryan")).execute().body())
     }
-
+    @Test
+    fun checkDataBaseConnectivity() {
+        println("Is the database available: " + controller.checkDataBaseConnectivity())
+    }
 }
