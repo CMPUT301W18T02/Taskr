@@ -36,11 +36,13 @@ class Task:
         # self.photos = [str(base64.encodebytes(bytes(f.text(), "utf-8"))) for i in range(random.randint(0, 10))]
         self.photos = []
         self.location = {
-            "latitude": random.uniform(53.237022, 52.713658) + random.random(),
-            "longitude": random.uniform(-114.094366, -112.748048) + random.random(),
+            "latitude": random.uniform(53.433298, 53.635187),
+            "longitude": random.uniform(-113.301333, -113.692089),
             "altitude": 0.0}
         self.chosenBidder = self.choose_bid(bidders)
 
+    def __str__(self):
+        return self.title + ": LatLng(" + str(self.location) + ")"
     @staticmethod
     def choose_bid(bidders):
         if random.choice([True, False]):
