@@ -1,7 +1,6 @@
 package ca.ualberta.taskr
 
 
-
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.location.Location
@@ -43,7 +42,6 @@ import com.mapbox.mapboxsdk.constants.Style
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
 
-
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
@@ -69,7 +67,6 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
         mapView.getMapAsync(this)
     }
-
 
 
     public override fun onStart() {
@@ -124,7 +121,20 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
                 t.printStackTrace()
             }
         })
-
+        mapboxMap.setOnInfoWindowClickListener(
+                fun(marker: Marker): Boolean {
+                    for (task1 in masterTaskList) {
+                        if (task1.title == marker.title) {
+                            var intent = Intent(this, ViewTaskActivity::class.java)
+                            var bundle = Bundle()
+                            var strTask = GenerateRetrofit.generateGson().toJson(task1)
+                            bundle.putString("DISPLAYTASK", strTask)
+                            intent.putExtras(bundle)
+                            startActivity(intent)
+                        }
+                    }
+                    return true
+                })
         updateCurrentLocation()
         setCameraPosition(currentLocation)
 
@@ -158,31 +168,18 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
                         .position(task.location)
                         .title(task.title)
                         .snippet("owner: " + task.owner))
-                mapboxMap.setOnInfoWindowClickListener(
-                            fun (marker: Marker): Boolean {
-                                for (task1 in masterTaskList) {
-                                    if (task1.title == marker.title) {
-                                        var intent = Intent(this, ViewTaskActivity::class.java)
-                                        var bundle = Bundle()
-                                        var strTask = GenerateRetrofit.generateGson().toJson(task1)
-                                        bundle.putString("DISPLAYTASK", strTask)
-                                        intent.putExtras(bundle)
-                                        startActivity(intent)
-                                    }
-                                }
-                                return true
-                            })
-
-
-
             }
-        }
 
+
+
+        }
     }
 
-    /*override fun onMarkerClick(marker: Marker): Boolean {
-        return true
-    }*/
+
+
+/*override fun onMarkerClick(marker: Marker): Boolean {
+    return true
+}*/
 
 
 //    override fun onMapClick(point: LatLng) {
@@ -199,45 +196,45 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 //        }
 //    }
 
-    private fun initializeLocationEngine() {
-        locationEngine = Mapbox.getLocationEngine()
-        locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
-        locationEngine.activate()
+private fun initializeLocationEngine() {
+    locationEngine = Mapbox.getLocationEngine()
+    locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
+    locationEngine.activate()
+}
+
+private fun latLngFromLocation(location: Location): LatLng {
+    return LatLng(location.latitude, location.longitude)
+}
+
+private fun setCameraPosition(location: Location) {
+    mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+            latLngFromLocation(location), 10.0))
+}
+
+private fun generatePerimeter(centerCoordinates: LatLng, radiusInKilometers: Double, numberOfSides: Int): PolygonOptions {
+    val positions = ArrayList<LatLng>()
+    val distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.latitude * Math.PI / 180))
+    val distanceY = radiusInKilometers / 110.574
+
+    val slice = 2 * Math.PI / numberOfSides
+
+    var theta: Double
+    var x: Double
+    var y: Double
+    var position: LatLng
+    for (i in 0 until numberOfSides) {
+        theta = i * slice
+        x = distanceX * Math.cos(theta)
+        y = distanceY * Math.sin(theta)
+
+        position = LatLng(centerCoordinates.latitude + y,
+                centerCoordinates.longitude + x)
+        positions.add(position)
     }
-
-    private fun latLngFromLocation(location: Location): LatLng {
-        return LatLng(location.latitude, location.longitude)
-    }
-
-    private fun setCameraPosition(location: Location) {
-        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                latLngFromLocation(location), 10.0))
-    }
-
-    private fun generatePerimeter(centerCoordinates: LatLng, radiusInKilometers: Double, numberOfSides: Int): PolygonOptions {
-        val positions = ArrayList<LatLng>()
-        val distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.latitude * Math.PI / 180))
-        val distanceY = radiusInKilometers / 110.574
-
-        val slice = 2 * Math.PI / numberOfSides
-
-        var theta: Double
-        var x: Double
-        var y: Double
-        var position: LatLng
-        for (i in 0 until numberOfSides) {
-            theta = i * slice
-            x = distanceX * Math.cos(theta)
-            y = distanceY * Math.sin(theta)
-
-            position = LatLng(centerCoordinates.latitude + y,
-                    centerCoordinates.longitude + x)
-            positions.add(position)
-        }
-        return PolygonOptions()
-                .addAll(positions)
-                .fillColor(Color.BLUE)
-                .alpha(0.1f)
-    }
+    return PolygonOptions()
+            .addAll(positions)
+            .fillColor(Color.BLUE)
+            .alpha(0.1f)
+}
 }
 
