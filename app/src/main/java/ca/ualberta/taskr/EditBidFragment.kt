@@ -54,7 +54,7 @@ class EditBidFragment : DialogFragment() {
         var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
         ButterKnife.bind(this, view)
         try {
-            if (displayBid?.amount > 0) {
+            if (displayBid.amount > 0) {
                 enterAmountView.setText(displayBid.amount.toString())
             }
         } catch (e : UninitializedPropertyAccessException) {
