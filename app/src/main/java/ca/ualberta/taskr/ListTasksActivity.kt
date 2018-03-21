@@ -152,8 +152,7 @@ class ListTasksActivity : AppCompatActivity() {
 
         shownTaskList.addAll(masterTaskList.filter {
             it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
-            //TODO FIX SEARCH
-//                && (it.title.contains(textToSearch) || it.description.contains(textToSearch))
+                && ((it.title != null && it.title.contains(textToSearch)) || (it.description != null && it.description.contains(textToSearch)))
         })
         loadingPanel.visibility = View.GONE
 
