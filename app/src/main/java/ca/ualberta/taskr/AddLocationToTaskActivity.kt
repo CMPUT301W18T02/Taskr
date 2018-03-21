@@ -2,6 +2,7 @@ package ca.ualberta.taskr
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -20,6 +21,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ca.ualberta.taskr.R.id.mapView
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 
 import com.mapbox.mapboxsdk.constants.Style
 
@@ -48,7 +50,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     @OnClick(R.id.add_location)
     fun sendBack() {
-        val intent = Intent();
+        val intent = Intent()
         intent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
         setResult(RESULT_OK, intent)
         finish()
@@ -63,29 +65,28 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
-        position = GenerateRetrofit.generateGson().fromJson(savedInstanceState?.getString("position"), LatLng::class.java)
+        position = GenerateRetrofit.generateGson().fromJson(intent.getStringExtra("position"), LatLng::class.java)
+        println(position)
 
     }
 
 
-
-
-    override fun onStart(){
+    override fun onStart() {
         super.onStart()
         mapView.onStart()
     }
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
         mapView.onPause()
     }
 
-    override fun onStop(){
+    override fun onStop() {
         super.onStop()
         mapView.onStop()
     }
@@ -108,8 +109,10 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
-        if (position!= null) {
-            mapboxMap.addMarker(MarkerOptions()
+        if (position != null) {
+            setCameraPosition(position!!)
+
+            marker = mapboxMap.addMarker(MarkerOptions()
                     .position(position))
         }
         mapboxMap.addOnMapClickListener(this)
@@ -139,6 +142,14 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         }
     }
 
+    private fun latLngFromLocation(location: Location): LatLng {
+        return LatLng(location.latitude, location.longitude)
+    }
+
+    private fun setCameraPosition(point: LatLng) {
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                point, 10.0))
+    }
 
 
 }

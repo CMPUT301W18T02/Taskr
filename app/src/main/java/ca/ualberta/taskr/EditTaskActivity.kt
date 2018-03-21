@@ -88,6 +88,8 @@ class EditTaskActivity : AppCompatActivity() {
     fun openLocationActivity(){
         val addLocationIntent = Intent(this, AddLocationToTaskActivity::class.java)
         addLocationIntent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
+        val s = intent.getStringExtra("EXTRA_SESSION_ID")
+        println(GenerateRetrofit.generateGson().toJson(position))
         startActivityForResult(addLocationIntent, 1)
     }
 
@@ -123,9 +125,9 @@ class EditTaskActivity : AppCompatActivity() {
         // post newTask to servers
         // if a task has been passed in, edit its properties, otherwise post a new task
         if(taskPassedIn) {
-            GenerateRetrofit.generateRetrofit().updateTask(id.toString(), newTask).enqueue(object : Callback<Void> {
+            GenerateRetrofit.generateRetrofit().updateTask(id._id, newTask).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    Log.i("network", response.body().toString())
+                    Log.i("network update task", response.body().toString())
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
