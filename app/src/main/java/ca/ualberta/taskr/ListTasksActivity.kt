@@ -113,12 +113,12 @@ class ListTasksActivity : AppCompatActivity() {
 
         taskListAdapter.setClickListener(View.OnClickListener {
             val position = taskList.indexOfChild(it)
-            val nearbyTasksIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+            val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
             val bundle = Bundle()
             val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
             bundle.putString("TASK", strTask)
-            nearbyTasksIntent.putExtras(bundle)
-            startActivity(nearbyTasksIntent)
+            viewTaskIntent.putExtras(bundle)
+            startActivity(viewTaskIntent)
         })
     }
 
