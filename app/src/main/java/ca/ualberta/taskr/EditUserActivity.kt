@@ -119,11 +119,12 @@ class EditUserActivity : AppCompatActivity() {
         if (isNewUser) {
             GenerateRetrofit.generateRetrofit().createUser(user).enqueue(object: Callback<Void> {
                 override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
+                    userController.setLocalUsername(Username)
                     openListTasksActivity()
                 }
 
                 override fun onFailure(call: Call<Void>?, t: Throwable?) {
-                    Log.e("network", "Network Failed!")
+                    Log.e("network", "Network Failed on creation!")
                 }
             })
         }

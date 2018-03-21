@@ -41,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
     var userController: UserController = UserController(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        userController.setLocalUsername("")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         ButterKnife.bind(this)
@@ -94,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
     fun NewUserClicked(v: View) {
 
         var Username : String = UsernameText.text.toString()
-
+//        userController.setLocalUsername(Username)
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
@@ -106,6 +107,7 @@ class LoginActivity : AppCompatActivity() {
                     showLoginError("Username: " + " Already exists")
                 }
                 else{
+                    userController.setLocalUsername("")
                     launchEditUserActivity(Username)
                 }
             }
@@ -129,5 +131,7 @@ class LoginActivity : AppCompatActivity() {
     fun onTaskrImageClick() {
         // TODO: Implement clicking on the logo in part 5
     }
+
+
 
 }
