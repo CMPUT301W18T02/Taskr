@@ -28,18 +28,6 @@ class AcceptBidFragment : DialogFragment() {
     private var mListener: AcceptBidFragmentInteractionListener? = null
 
     /**
-     * Initializes the AcceptBidFragment. Obtains bid selected by Requester through the class
-     * which instantiated this fragment.
-     */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            var strBid = arguments.getString("DISPLAYBID")
-            displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
-        }
-    }
-
-    /**
      * Creates the view for AcceptBidFragment's layout, then updates displayed Bid attributes with
      * those obtained from a provided Bid object.
      */
@@ -48,9 +36,16 @@ class AcceptBidFragment : DialogFragment() {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
+
+        if (arguments != null) {
+            var strBid = arguments.getString("DISPLAYBID")
+            displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
+        }
+
         // Update Bid attribute views using received Bid.
         bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid.amount)
         bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid.owner)
+
         return view
     }
 
