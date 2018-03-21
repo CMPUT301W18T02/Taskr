@@ -17,26 +17,17 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
 import com.mapbox.services.android.telemetry.location.LocationEngine
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority
-import com.mapbox.services.android.telemetry.location.LocationEngineProvider
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.annotations.PolygonOptions
-import android.content.DialogInterface
-import android.content.DialogInterface.BUTTON_NEUTRAL
 import android.content.Intent
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import ca.ualberta.taskr.models.Task
-import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit.Companion.generateRetrofit
-import com.mapbox.mapboxsdk.location.LocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.mapbox.mapboxsdk.constants.Style
 
 
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
@@ -45,9 +36,6 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
-    private var position: LatLng? = null
-    private lateinit var marker: Marker
-    private lateinit var locationPlugin: LocationLayerPlugin
     private lateinit var locationEngine: LocationEngine
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var currentLocation: Location = Location("")
@@ -123,14 +111,15 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         })
         mapboxMap.setOnInfoWindowClickListener(
                 fun(marker: Marker): Boolean {
-                    for (task1 in masterTaskList) {
-                        if (task1.title == marker.title) {
-                            var intent = Intent(this, ViewTaskActivity::class.java)
-                            var bundle = Bundle()
-                            var strTask = GenerateRetrofit.generateGson().toJson(task1)
-                            bundle.putString("DISPLAYTASK", strTask)
-                            intent.putExtras(bundle)
-                            startActivity(intent)
+                    for (task in masterTaskList) {
+                        if (task.title == marker.title) {
+                            val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+                            val bundle = Bundle()
+                            val strTask = GenerateRetrofit.generateGson().toJson(task)
+                            bundle.putString("TASK", strTask)
+                            viewTaskIntent.putExtras(bundle)
+                            startActivity(viewTaskIntent)
+
                         }
                     }
                     return true
@@ -156,9 +145,6 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
     private fun addTasksToMap() {
         mapboxMap.removeAnnotations()
-        mapboxMap.addMarker(MarkerOptions()
-                .position(latLngFromLocation(currentLocation))
-                .title("Current Location"))
         mapboxMap.addPolygon(generatePerimeter(latLngFromLocation(currentLocation), 5.0, 100))
 
 

@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
 import android.util.Log
+import android.view.View
 
 import android.widget.Button
 
@@ -46,6 +47,16 @@ class MyTasksActivity : AppCompatActivity() {
             layoutManager = viewManager
             adapter = myTasksAdapter
         }
+
+        myTasksAdapter.setClickListener(View.OnClickListener {
+            val position = myTasksView.indexOfChild(it)
+            val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+            val bundle = Bundle()
+            val strTask = GenerateRetrofit.generateGson().toJson(myTasksList[position])
+            bundle.putString("TASK", strTask)
+            viewTaskIntent.putExtras(bundle)
+            startActivity(viewTaskIntent)
+        })
 
         populateList()
     }

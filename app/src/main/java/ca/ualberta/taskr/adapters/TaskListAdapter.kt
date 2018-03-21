@@ -20,7 +20,7 @@ import android.R.attr.onClick
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
 
-    var mClickListener: View.OnClickListener? = null
+    private lateinit var mClickListener: View.OnClickListener
 
     /**
      * LocalViewHolder function
@@ -49,7 +49,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         //return LocalViewHolder(itemView)
 
         val holder = LocalViewHolder(itemView)
-        holder.itemView.setOnClickListener({ view -> mClickListener!!.onClick(view) })
+        holder.itemView.setOnClickListener({ view -> mClickListener.onClick(view) })
         return holder
     }
 
