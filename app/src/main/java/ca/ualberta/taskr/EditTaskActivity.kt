@@ -44,6 +44,8 @@ class EditTaskActivity : AppCompatActivity() {
     var taskPassedIn: Boolean = false
     private lateinit var editTask: Task
     private  var position: LatLng? = null
+    private lateinit var id: ElasticsearchID
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +55,20 @@ class EditTaskActivity : AppCompatActivity() {
 
         if (intent.getStringExtra("Task") != null){
             taskPassedIn = true
+            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(editTask.owner, editTask.title, editTask.description)).enqueue(object : Callback<ElasticsearchID> {
+                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                    Log.i("network", response.body().toString())
+                    id = response.body() as ElasticsearchID
+                }
+
+                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                    Log.e("network", "Network Failed!")
+                    t.printStackTrace()
+                    return
+                }
+            })
             val strTask: String = intent.getStringExtra("Task")
+
             editTask = GenerateRetrofit.generateGson().fromJson(strTask, Task::class.java)
             position = editTask.location
             fillBoxes(editTask)
@@ -107,15 +122,12 @@ class EditTaskActivity : AppCompatActivity() {
         // post newTask to servers
         // if a task has been passed in, edit its properties, otherwise post a new task
         if(taskPassedIn) {
-            var id: ElasticsearchID
-            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(editTask.owner, editTask.title, editTask.description)).enqueue(object : Callback<ElasticsearchID> {
-                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+            GenerateRetrofit.generateRetrofit().updateTask(id.toString(), newTask).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     Log.i("network", response.body().toString())
-                    id = response.body() as ElasticsearchID
-                    GenerateRetrofit.generateRetrofit().updateTask(id.toString(), newTask)
                 }
 
-                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                override fun onFailure(call: Call<Void>, t: Throwable) {
                     Log.e("network", "Network Failed!")
                     t.printStackTrace()
                     return
@@ -123,7 +135,17 @@ class EditTaskActivity : AppCompatActivity() {
             })
         }
         else{
-            GenerateRetrofit.generateRetrofit().createTask(newTask)
+            GenerateRetrofit.generateRetrofit().createTask(newTask).enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    Log.i("network", response.body().toString())
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("network", "Network Failed!")
+                    t.printStackTrace()
+                    return
+                }
+            })
         }
 
         val editTaskIntent = Intent()
