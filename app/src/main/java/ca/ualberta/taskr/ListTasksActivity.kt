@@ -24,11 +24,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.support.design.widget.NavigationView
-import android.support.v4.widget.ContentLoadingProgressBar
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
-import android.widget.TextView
 import ca.ualberta.taskr.controllers.NavViewController
 
 

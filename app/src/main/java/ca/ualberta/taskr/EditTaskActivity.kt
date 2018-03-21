@@ -55,6 +55,11 @@ class EditTaskActivity : AppCompatActivity() {
 
         if (intent.getStringExtra("Task") != null){
             taskPassedIn = true
+            val strTask: String = intent.getStringExtra("Task")
+
+            editTask = GenerateRetrofit.generateGson().fromJson(strTask, Task::class.java)
+            position = editTask.location
+            fillBoxes(editTask)
             GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(editTask.owner, editTask.title, editTask.description)).enqueue(object : Callback<ElasticsearchID> {
                 override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                     Log.i("network", response.body().toString())
@@ -67,11 +72,7 @@ class EditTaskActivity : AppCompatActivity() {
                     return
                 }
             })
-            val strTask: String = intent.getStringExtra("Task")
 
-            editTask = GenerateRetrofit.generateGson().fromJson(strTask, Task::class.java)
-            position = editTask.location
-            fillBoxes(editTask)
         }
     }
 

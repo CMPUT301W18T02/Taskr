@@ -293,7 +293,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                 Log.i("network", response.body().toString())
                 id = response.body() as ElasticsearchID
-                GenerateRetrofit.generateRetrofit().updateTask(id.toString(), displayTask).enqueue(object : Callback<Void>{
+                GenerateRetrofit.generateRetrofit().updateTask(id._id, displayTask).enqueue(object : Callback<Void>{
                     override fun onFailure(call: Call<Void>?, t: Throwable?) {
 
                     }
@@ -349,6 +349,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     public override fun onResume() {
         super.onResume()
         mapView.onResume()
+
     }
     /**
      * Default onPause method with corresponding mapView method added.
@@ -419,4 +420,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     override fun onMapClick(point : LatLng) {
         Log.i("Hello", position.toString())
     }
+
+
 }
