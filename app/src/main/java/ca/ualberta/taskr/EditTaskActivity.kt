@@ -1,5 +1,6 @@
 package ca.ualberta.taskr
 
+import android.app.Activity
 import android.content.Intent
 import android.media.Image
 import android.support.v7.app.AppCompatActivity
@@ -42,6 +43,8 @@ class EditTaskActivity : AppCompatActivity() {
 
     var taskPassedIn: Boolean = false
     private lateinit var editTask: Task
+    private  var position: LatLng? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,7 @@ class EditTaskActivity : AppCompatActivity() {
             taskPassedIn = true
             val strTask: String = intent.getStringExtra("Task")
             editTask = GenerateRetrofit.generateGson().fromJson(strTask, Task::class.java)
+            position = editTask.location
             fillBoxes(editTask)
         }
     }
@@ -66,9 +70,9 @@ class EditTaskActivity : AppCompatActivity() {
 
     @OnClick(R.id.getLocationButton)
     fun openLocationActivity(){
-        val addLocationIntent = Intent(applicationContext, AddLocationToTaskActivity::class.java)
-        startActivity(addLocationIntent)
-        finish()
+        val addLocationIntent = Intent(this, AddLocationToTaskActivity::class.java)
+        addLocationIntent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
+        startActivityForResult(addLocationIntent, 1)
     }
 
     /**
@@ -89,15 +93,16 @@ class EditTaskActivity : AppCompatActivity() {
         val taskPhotos: ArrayList<String> = ArrayList()
 
         // Convert String to latlng
-        val locationList: List<String> = locationEditText.text.toString().split(",")
-        val lat: Double = locationList[0].toDouble()
-        val lng: Double = locationList[0].toDouble()
-        val taskLatLng = LatLng(lat, lng)
+//        val taskLatLng = GenerateRetrofit.generateGson().fromJson(locationEditText.text.toString(), LatLng::class.java)
+//        val locationList: List<String> = locationEditText.text.toString().split(",")
+//        val lat: Double = locationList[0].toDouble()
+//        val lng: Double = locationList[0].toDouble()
+//        val taskLatLng = LatLng(lat, lng)
 
         val taskChosenBidder = ""
 
         val newTask = Task(taskOwner, taskTitle, taskStatus, taskBids, taskDetails, taskPhotos,
-                taskLatLng, taskChosenBidder)
+                position, taskChosenBidder)
 
         // post newTask to servers
         // if a task has been passed in, edit its properties, otherwise post a new task
@@ -126,5 +131,17 @@ class EditTaskActivity : AppCompatActivity() {
         editTaskIntent.putExtra("Task", strTask)
         setResult(1, editTaskIntent)
         finish()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                position = GenerateRetrofit.generateGson().fromJson(data.getStringExtra("position"),LatLng::class.java)
+                locationEditText.setText(position.toString())
+
+            }
+        }
+
     }
 }

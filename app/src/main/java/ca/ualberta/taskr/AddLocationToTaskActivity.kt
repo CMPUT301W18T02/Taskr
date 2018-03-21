@@ -19,6 +19,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ca.ualberta.taskr.R.id.mapView
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 import com.mapbox.mapboxsdk.constants.Style
 
@@ -35,7 +36,7 @@ import com.mapbox.mapboxsdk.constants.Style
 class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
     @BindView(R.id.rangeMapView)
     lateinit var mapView: MapView
-    private var mapboxMap: MapboxMap? = null
+    private lateinit var mapboxMap: MapboxMap
     @BindView(R.id.add_location)
     lateinit var button: Button
     private var position: LatLng? = null
@@ -47,9 +48,10 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     @OnClick(R.id.add_location)
     fun sendBack() {
-        val intent = Intent(applicationContext, EditTaskActivity::class.java)
-        intent.putExtra("LatLng", position)
-        startActivity(intent)
+        val intent = Intent();
+        intent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
+        setResult(RESULT_OK, intent)
+        finish()
 
     }
 
@@ -60,8 +62,8 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)
-
         mapView.getMapAsync(this)
+        position = GenerateRetrofit.generateGson().fromJson(savedInstanceState?.getString("position"), LatLng::class.java)
 
     }
 
@@ -106,6 +108,10 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
+        if (position!= null) {
+            mapboxMap.addMarker(MarkerOptions()
+                    .position(position))
+        }
         mapboxMap.addOnMapClickListener(this)
 
     }
@@ -119,14 +125,14 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         /*iconFactory = IconFactory.getInstance(this)
         iconDrawable = ContextCompat.getDrawable(this, R.drawable.purple_marker)
         icon = iconFactory.fromDrawable(iconDrawable)*/
+        println(point)
         if (position == null) {
-            marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point)
-                    .icon(icon))
+            marker = mapboxMap.addMarker(MarkerOptions()
+                    .position(point))
             position = point
         } else {
             marker.remove()
-            marker = mapboxMap!!.addMarker(MarkerOptions()
+            marker = mapboxMap.addMarker(MarkerOptions()
                     .position(point))
             position = point
 
