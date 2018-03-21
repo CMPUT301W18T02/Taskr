@@ -20,10 +20,10 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:textAlignment="center"
+            app:theme="@style/Toolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:theme="@style/Toolbar">
+            app:layout_constraintTop_toTopOf="parent" >
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -52,10 +52,10 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@null"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     android:src="@drawable/ic_map"
+                    android:background="@null"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -73,36 +73,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/taskListToolbar" />
 
-        <RelativeLayout
-            android:id="@+id/loadingPanel"
-            android:layout_width="368dp"
-            android:layout_height="62dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/taskList">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true" />
-        </RelativeLayout>
-
     </android.support.constraint.ConstraintLayout>
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
-    <android.support.design.widget.NavigationView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.design.widget.NavigationView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header"
-        app:itemIconTint="@color/colorTextWhite"
         app:itemTextColor="@color/colorTextWhite"
-        app:menu="@menu/drawer_view" />
+        app:itemIconTint="@color/colorTextWhite"
+        app:menu="@menu/drawer_view"
+        app:headerLayout="@layout/nav_header" />
 
 </android.support.v4.widget.DrawerLayout>

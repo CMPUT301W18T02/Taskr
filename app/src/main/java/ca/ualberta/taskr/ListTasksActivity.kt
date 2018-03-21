@@ -24,10 +24,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.support.design.widget.NavigationView
-import android.support.v4.widget.ContentLoadingProgressBar
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.TextView
 import ca.ualberta.taskr.controllers.NavViewController
 
@@ -50,9 +47,6 @@ class ListTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.taskListToolbar)
     lateinit var toolbar: Toolbar
-
-    @BindView(R.id.loadingPanel)
-    lateinit var loadingPanel: RelativeLayout
 
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
@@ -150,8 +144,6 @@ class ListTasksActivity : AppCompatActivity() {
             it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE) &&
                 (it.title.contains(textToSearch) || it.description.contains(textToSearch))
         })
-        loadingPanel.visibility = View.GONE
-
         taskListAdapter.notifyDataSetChanged()
     }
 
@@ -159,5 +151,6 @@ class ListTasksActivity : AppCompatActivity() {
     fun openMapView(){
         val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
+        finish()
     }
 }
