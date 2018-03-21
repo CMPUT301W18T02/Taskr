@@ -41,13 +41,15 @@ class CreateNewUserTest {
 
         val user = User(name, phoneNumber, image, email, username)
 
-        Assert.assertFalse(activity.CheckIfUsernameExists(username))
+        Assert.assertFalse(activity.userController.getLocalUserName() == username)
 
         MasterUserList.add(user)
 
         Assert.assertEquals(user.username,username)
 
-        activity.CheckIfUsernameExists(username)
+        activity.userController.setLocalUsername(username)
+
+        Assert.assertTrue(activity.userController.getLocalUserName() == username)
 
         //Assert.assertTrue(activity.CheckIfUsernameExists(username))
     }
