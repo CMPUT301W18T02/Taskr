@@ -29,9 +29,8 @@ class User:
 class Task:
     def __init__(self, owner_username, bidders):
         self.owner = owner_username
-        self.title = f.bs()
-        self.status = random.choice(["REQUESTED", "BID", "ASSIGNED", "DONE"])
-        self.bids = [Bid(bidder) for bidder in bidders if random.choice([True,False])]
+        self.title = f.bs().capitalize()
+        self.bids = self.random_null_bids([Bid(bidder) for bidder in bidders if random.choice([True,False])])
         self.description = f.text().replace("\n", "")
         # self.photos = [str(base64.encodebytes(bytes(f.text(), "utf-8"))) for i in range(random.randint(0, 10))]
         self.photos = []
@@ -39,7 +38,15 @@ class Task:
             "latitude": random.uniform(53.433298, 53.635187),
             "longitude": random.uniform(-113.301333, -113.692089),
             "altitude": 0.0}
-        self.chosenBidder = self.choose_bid(bidders)
+        if len(self.bids) == 0:
+            self.status = "REQUESTED"
+        else:
+            self.status = random.choice(["BID", "ASSIGNED", "DONE"])
+        if self.status in ["ASSIGNED", "DONE"]:
+            self.chosenBidder = self.choose_bid([bid.owner for bid in self.bids])
+        else:
+            self.chosenBidder = None
+
 
     def __str__(self):
         return self.title + ": LatLng(" + str(self.location) + ")"
@@ -49,6 +56,14 @@ class Task:
             return random.choice(bidders)
         else:
             return None
+
+    @staticmethod
+    def random_null_bids(bids):
+        if random.choice([True, True, True, False]):
+            return bids
+        else:
+            return []
+
 
     def to_json(self):
         return json.dumps(self.__dict__, default=lambda x: x.__dict__)
