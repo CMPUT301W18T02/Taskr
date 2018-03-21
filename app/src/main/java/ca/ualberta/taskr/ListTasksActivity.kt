@@ -27,6 +27,7 @@ import android.support.design.widget.NavigationView
 import android.view.View
 import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
+import ca.ualberta.taskr.controllers.UserController
 
 
 /**
@@ -60,6 +61,7 @@ class ListTasksActivity : AppCompatActivity() {
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var shownTaskList: ArrayList<Task> = ArrayList()
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
+    private lateinit var username: String
 
     /**
      * The on create method for the ListTasksActivity.
@@ -75,6 +77,8 @@ class ListTasksActivity : AppCompatActivity() {
         var actionbar = supportActionBar
         actionbar!!.setDisplayHomeAsUpEnabled(true)
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu)
+
+        username = UserController(this).getLocalUserName()
 
         // Build up recycle view
         viewManager = LinearLayoutManager(this)
@@ -103,7 +107,7 @@ class ListTasksActivity : AppCompatActivity() {
         })
 
         taskListAdapter.setClickListener(View.OnClickListener {
-            val position = taskList.indexOfChild(it)
+            val position = taskList.getChildLayoutPosition(it)
             val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
             val bundle = Bundle()
             val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
@@ -152,7 +156,8 @@ class ListTasksActivity : AppCompatActivity() {
 
         shownTaskList.addAll(masterTaskList.filter {
             it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
-                && ((it.title != null && it.title.contains(textToSearch)) || (it.description != null && it.description.contains(textToSearch)))
+                && (it.owner != username)
+                && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
         })
         loadingPanel.visibility = View.GONE
 
