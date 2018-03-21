@@ -295,11 +295,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 id = response.body() as ElasticsearchID
                 GenerateRetrofit.generateRetrofit().updateTask(id._id, displayTask).enqueue(object : Callback<Void>{
                     override fun onFailure(call: Call<Void>?, t: Throwable?) {
-
+                        Log.e("network", "Network Failed!")
+                        if (t != null) {
+                            t.printStackTrace()
+                        }
+                        return
                     }
 
                     override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
-
+                        Log.e("network", "Posted!")
                     }
                 })
             }

@@ -32,17 +32,6 @@ class EditBidFragment : DialogFragment() {
     lateinit var fragmentTitle : TextView
     private var mListener: EditBidFragmentInteractionListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            if (arguments.getString("DISPLAYBID") != null) {
-                var strBid = arguments.getString("DISPLAYBID")
-                fragmentTitle.text = getString(R.string.fragment_edit_bid)
-                displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
-            }
-        }
-    }
-
     /**
      * Creates the view for EditBidFragment's layout, then updates displayed bid amount with
      * value obtained from a provided Bid object. If no Bid was provided, no update is made.
@@ -54,13 +43,20 @@ class EditBidFragment : DialogFragment() {
         var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
         ButterKnife.bind(this, view)
         try {
-            if (displayBid?.amount > 0) {
+            if (displayBid.amount > 0) {
                 enterAmountView.setText(displayBid.amount.toString())
             }
         } catch (e : UninitializedPropertyAccessException) {
             // If displayBid not initialized, then no Bid object was provided by
             // container activity.
             Log.e("DisplayBid Object", "No Bid object provided")
+        }
+        if (arguments != null) {
+            if (arguments.getString("DISPLAYBID") != null) {
+                var strBid = arguments.getString("DISPLAYBID")
+                fragmentTitle.text = getString(R.string.fragment_edit_bid)
+                displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
+            }
         }
         return view
     }

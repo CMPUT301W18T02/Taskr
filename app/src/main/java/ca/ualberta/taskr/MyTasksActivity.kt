@@ -54,7 +54,7 @@ class MyTasksActivity : AppCompatActivity() {
         }
 
         myTasksAdapter.setClickListener(View.OnClickListener {
-            val position = myTasksView.indexOfChild(it)
+            val position = myTasksView.getChildLayoutPosition(it)
             val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
             val bundle = Bundle()
             val strTask = GenerateRetrofit.generateGson().toJson(myTasksList[position])
