@@ -70,6 +70,10 @@ class MyTasksActivity : AppCompatActivity() {
      * Populate the task list with the user's current active tasks.
      */
     private fun populateList(){
+        loadingPanel.visibility = View.VISIBLE
+        myTasksList.clear()
+        myTasksAdapter.notifyDataSetChanged()
+
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 Log.i("network", response.body().toString())
@@ -116,5 +120,10 @@ class MyTasksActivity : AppCompatActivity() {
                 populateList()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        populateList()
     }
 }

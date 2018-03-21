@@ -88,19 +88,7 @@ class ListTasksActivity : AppCompatActivity() {
 
         NavViewController(navView, drawerLayout, applicationContext)
 
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
-                masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
-                updateSearch(searchText)
-            }
-
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-            }
-        })
+        updateTasks()
 
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -128,6 +116,22 @@ class ListTasksActivity : AppCompatActivity() {
         })
     }
 
+    private fun updateTasks() {
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                Log.i("network", response.body().toString())
+                masterTaskList.clear()
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                updateSearch(searchText)
+            }
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+            }
+        })
+    }
+
     /**
      * The android built in listener for the menu button on the toolbar
      */
@@ -145,7 +149,10 @@ class ListTasksActivity : AppCompatActivity() {
      * Use to update the shownTaskList by applying a search filter to the master list
      */
     fun updateSearch(textToSearch : String){
+        loadingPanel.visibility = View.VISIBLE
         shownTaskList.clear()
+        taskListAdapter.notifyDataSetChanged()
+
         shownTaskList.addAll(masterTaskList.filter {
             it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE) &&
                 (it.title.contains(textToSearch) || it.description.contains(textToSearch))
@@ -160,4 +167,10 @@ class ListTasksActivity : AppCompatActivity() {
         val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
     }
+
+    override fun onResume() {
+        super.onResume()
+        updateTasks()
+    }
+
 }
