@@ -29,6 +29,20 @@ interface ElasticSearch {
     fun getUsers(): Call<List<User>>
 
     /**
+     * Return a task by id
+     */
+    @GET("cmput301w18t02/task/{id}")
+    fun getTask(@Path("id") id: String): Call<Task>
+
+
+    /**
+     * Return a user by id
+     */
+    @GET("cmput301w18t02/user/{id}")
+    fun getUser(@Path("id") id: String): Call<User>
+
+
+    /**
      * Return a list of all tasks located on the server
      */
     @GET("cmput301w18t02/task/_search?q=*:*&filter_path=hits.hits.*,aggregations.*&size=99999")
