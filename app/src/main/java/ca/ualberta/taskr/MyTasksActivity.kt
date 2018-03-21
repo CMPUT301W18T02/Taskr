@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 
 import android.widget.Button
+import android.widget.RelativeLayout
 
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -27,6 +28,10 @@ class MyTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.addTaskButton)
     lateinit var addTaskButton: Button
+
+    @BindView(R.id.loadingPanel)
+    lateinit var loadingPanel: RelativeLayout
+
 
     @BindView(R.id.myTasksView)
     lateinit var myTasksView: RecyclerView
@@ -80,6 +85,7 @@ class MyTasksActivity : AppCompatActivity() {
                     it -> it.owner == username
                 })
 
+                loadingPanel.visibility = View.GONE
                 myTasksAdapter.notifyDataSetChanged()
             }
 
