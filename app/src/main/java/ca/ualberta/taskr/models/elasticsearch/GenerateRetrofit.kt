@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 
-
 /**
  *  3/5/2018
  *
@@ -73,6 +72,5 @@ class GenerateRetrofit {
 
             return retrofit.create(ElasticSearch::class.java)
         }
-
     }
 }

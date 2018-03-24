@@ -28,6 +28,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 
 
 /**
@@ -118,19 +119,14 @@ class ListTasksActivity : AppCompatActivity() {
     }
 
     private fun updateTasks() {
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
+        CachingRetrofit(this).getTasks(object: ca.ualberta.taskr.models.elasticsearch.Callback<List<Task>> {
+            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                masterTaskList.addAll(response as ArrayList<Task>)
                 updateSearch(searchText)
-            }
 
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
             }
-        })
+        }).execute()
     }
 
     /**
