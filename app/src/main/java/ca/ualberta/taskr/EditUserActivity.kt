@@ -41,7 +41,7 @@ class EditUserActivity : AppCompatActivity() {
     lateinit var ApplyChangesButton: Button
 
     @BindView(R.id.EditUserErrorTextView)
-    lateinit var EditUSerErrorTextView: TextView
+    lateinit var EditUserErrorTextView: TextView
 
     var userController : UserController = UserController(this)
 
@@ -55,21 +55,16 @@ class EditUserActivity : AppCompatActivity() {
         isNewUser = (Username == "")
 
         if (isNewUser) {
-            ApplyChangesButton.setText("Create User")
+            ApplyChangesButton.text = "Create User"
             Username = intent.getStringExtra("username")
         }
-        else ApplyChangesButton.setText("Edit User")
+        else ApplyChangesButton.text = "Edit User"
 
     }
 
 
-    fun DisplayErrorMessage(message: String) {
-        // TODO
-    }
-
-    fun CheckNameFormatting(name: String): Boolean {
-        // TODO
-        return false
+    private fun DisplayErrorMessage(message: String) {
+        EditUserErrorTextView.text = message
     }
 
     fun CheckPhoneNumberFormatting(PhoneNumber: String): Boolean {
@@ -90,11 +85,6 @@ class EditUserActivity : AppCompatActivity() {
         val name: String = UserSurnameText.text.toString()
         val phoneNumber: String = UserPhoneNumberText.text.toString()
         val email: String = UserEmailText.text.toString()
-
-        if (CheckNameFormatting(name)) {
-            DisplayErrorMessage("Invalid Name")
-            return
-        }
 
         if (CheckPhoneNumberFormatting(phoneNumber)) {
             DisplayErrorMessage("Invalid PhoneNumber")

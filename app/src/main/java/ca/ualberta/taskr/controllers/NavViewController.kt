@@ -16,6 +16,7 @@ class NavViewController(var navView: NavigationView,
 
 
     init {
+        val userController = UserController(context)
         navView.setNavigationItemSelectedListener(
                 { menuItem ->
                     menuItem.isChecked = true
@@ -36,11 +37,13 @@ class NavViewController(var navView: NavigationView,
                                 ToDoTaskListActivity::class.java)
                         context.startActivity(toDoTaskListIntent)
                     }
+                    else if(menuItem.itemId == R.id.nav_logout){
+                        logout(userController)
+                    }
 
                     true
                 })
 
-        val userController = UserController(context)
         val headerView =  navView.getHeaderView(0)
         val usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
         usernameTextView.text = userController.getLocalUserName()
@@ -50,6 +53,13 @@ class NavViewController(var navView: NavigationView,
                     EditUserActivity::class.java)
             context.startActivity(editUserIntent)
         })
+    }
+
+    fun logout(userController: UserController){
+        userController.setLocalUsername("")
+        val loginScreenIntent = Intent(context,
+                LoginActivity::class.java)
+        context.startActivity(loginScreenIntent)
 
     }
 }

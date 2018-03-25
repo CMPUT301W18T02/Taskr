@@ -37,14 +37,22 @@ class LoginActivity : AppCompatActivity() {
     @BindView(R.id.UsernameText)
     lateinit var UsernameText   : EditText
 
-    var MasterUserList : ArrayList<User> = ArrayList<User>()
+    var masterUserList : ArrayList<User> = ArrayList()
     var userController: UserController = UserController(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        userController.setLocalUsername("")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        checkIfUserIsLoggedIn()
+
         ButterKnife.bind(this)
+    }
+
+    private fun checkIfUserIsLoggedIn(){
+        if (userController.getLocalUserName() != ""){
+            launchTaskList()
+        }
     }
 
     fun getConnectivityStatus() {
@@ -57,23 +65,23 @@ class LoginActivity : AppCompatActivity() {
     }
 
     @OnClick(R.id.LoginButton)
-    fun LoginClicked(v: View) {
+    fun loginClicked(v: View) {
 
-        val Username : String = UsernameText.text.toString()
+        val username : String = UsernameText.text.toString()
 
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
-                MasterUserList.addAll(response.body() as ArrayList<User>)
-                val exisiting = MasterUserList.firstOrNull {
-                    it -> it.username == Username
+                masterUserList.addAll(response.body() as ArrayList<User>)
+                val matchedUser = masterUserList.firstOrNull {
+                    it -> it.username == username
                 }
-                if (exisiting != null) {
-                    userController.setLocalUsername(Username)
+                if (matchedUser != null) {
+                    userController.setLocalUsername(username)
                     launchTaskList()
                 }
                 else{
-                    showLoginError("Username " + "doesn't exist")
+                    showLoginError("Username: $username doesn't exist")
                 }
             }
 
@@ -92,23 +100,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
     @OnClick(R.id.NewUserButton)
-    fun NewUserClicked(v: View) {
+    fun newUserClicked(v: View) {
 
-        var Username : String = UsernameText.text.toString()
-//        userController.setLocalUsername(Username)
+        val username : String = UsernameText.text.toString()
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
-                MasterUserList.addAll(response.body() as ArrayList<User>)
-                val exisiting = MasterUserList.firstOrNull {
-                    it -> it.username == Username
+                masterUserList.addAll(response.body() as ArrayList<User>)
+                val matchedUser = masterUserList.firstOrNull {
+                    it -> it.username == username
                 }
-                if (exisiting != null) {
-                    showLoginError("Username: " + " Already exists")
+                if (matchedUser != null) {
+                    showLoginError("Username: $username already exists")
                 }
                 else{
                     userController.setLocalUsername("")
-                    launchEditUserActivity(Username)
+                    launchEditUserActivity(username)
                 }
             }
 
