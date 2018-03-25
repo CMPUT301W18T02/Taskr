@@ -12,6 +12,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
@@ -43,7 +44,7 @@ class EditUserActivity : AppCompatActivity() {
     @BindView(R.id.EditUserErrorTextView)
     lateinit var EditUSerErrorTextView: TextView
 
-    var userController : UserController = UserController(this)
+    var userController: UserController = UserController(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +58,7 @@ class EditUserActivity : AppCompatActivity() {
         if (isNewUser) {
             ApplyChangesButton.setText("Create User")
             Username = intent.getStringExtra("username")
-        }
-        else ApplyChangesButton.setText("Edit User")
+        } else ApplyChangesButton.setText("Edit User")
 
     }
 
@@ -115,9 +115,9 @@ class EditUserActivity : AppCompatActivity() {
      *
      * @param user The user object to get updated
      */
-    fun UpdateUser(user : User) {
+    fun UpdateUser(user: User) {
         if (isNewUser) {
-            GenerateRetrofit.generateRetrofit().createUser(user).enqueue(object: Callback<Void> {
+            GenerateRetrofit.generateRetrofit().createUser(user).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
                     userController.setLocalUsername(Username)
                     openListTasksActivity()
@@ -127,40 +127,19 @@ class EditUserActivity : AppCompatActivity() {
                     Log.e("network", "Network Failed on creation!")
                 }
             })
-        }
-        else {
-            lateinit var id : ElasticsearchID
-            GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(user.username)).enqueue(object : Callback<ElasticsearchID> {
-                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
-                    Log.i("network", response.body().toString())
-                    id = response.body() as ElasticsearchID
-                    GenerateRetrofit.generateRetrofit().updateUser(id.toString(), user).enqueue(object : Callback<Void> {
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                            Log.i("network", response.body().toString())
-                            openListTasksActivity()
-                        }
-
-                        override fun onFailure(call: Call<Void>, t: Throwable) {
-                            Log.e("network", "Network Failed!")
-                            t.printStackTrace()
-                            return
-                        }
-                    })
+        } else {
+            CachingRetrofit(this).updateUser(object : ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+                override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                    //TODO offline functionality
                 }
-
-                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
-                    Log.e("network", "Network Failed!")
-                    t.printStackTrace()
-                    return
-                }
-            })
+            }).execute(user)
         }
     }
 
     /**
      * Open the list tasks activity
      */
-    fun openListTasksActivity(){
+    fun openListTasksActivity() {
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
     }

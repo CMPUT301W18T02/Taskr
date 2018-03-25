@@ -20,15 +20,14 @@ import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import android.support.design.widget.NavigationView
 import android.view.View
 import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Callback
+
 
 
 /**
@@ -119,8 +118,9 @@ class ListTasksActivity : AppCompatActivity() {
     }
 
     private fun updateTasks() {
-        CachingRetrofit(this).getTasks(object: ca.ualberta.taskr.models.elasticsearch.Callback<List<Task>> {
+        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
             override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
+                //TODO Deal with offline
                 masterTaskList.clear()
                 masterTaskList.addAll(response as ArrayList<Task>)
                 updateSearch(searchText)

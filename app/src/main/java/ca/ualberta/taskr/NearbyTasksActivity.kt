@@ -24,6 +24,7 @@ import com.mapbox.mapboxsdk.annotations.PolygonOptions
 import android.content.Intent
 import android.util.Log
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import retrofit2.Call
 import retrofit2.Callback
@@ -96,19 +97,15 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
+        CachingRetrofit(this).getTasks(object : ca.ualberta.taskr.models.elasticsearch.Callback<List<Task>> {
+            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
+                //TODO Offline signifier, handle responseFromCache
                 masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                masterTaskList.addAll(response)
                 addTasksToMap()
             }
+        }).execute()
 
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-            }
-        })
         mapboxMap.setOnInfoWindowClickListener(
                 fun(marker: Marker): Boolean {
                     for (task in masterTaskList) {
@@ -157,10 +154,8 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
             }
 
 
-
         }
     }
-
 
 
 /*override fun onMarkerClick(marker: Marker): Boolean {
@@ -182,45 +177,45 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 //        }
 //    }
 
-private fun initializeLocationEngine() {
-    locationEngine = Mapbox.getLocationEngine()
-    locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
-    locationEngine.activate()
-}
-
-private fun latLngFromLocation(location: Location): LatLng {
-    return LatLng(location.latitude, location.longitude)
-}
-
-private fun setCameraPosition(location: Location) {
-    mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-            latLngFromLocation(location), 10.0))
-}
-
-private fun generatePerimeter(centerCoordinates: LatLng, radiusInKilometers: Double, numberOfSides: Int): PolygonOptions {
-    val positions = ArrayList<LatLng>()
-    val distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.latitude * Math.PI / 180))
-    val distanceY = radiusInKilometers / 110.574
-
-    val slice = 2 * Math.PI / numberOfSides
-
-    var theta: Double
-    var x: Double
-    var y: Double
-    var position: LatLng
-    for (i in 0 until numberOfSides) {
-        theta = i * slice
-        x = distanceX * Math.cos(theta)
-        y = distanceY * Math.sin(theta)
-
-        position = LatLng(centerCoordinates.latitude + y,
-                centerCoordinates.longitude + x)
-        positions.add(position)
+    private fun initializeLocationEngine() {
+        locationEngine = Mapbox.getLocationEngine()
+        locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
+        locationEngine.activate()
     }
-    return PolygonOptions()
-            .addAll(positions)
-            .fillColor(Color.BLUE)
-            .alpha(0.1f)
-}
+
+    private fun latLngFromLocation(location: Location): LatLng {
+        return LatLng(location.latitude, location.longitude)
+    }
+
+    private fun setCameraPosition(location: Location) {
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                latLngFromLocation(location), 10.0))
+    }
+
+    private fun generatePerimeter(centerCoordinates: LatLng, radiusInKilometers: Double, numberOfSides: Int): PolygonOptions {
+        val positions = ArrayList<LatLng>()
+        val distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.latitude * Math.PI / 180))
+        val distanceY = radiusInKilometers / 110.574
+
+        val slice = 2 * Math.PI / numberOfSides
+
+        var theta: Double
+        var x: Double
+        var y: Double
+        var position: LatLng
+        for (i in 0 until numberOfSides) {
+            theta = i * slice
+            x = distanceX * Math.cos(theta)
+            y = distanceY * Math.sin(theta)
+
+            position = LatLng(centerCoordinates.latitude + y,
+                    centerCoordinates.longitude + x)
+            positions.add(position)
+        }
+        return PolygonOptions()
+                .addAll(positions)
+                .fillColor(Color.BLUE)
+                .alpha(0.1f)
+    }
 }
 
