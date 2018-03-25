@@ -46,4 +46,5 @@
     <string name="activity_edit_task_details">"Details"</string>
 
     <string name="activity_my_tasks_add_task">"+ Add Task"</string>
+    <string name="prefs_user">user_key</string>
 </resources>

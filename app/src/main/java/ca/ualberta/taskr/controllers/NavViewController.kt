@@ -57,6 +57,7 @@ class NavViewController(var navView: NavigationView,
 
     fun logout(userController: UserController){
         userController.setLocalUsername("")
+        userController.setLocalUserObject(null)
         val loginScreenIntent = Intent(context,
                 LoginActivity::class.java)
         context.startActivity(loginScreenIntent)

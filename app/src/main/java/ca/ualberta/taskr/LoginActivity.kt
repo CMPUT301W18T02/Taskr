@@ -77,6 +77,7 @@ class LoginActivity : AppCompatActivity() {
                     it -> it.username == username
                 }
                 if (matchedUser != null) {
+                    userController.setLocalUserObject(matchedUser)
                     userController.setLocalUsername(username)
                     launchTaskList()
                 }
