@@ -123,6 +123,11 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         return true
     }
 
+    /**
+     * On Map Click - places a marker on the map, if a marker is currently placed
+     * on the map - removes it and places a marker in the new position.
+     */
+
 
     override fun onMapClick(point: LatLng) {
         /*iconFactory = IconFactory.getInstance(this)

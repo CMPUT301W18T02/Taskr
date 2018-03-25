@@ -22,14 +22,14 @@
         </activity>
         <activity android:name=".EditUserActivity" />
         <activity android:name=".NearbyTasksActivity"
-            android:exported="true" android:theme="@style/MapBoxSpecific"/>
+            android:theme="@style/MapBoxSpecific"/>
         <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
         <activity android:name=".ListTasksActivity" />
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".AddPhotoToTaskActivity" />
         <activity android:name=".MyTasksActivity" />
         <activity android:name=".AddLocationToTaskActivity"
-            android:theme="@style/MapBoxSpecific"/>
+            android:exported="true" android:theme="@style/MapBoxSpecific"/>
         <activity android:name=".ViewTaskActivity" android:theme="@style/MapBoxSpecific"/>
     </application>
 
