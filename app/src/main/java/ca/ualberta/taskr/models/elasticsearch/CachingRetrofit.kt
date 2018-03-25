@@ -8,7 +8,10 @@ import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import ca.ualberta.taskr.R
+import com.google.common.io.Files
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.io.IOError
 
 
@@ -17,51 +20,38 @@ import java.io.IOError
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
-
+//TODO Documentation
+//TODO UPLOAD CACHED TASKS and USERS
 class CachingRetrofit(val context: Context) {
     private val server = GenerateRetrofit.generateRetrofit()
-    private val gson = GenerateRetrofit.generateGson()
+    private val gson = Gson()
 
 
     private fun setUsers(users: List<User>) {
-        val editor: SharedPreferences.Editor = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        ).edit()
-        editor.putString(context.getString(R.string.sf_users_key), gson.toJson(users))
-        editor.apply()
+        val file = File(context.filesDir, "users.json")
+        Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(users))
     }
 
     private fun getUsersFromDisk(): List<User> {
-        val userListType = object : TypeToken<List<@JvmSuppressWildcards User>>() {}.type
-
-        val sharedPrefs = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        )
-        return gson.fromJson(sharedPrefs
-                .getString(context.getString(R.string.sf_users_key), "[]"), userListType)
+        val file = File(context.filesDir, "users.json")
+        val json = Files.asCharSource(file, Charsets.UTF_8).read()
+        val taskListType = object : TypeToken<List<@JvmSuppressWildcards User>>() {}.type
+        return gson.fromJson(json, taskListType)
     }
 
     private fun setTasks(tasks: List<Task>) {
-        val editor: SharedPreferences.Editor = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        ).edit()
-        editor.putString(context.getString(R.string.sf_tasks_key), gson.toJson(tasks))
-        editor.apply()
+        val file = File(context.filesDir, "tasks.json")
+        Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(tasks))
     }
 
     private fun getTasksFromDisk(): List<Task> {
+        // https://stackoverflow.com/questions/14376807/how-to-read-write-string-from-a-file-in-android
+        val file = File(context.filesDir, "tasks.json")
+        val json = Files.asCharSource(file, Charsets.UTF_8).read()
+
         val taskListType = object : TypeToken<List<@JvmSuppressWildcards Task>>() {}.type
 
-        val sharedPrefs = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        )
-        return gson.fromJson(sharedPrefs
-                .getString(context.getString(R.string.sf_tasks_key), "[]"), taskListType)
-
+        return gson.fromJson(json, taskListType)
     }
 
     private fun getLocalUserName(): String {
@@ -72,28 +62,47 @@ class CachingRetrofit(val context: Context) {
         return sharedPrefs.getString(context.getString(R.string.sf_username_key), "")
     }
 
-    private fun addTaskToUpload(pair: Pair<Task, Task>) {
-        val currentTasksToUpload: ArrayList<Pair<Task, Task>> = getTasksToUpload()
-
+    private fun addTaskToUpload(pair: Pair<Task?, Task>) {
+        val file = File(context.filesDir, "tasksToUpload.json")
+        val currentTasksToUpload = getTasksToUpload()
         currentTasksToUpload.add(pair)
-
-        val editor: SharedPreferences.Editor = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        ).edit()
-        editor.putString(context.getString(R.string.sf_tasks_to_upload_key), gson.toJson(currentTasksToUpload))
-        editor.apply()
+        Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentTasksToUpload))
     }
 
-    private fun getTasksToUpload(): ArrayList<Pair<Task, Task>> {
-        val taskListType = object : TypeToken<List<@JvmSuppressWildcards Pair<Task, Task>>>() {}.type
+    private fun getTasksToUpload(): ArrayList<Pair<Task?, Task>> {
+        val file = File(context.filesDir, "tasksToUpload.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
 
-        val sharedPrefs = context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                AppCompatActivity.MODE_PRIVATE
-        )
-        return gson.fromJson(sharedPrefs
-                .getString(context.getString(R.string.sf_tasks_to_upload_key), "[]"), taskListType)
+        val json = Files.asCharSource(file, Charsets.UTF_8).read()
+
+        val tasksToUploadListType = object : TypeToken<List<@JvmSuppressWildcards Pair<Task?, Task>>>() {}.type
+
+        return gson.fromJson(json, tasksToUploadListType)
+
+    }
+
+    private fun addUserToUpload(pair: User) {
+        val currentUsersToUpload = getUsersToUpload()
+        currentUsersToUpload.add(pair)
+        val file = File(context.filesDir, "usersToUpload.json")
+        Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentUsersToUpload))
+    }
+
+    private fun getUsersToUpload(): ArrayList<User> {
+        val file = File(context.filesDir, "usersToUpload.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
+        val json = Files.asCharSource(file, Charsets.UTF_8).read()
+
+        val usersToUploadListType = object : TypeToken<List<@JvmSuppressWildcards User>>() {}.type
+
+        return gson.fromJson(json, usersToUploadListType)
 
     }
 
@@ -104,7 +113,7 @@ class CachingRetrofit(val context: Context) {
         for (task in tasks.filter({ it -> it.owner == owner })) {
 
         }
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
 
@@ -171,38 +180,44 @@ class CachingRetrofit(val context: Context) {
                 tasks = getTasksFromDisk()
 
             }
-
-
             println(tasks)
             return tasks
         }
     }
 
-    inner class updateTask(val callback: Callback<Boolean>) : AsyncTask<Pair<Task, Task>, Void, Boolean>() {
+    inner class updateTask(val callback: Callback<Boolean>) : AsyncTask<Pair<Task?, Task>, Void, Boolean>() {
         override fun onPostExecute(uploadSucceeded: Boolean) {
             super.onPostExecute(uploadSucceeded)
             if (uploadSucceeded) {
-                callback.onResponse(uploadSucceeded, false)
+                callback.onResponse(uploadSucceeded, uploadSucceeded)
             } else {
                 callback.onFailure()
             }
         }
 
-        override fun doInBackground(vararg params: Pair<Task, Task>): Boolean {
+        override fun doInBackground(vararg params: Pair<Task?, Task>): Boolean {
             var uploadSuccessful = true
             for (pair in params) {
 
                 try {
-                    val (new, old) = pair
-                    val query = Query.taskQuery(old.owner, old.title, old.description)
-                    val id = server.getTaskID(query).execute().body()
-                    if (id == null) {
-                        addTaskToUpload(pair)
-                        throw IOError(Throwable())
+                    val (old, new) = pair
+                    if (old == null) {
+                        try {
+                            server.createTask(new)
+                        } catch (e: Throwable) {
+                            addTaskToUpload(pair)
+                        }
                     } else {
-                        server.updateTask(id._id, new).execute()
+                        val query = Query.taskQuery(old.owner, old.title, old.description)
+                        val id = server.getTaskID(query).execute().body()
+                        if (id == null) {
+                            addTaskToUpload(pair)
+                            throw IOError(Throwable())
+                        } else {
+                            server.updateTask(id._id, new).execute()
+                        }
                     }
-                } catch (e: IOError) {
+                } catch (e: Throwable) {
                     Log.i("Network", "Unavailable")
                     uploadSuccessful = false
                 }
@@ -212,16 +227,37 @@ class CachingRetrofit(val context: Context) {
     }
 
 
-    fun updateUser(id: String, user: User): Void {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    inner class updateUser(val callback: Callback<Boolean>) : AsyncTask<User, Void, Boolean>() {
+        override fun onPostExecute(uploadSucceeded: Boolean) {
+            super.onPostExecute(uploadSucceeded)
+            if (uploadSucceeded) {
+                callback.onResponse(uploadSucceeded, uploadSucceeded)
+            } else {
+                callback.onFailure()
+            }
+        }
 
-    fun createTask(task: Task): Void {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        override fun doInBackground(vararg params: User): Boolean {
+            var uploadSuccessful = true
+            for (user in params) {
 
-    fun createUser(user: User): Void {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                try {
+                    val query = Query.userQuery(user.username)
+                    val id = server.getUserID(query).execute().body()
+                    if (id == null) {
+                        addUserToUpload(user)
+                        throw IOError(Throwable())
+                    } else {
+                        server.updateUser(id._id, user).execute()
+                    }
+
+                } catch (e: Throwable) {
+                    Log.i("Network", "Unavailable")
+                    uploadSuccessful = false
+                }
+            }
+            return uploadSuccessful
+        }
     }
 
     fun isOnline(): Boolean {

@@ -62,7 +62,6 @@ class GenerateRetrofit {
             val client = OkHttpClient.Builder()
                     .addInterceptor(interceptor).build()
 
-            //TODO https://stackoverflow.com/questions/43455825/retrofit-2-gson-and-custom-deserializer
             val retrofit = Retrofit
                     .Builder()
                     .client(client)

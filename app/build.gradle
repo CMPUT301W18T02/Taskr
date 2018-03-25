@@ -74,7 +74,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
 
     implementation 'com.android.support:design:26.1.0'
-
+    implementation 'com.google.guava:guava:24.1-android'
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"
