@@ -1,7 +1,9 @@
-package ca.ualberta.taskr
+package ca.ualberta.taskr.models.UserCases
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import ca.ualberta.taskr.BuildConfig
+import ca.ualberta.taskr.ListTasksActivity
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
