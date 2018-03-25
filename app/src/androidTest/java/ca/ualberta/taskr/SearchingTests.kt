@@ -1,22 +1,8 @@
 package ca.ualberta.taskr
 
-import android.content.Intent
-import android.widget.Button
-import ca.ualberta.taskr.*
-import ca.ualberta.taskr.models.User
-import org.junit.Assert.*
-import org.robolectric.Shadows
-
-import android.support.design.widget.NavigationView
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.widget.EditText
-import android.widget.RelativeLayout
-import butterknife.BindView
 import ca.ualberta.taskr.adapters.TaskListAdapter
-import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -26,6 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Robolectric
+import org.robolectric.annotation.Config
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,34 +25,16 @@ import retrofit2.Response
  */
 
 @RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class SearchingTests {
 
     private lateinit var activity: ListTasksActivity
-    private var searchText = "Test"
+    private var searchText = "TestTask"
     private var shownTaskList: ArrayList<Task> = ArrayList()
 
-    private var taskUser = "TestUser"
+    private var taskUser = "TestTaskUser"
     private var taskTitle = "TestTaskTitle"
     private var taskStatus: TaskStatus? = null
-    private var taskBids = ArrayList<Bid>()
-
-    @BindView(R.id.taskList)
-    lateinit var taskList: RecyclerView
-
-    @BindView(R.id.drawer_layout)
-    lateinit var drawerLayout: DrawerLayout
-
-    @BindView(R.id.taskSearchBar)
-    lateinit var searchBar: EditText
-
-    @BindView(R.id.taskListToolbar)
-    lateinit var toolbar: Toolbar
-
-    @BindView(R.id.loadingPanel)
-    lateinit var loadingPanel: RelativeLayout
-
-    @BindView(R.id.nav_view)
-    lateinit var navView: NavigationView
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -97,6 +66,7 @@ class SearchingTests {
                 masterTaskList.clear()
                 masterTaskList.addAll(response.body() as ArrayList<Task>)
                 activity.updateSearch(searchText)
+                shownTaskList.clear()
 
                 shownTaskList.addAll(masterTaskList.filter {
                     it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
@@ -104,6 +74,12 @@ class SearchingTests {
                         && ((it.title != null && it.title.contains(searchText, true)) ||
                         (it.description != null && it.description.contains(searchText, true)))
                 })
+
+                Assert.assertEquals("Text",searchText)
+
+
+                //Assert.assertEquals()
+
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {

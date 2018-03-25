@@ -12,6 +12,7 @@ import org.junit.Assert.assertEquals
 
 /**
  * Created by marissasnihur on 2018-02-22.
+ *
  */
 @RunWith(RobolectricTestRunner::class)
 class UserUnitTest {
