@@ -6,10 +6,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.widget.DrawerLayout
 import android.widget.ImageView
 import android.widget.TextView
-import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.ListTasksActivity
-import ca.ualberta.taskr.MyTasksActivity
-import ca.ualberta.taskr.R
+import ca.ualberta.taskr.*
 
 
 class NavViewController(var navView: NavigationView,
@@ -34,15 +31,20 @@ class NavViewController(var navView: NavigationView,
                                 MyTasksActivity::class.java)
                         context.startActivity(myTasksIntent)
                     }
+                    else if(menuItem.itemId == R.id.nav_todo){
+                        val toDoTaskListIntent = Intent(context,
+                                ToDoTaskListActivity::class.java)
+                        context.startActivity(toDoTaskListIntent)
+                    }
 
                     true
                 })
 
-        var userController : UserController = UserController(context)
+        val userController = UserController(context)
         val headerView =  navView.getHeaderView(0)
-        var usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
         usernameTextView.text = userController.getLocalUserName()
-        var userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
+        val userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
         userPhoto.setOnClickListener({
             val editUserIntent = Intent(context,
                     EditUserActivity::class.java)

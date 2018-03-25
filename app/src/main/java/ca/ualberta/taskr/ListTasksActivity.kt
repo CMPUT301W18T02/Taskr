@@ -117,6 +117,9 @@ class ListTasksActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Network call to generate the master task list
+     */
     private fun updateTasks() {
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
