@@ -16,7 +16,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import butterknife.*
-import ca.ualberta.taskr.Perms.PermsUtil
+import ca.ualberta.taskr.util.PermsUtil
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
@@ -33,7 +33,6 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.MapboxMapOptions
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import retrofit2.Response
 import retrofit2.Call
