@@ -179,6 +179,7 @@ class CachingRetrofit(val context: Context) {
             if (result == null) {
                 callback.onFailure()
             } else {
+                tryUploads()
                 callback.onResponse(result, resultFromCache)
             }
 
@@ -194,7 +195,9 @@ class CachingRetrofit(val context: Context) {
         override fun onPostExecute(result: List<User>) {
             super.onPostExecute(result)
             callback.onResponse(result, resultFromCache)
-
+            if (!resultFromCache) {
+                tryUploads()
+            }
         }
 
         override fun doInBackground(vararg params: Void): List<User> {
@@ -215,6 +218,9 @@ class CachingRetrofit(val context: Context) {
         override fun onPostExecute(result: List<Task>) {
             super.onPostExecute(result)
             callback.onResponse(result, resultFromCache)
+            if (!resultFromCache) {
+                tryUploads()
+            }
 
         }
 
@@ -244,6 +250,7 @@ class CachingRetrofit(val context: Context) {
         override fun onPostExecute(uploadSucceeded: Boolean) {
             super.onPostExecute(uploadSucceeded)
             if (uploadSucceeded) {
+                tryUploads()
                 callback.onResponse(uploadSucceeded, uploadSucceeded)
             } else {
                 callback.onFailure()
@@ -284,6 +291,7 @@ class CachingRetrofit(val context: Context) {
         override fun onPostExecute(uploadSucceeded: Boolean) {
             super.onPostExecute(uploadSucceeded)
             if (uploadSucceeded) {
+                tryUploads()
                 callback.onResponse(uploadSucceeded, uploadSucceeded)
             } else {
                 callback.onFailure()
@@ -311,6 +319,16 @@ class CachingRetrofit(val context: Context) {
             }
             return uploadSuccessful
         }
+    }
+
+    private fun tryUploads() {
+        val callback = object : Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {}
+        }
+        updateUser(callback).execute(*getUsersToUpload().toArray() as Array<User>)
+        updateTask(callback).execute(*getTasksToUpload().toArray() as Array<Pair<Task?, Task>>)
+
+
     }
 
     fun isOnline(): Boolean {
