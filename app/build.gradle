@@ -75,6 +75,8 @@ dependencies {
 
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.google.guava:guava:24.1-android'
+    implementation "com.android.support:support-compat:26.1.0"
+
 
     testCompile "junit:junit:4.12"
     testCompile "org.assertj:assertj-core:1.7.0"

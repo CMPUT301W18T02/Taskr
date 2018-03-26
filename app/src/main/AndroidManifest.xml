@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+
 
     <application
         android:allowBackup="true"
@@ -36,7 +40,24 @@
         <activity
             android:name=".ViewTaskActivity"
             android:theme="@style/MapBoxSpecific" />
-        <activity android:name=".ToDoTaskListActivity"></activity>
+        <activity android:name=".ToDoTaskListActivity" />
+
+        <receiver
+            android:name=".util.Alarm"
+            android:process=":remote" />
+
+        <receiver
+            android:name=".util.AlarmService"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </receiver>
+
+
     </application>
+
 
 </manifest>

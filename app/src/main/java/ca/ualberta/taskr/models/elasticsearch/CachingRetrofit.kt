@@ -1,10 +1,12 @@
 package ca.ualberta.taskr.models.elasticsearch
 
+import android.app.NotificationManager
 import android.os.AsyncTask
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.User
 import android.content.Context
 import android.content.SharedPreferences
+import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import ca.ualberta.taskr.R
@@ -13,6 +15,16 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.IOError
+import android.app.NotificationChannel
+import android.app.PendingIntent
+import android.content.Intent
+import android.os.Build
+import android.os.Build.VERSION_CODES
+import android.os.Build.VERSION
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
+import android.support.annotation.RequiresApi
+import ca.ualberta.taskr.ViewTaskActivity
 
 
 /**
@@ -110,10 +122,53 @@ class CachingRetrofit(val context: Context) {
     private fun notifyUserOfBids(tasks: List<Task>) {
         val owner = getLocalUserName()
         val oldTasks = getTasksFromDisk().filter({ it -> it.owner == owner })
+        var i = 1
         for (task in tasks.filter({ it -> it.owner == owner })) {
+            for (old_task in oldTasks.filter { it -> (it.title == task.title && it.description == task.description) }) {
+                for (bid in task.bids) {
+                    var match = false
+                    for (old_bid in old_task.bids) {
+                        if (old_bid == bid) {
+                            match = true
+                        }
+                    }
+                    if (!match) {
+//                    if (i < 5) {
+                        Log.i("NOTIFY_NEW_BID", task.title + bid.toString())
+                        val CHANNEL_ID = "my_id_01"// The internal id of the channel.
+                        val CHANNEL_NAME = "Channel Name"// The public name of the channel.
+                        val viewTaskIntent = Intent(context, ViewTaskActivity::class.java)
+                        val bundle = Bundle()
+                        val strTask = GenerateRetrofit.generateGson().toJson(task)
+                        bundle.putString("TASK", strTask)
+                        viewTaskIntent.putExtras(bundle)
+                        val pendingIntent = PendingIntent.getActivity(context, 0, viewTaskIntent, 0)
+                        val mBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+                                .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                                .setContentTitle("New bid on ${task.title}!")
+                                .setContentText("${bid.owner} made a bid of $${bid.amount} on your task!")
+                                .setContentIntent(pendingIntent)
+                                .setAutoCancel(true)
+                                .setColor(0x855bf7)
+                                .setLights(0x855bf7, 1000, 500)
+                                .setPriority(2)
+                                .setVibrate(longArrayOf(1000, 0, 1000, 0, 1000, 1000, 0, 1000, 0, 1000, 0, 1000, 1000, 0, 1000, 0, 1000, 0, 1000, 1000, 0, 1000))
 
+                        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            notificationManager.createNotificationChannel(NotificationChannel(CHANNEL_ID,
+                                    CHANNEL_NAME,
+                                    NotificationManager.IMPORTANCE_DEFAULT))
+                        }
+                        notificationManager.notify(i, mBuilder.build())
+                        i += 1
+                    }
+
+                }
+            }
         }
-        TODO("not implemented")
     }
 
 
@@ -172,8 +227,8 @@ class CachingRetrofit(val context: Context) {
                     tasks = getTasksFromDisk()
                 } else {
                     tasks = t
+                    notifyUserOfBids(tasks)
                     setTasks(tasks)
-//                notifyUserOfBids(tasks)
                 }
             } catch (e: Throwable) {
                 resultFromCache = true
@@ -198,20 +253,18 @@ class CachingRetrofit(val context: Context) {
         override fun doInBackground(vararg params: Pair<Task?, Task>): Boolean {
             var uploadSuccessful = true
             for (pair in params) {
+                Log.i("TASK", pair.toString())
 
                 try {
                     val (old, new) = pair
                     if (old == null) {
-                        try {
-                            server.createTask(new)
-                        } catch (e: Throwable) {
-                            addTaskToUpload(pair)
-                        }
+                        server.createTask(new).execute()
                     } else {
                         val query = Query.taskQuery(old.owner, old.title, old.description)
                         val id = server.getTaskID(query).execute().body()
                         if (id == null) {
                             addTaskToUpload(pair)
+                            uploadSuccessful = false
                             throw IOError(Throwable())
                         } else {
                             server.updateTask(id._id, new).execute()

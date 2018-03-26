@@ -14,6 +14,7 @@ import butterknife.OnClick
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.util.Alarm
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,18 +27,18 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
 
     @BindView(R.id.LoginButton)
-    lateinit var LoginButton    : Button
+    lateinit var LoginButton: Button
 
     @BindView(R.id.NewUserButton)
-    lateinit var NewUserButton  : Button
+    lateinit var NewUserButton: Button
 
     @BindView(R.id.LoginErrorText)
-    lateinit var LoginErrorText : TextView
+    lateinit var LoginErrorText: TextView
 
     @BindView(R.id.UsernameText)
-    lateinit var UsernameText   : EditText
+    lateinit var UsernameText: EditText
 
-    var masterUserList : ArrayList<User> = ArrayList()
+    var masterUserList: ArrayList<User> = ArrayList()
     var userController: UserController = UserController(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +48,11 @@ class LoginActivity : AppCompatActivity() {
         checkIfUserIsLoggedIn()
 
         ButterKnife.bind(this)
+        Alarm().setAlarm(this)
     }
 
-    private fun checkIfUserIsLoggedIn(){
-        if (userController.getLocalUserName() != ""){
+    private fun checkIfUserIsLoggedIn() {
+        if (userController.getLocalUserName() != "") {
             launchTaskList()
         }
     }
@@ -67,21 +69,20 @@ class LoginActivity : AppCompatActivity() {
     @OnClick(R.id.LoginButton)
     fun loginClicked(v: View) {
 
-        val username : String = UsernameText.text.toString()
+        val username: String = UsernameText.text.toString()
 
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
                 masterUserList.addAll(response.body() as ArrayList<User>)
-                val matchedUser = masterUserList.firstOrNull {
-                    it -> it.username == username
+                val matchedUser = masterUserList.firstOrNull { it ->
+                    it.username == username
                 }
                 if (matchedUser != null) {
                     userController.setLocalUserObject(matchedUser)
                     userController.setLocalUsername(username)
                     launchTaskList()
-                }
-                else{
+                } else {
                     showLoginError("Username: $username doesn't exist")
                 }
             }
@@ -95,7 +96,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    fun launchTaskList(){
+    fun launchTaskList() {
         var intent = Intent(this, ListTasksActivity::class.java)
         startActivity(intent)
     }
@@ -103,18 +104,17 @@ class LoginActivity : AppCompatActivity() {
     @OnClick(R.id.NewUserButton)
     fun newUserClicked(v: View) {
 
-        val username : String = UsernameText.text.toString()
+        val username: String = UsernameText.text.toString()
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
                 masterUserList.addAll(response.body() as ArrayList<User>)
-                val matchedUser = masterUserList.firstOrNull {
-                    it -> it.username == username
+                val matchedUser = masterUserList.firstOrNull { it ->
+                    it.username == username
                 }
                 if (matchedUser != null) {
                     showLoginError("Username: $username already exists")
-                }
-                else{
+                } else {
                     userController.setLocalUsername("")
                     launchEditUserActivity(username)
                 }
@@ -129,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    fun launchEditUserActivity(username:String) {
+    fun launchEditUserActivity(username: String) {
         var intent = Intent(this, EditUserActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
@@ -139,7 +139,6 @@ class LoginActivity : AppCompatActivity() {
     fun onTaskrImageClick() {
         // TODO: Implement clicking on the logo in part 5
     }
-
 
 
 }

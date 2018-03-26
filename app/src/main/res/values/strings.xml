@@ -31,9 +31,8 @@
 
     <string name="prefs_name">"TaskrPrefs"</string>
     <string name="sf_username_key">Username</string>
-    <string name="sf_users_key">Users</string>
-    <string name="sf_tasks_key">Tasks</string>
-    <string name="sf_tasks_to_upload_key">TASKS_TO_UPLOAD</string>
+    <string name="sf_message_number_key">Username</string>
+
 
 
 
