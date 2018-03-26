@@ -4,11 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 
 import android.widget.Button
@@ -18,6 +23,8 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.TaskListAdapter
+import ca.ualberta.taskr.controllers.NavViewController
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -25,15 +32,20 @@ import ca.ualberta.taskr.models.elasticsearch.Callback
 
 class MyTasksActivity : AppCompatActivity() {
 
-    @BindView(R.id.addTaskButton)
-    lateinit var addTaskButton: Button
-
     @BindView(R.id.loadingPanel)
     lateinit var loadingPanel: RelativeLayout
 
-
     @BindView(R.id.myTasksView)
     lateinit var myTasksView: RecyclerView
+
+    @BindView(R.id.myTasksToolbar)
+    lateinit var toolbar: Toolbar
+
+    @BindView(R.id.drawer_layout)
+    lateinit var drawerLayout: DrawerLayout
+
+    @BindView(R.id.nav_view)
+    lateinit var navView: NavigationView
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -45,12 +57,19 @@ class MyTasksActivity : AppCompatActivity() {
         setContentView(R.layout.activity_my_tasks)
         ButterKnife.bind(this)
 
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu)
+
         // Build up recycle view
         viewManager = LinearLayoutManager(this)
         myTasksView.apply {
             layoutManager = viewManager
             adapter = myTasksAdapter
         }
+
+        NavViewController(navView, drawerLayout, applicationContext)
 
         myTasksAdapter.setClickListener(View.OnClickListener {
             val position = myTasksView.getChildLayoutPosition(it)
@@ -78,9 +97,7 @@ class MyTasksActivity : AppCompatActivity() {
                 //TODO Deal with offline
                 Log.i("network", response.toString())
 
-                // Grab username from SharedPreferences
-                val editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-                val username = editor.getString("Username", null)
+                val username = UserController(applicationContext).getLocalUserName()
 
                 // Populate a master list and filter it by username to get our
                 val masterList: ArrayList<Task> = ArrayList()
@@ -116,6 +133,16 @@ class MyTasksActivity : AppCompatActivity() {
                 populateList()
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {

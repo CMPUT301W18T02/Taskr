@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import butterknife.BindView
 import butterknife.ButterKnife
-import ca.ualberta.taskr.Perms.PermsUtil
+import ca.ualberta.taskr.util.PermsUtil
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions

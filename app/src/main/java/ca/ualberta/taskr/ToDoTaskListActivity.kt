@@ -2,6 +2,7 @@ package ca.ualberta.taskr
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
@@ -12,41 +13,33 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
+import android.widget.RelativeLayout
 import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnClick
 import ca.ualberta.taskr.adapters.TaskListAdapter
+import ca.ualberta.taskr.controllers.NavViewController
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import android.support.design.widget.NavigationView
-import android.view.View
-import android.widget.RelativeLayout
-import ca.ualberta.taskr.controllers.NavViewController
-import ca.ualberta.taskr.controllers.UserController
-import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.Callback
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
+class ToDoTaskListActivity : AppCompatActivity() {
 
-
-/**
- *  The master task list activity
- *
- *  @author eyesniper2
- */
-class ListTasksActivity : AppCompatActivity() {
-
-    @BindView(R.id.taskList)
-    lateinit var taskList: RecyclerView
+    @BindView(R.id.toDoTaskList)
+    lateinit var toDoTaskList: RecyclerView
 
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
 
-    @BindView(R.id.taskSearchBar)
+    @BindView(R.id.todoTaskSearchBar)
     lateinit var searchBar: EditText
 
-    @BindView(R.id.taskListToolbar)
+    @BindView(R.id.toDoListToolbar)
     lateinit var toolbar: Toolbar
 
     @BindView(R.id.loadingPanel)
@@ -63,14 +56,9 @@ class ListTasksActivity : AppCompatActivity() {
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
-    /**
-     * The on create method for the ListTasksActivity.
-     * Will set up the toolbar, base list, setup activity listeners and kick off network requests to get data
-     * from elastic search.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list_tasks)
+        setContentView(R.layout.activity_to_do_task_list)
         ButterKnife.bind(this)
 
         setSupportActionBar(toolbar)
@@ -82,7 +70,7 @@ class ListTasksActivity : AppCompatActivity() {
 
         // Build up recycle view
         viewManager = LinearLayoutManager(this)
-        taskList.apply {
+        toDoTaskList.apply {
             layoutManager = viewManager
             adapter = taskListAdapter
         }
@@ -107,7 +95,7 @@ class ListTasksActivity : AppCompatActivity() {
         })
 
         taskListAdapter.setClickListener(View.OnClickListener {
-            val position = taskList.getChildLayoutPosition(it)
+            val position = toDoTaskList.getChildLayoutPosition(it)
             val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
             val bundle = Bundle()
             val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
@@ -115,21 +103,26 @@ class ListTasksActivity : AppCompatActivity() {
             viewTaskIntent.putExtras(bundle)
             startActivity(viewTaskIntent)
         })
+
     }
 
     /**
-     * Network call to generate the master task list
+     * Network call to generate master task list in a async
      */
     private fun updateTasks() {
-        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
-            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
-                //TODO Deal with offline
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                Log.i("network", response.body().toString())
                 masterTaskList.clear()
-                masterTaskList.addAll(response as ArrayList<Task>)
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
                 updateSearch(searchText)
-
             }
-        }).execute()
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+            }
+        })
     }
 
     /**
@@ -154,19 +147,13 @@ class ListTasksActivity : AppCompatActivity() {
         taskListAdapter.notifyDataSetChanged()
 
         shownTaskList.addAll(masterTaskList.filter {
-            it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
-                && (it.owner != username)
+            it -> (it.status == TaskStatus.ASSIGNED)
+                && (it.chosenBidder != null && it.chosenBidder == username)
                 && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
         })
         loadingPanel.visibility = View.GONE
 
         taskListAdapter.notifyDataSetChanged()
-    }
-
-    @OnClick(R.id.viewTaskMapButton)
-    fun openMapView(){
-        val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
-        startActivity(nearbyTasksIntent)
     }
 
     override fun onResume() {

@@ -9,19 +9,21 @@
 
     <ImageButton
         android:id="@+id/ProfileImageButton"
-        android:layout_width="368dp"
-        android:layout_height="241dp"
+        android:layout_width="0dp"
+        android:layout_height="240dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@drawable/ic_account_circle" />
 
     <EditText
         android:id="@+id/UserSurnameText"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="46dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -30,6 +32,7 @@
         android:ems="10"
         android:hint="@string/activity_edit_user_name"
         android:inputType="textPersonName"
+        android:singleLine="true"
         app:layout_constraintBottom_toTopOf="@+id/UserEmailText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,14 +40,14 @@
 
     <EditText
         android:id="@+id/UserEmailText"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="46dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/colorAccent2"
         android:ems="10"
         android:hint="@string/activity_edit_user_email"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/UserPhoneNumberText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,14 +55,14 @@
 
     <EditText
         android:id="@+id/UserPhoneNumberText"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="46dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/colorAccent2"
         android:ems="10"
         android:hint="@string/activity_edit_user_phone_number"
-        android:inputType="textPersonName"
+        android:inputType="textPersonName|phone"
         app:layout_constraintBottom_toTopOf="@+id/ApplyChangesButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +70,7 @@
 
     <Button
         android:id="@+id/ApplyChangesButton"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="77dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
