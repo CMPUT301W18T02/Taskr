@@ -20,14 +20,14 @@ import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import android.support.design.widget.NavigationView
 import android.view.View
 import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Callback
+
 
 
 /**
@@ -117,20 +117,19 @@ class ListTasksActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Network call to generate the master task list
+     */
     private fun updateTasks() {
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
+        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
+            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
+                //TODO Deal with offline
                 masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                masterTaskList.addAll(response as ArrayList<Task>)
                 updateSearch(searchText)
-            }
 
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
             }
-        })
+        }).execute()
     }
 
     /**

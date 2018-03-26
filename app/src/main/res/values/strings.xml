@@ -31,6 +31,11 @@
 
     <string name="prefs_name">"TaskrPrefs"</string>
     <string name="sf_username_key">Username</string>
+    <string name="sf_message_number_key">Username</string>
+
+
+
+
 
     <!-- Add Location to Task Strings. -->
     <string name="activity_add_location_to_task_text">"Choose a Location"</string>
@@ -46,4 +51,5 @@
     <string name="activity_edit_task_details">"Details"</string>
 
     <string name="activity_my_tasks_add_task">"+ Add Task"</string>
+    <string name="prefs_user">user_key</string>
 </resources>

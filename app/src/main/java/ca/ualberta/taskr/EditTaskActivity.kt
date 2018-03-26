@@ -14,12 +14,13 @@ import butterknife.OnClick
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
 import com.mapbox.mapboxsdk.geometry.LatLng
 import retrofit2.Call
-import retrofit2.Callback
+import ca.ualberta.taskr.models.elasticsearch.Callback
 import retrofit2.Response
 
 /**
@@ -42,10 +43,8 @@ class EditTaskActivity : AppCompatActivity() {
     lateinit var locationEditText: EditText
 
     var taskPassedIn: Boolean = false
-    private lateinit var editTask: Task
-    private  var position: LatLng? = null
-    private lateinit var id: ElasticsearchID
-
+    private var editTask: Task? = null
+    private var position: LatLng? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,30 +52,22 @@ class EditTaskActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_task)
         ButterKnife.bind(this)
 
-        if (intent.getStringExtra("Task") != null){
+        if (intent.getStringExtra("Task") != null) {
             taskPassedIn = true
             val strTask: String = intent.getStringExtra("Task")
 
             editTask = GenerateRetrofit.generateGson().fromJson(strTask, Task::class.java)
-            position = editTask.location
-            fillBoxes(editTask)
-            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(editTask.owner, editTask.title, editTask.description)).enqueue(object : Callback<ElasticsearchID> {
-                override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
-                    Log.i("network", response.body().toString())
-                    id = response.body() as ElasticsearchID
-                }
-
-                override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
-                    Log.e("network", "Network Failed!")
-                    t.printStackTrace()
-                    return
-                }
-            })
-
+            val task = editTask
+            if (task != null) {
+                position = task.location
+                fillBoxes(task)
+            }
+        } else {
+            editTask = null
         }
     }
 
-    private fun fillBoxes(task: Task){
+    private fun fillBoxes(task: Task) {
         // TODO: populate images
         titleEditText.setText(task.title)
         detailsEditText.setText(task.description)
@@ -85,7 +76,7 @@ class EditTaskActivity : AppCompatActivity() {
 
 
     @OnClick(R.id.getLocationButton)
-    fun openLocationActivity(){
+    fun openLocationActivity() {
         val addLocationIntent = Intent(this, AddLocationToTaskActivity::class.java)
         addLocationIntent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
         val s = intent.getStringExtra("EXTRA_SESSION_ID")
@@ -97,7 +88,7 @@ class EditTaskActivity : AppCompatActivity() {
      * On clicking postTaskButton, post the newly created task to the server
      */
     @OnClick(R.id.postTaskButton)
-    fun postTask(){
+    fun postTask() {
         //create a new task object from fields, then post to server
 
         // Grab username from SharedPreferences
@@ -124,32 +115,12 @@ class EditTaskActivity : AppCompatActivity() {
 
         // post newTask to servers
         // if a task has been passed in, edit its properties, otherwise post a new task
-        if(taskPassedIn) {
-            GenerateRetrofit.generateRetrofit().updateTask(id._id, newTask).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    Log.i("network update task", response.body().toString())
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("network", "Network Failed!")
-                    t.printStackTrace()
-                    return
-                }
-            })
-        }
-        else{
-            GenerateRetrofit.generateRetrofit().createTask(newTask).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    Log.i("network", response.body().toString())
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("network", "Network Failed!")
-                    t.printStackTrace()
-                    return
-                }
-            })
-        }
+        CachingRetrofit(this).updateTask(object : Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                //TODO Deal with offline
+                Log.i("UPLOADED?", response.toString())
+            }
+        }).execute(Pair(editTask, newTask))
 
         val editTaskIntent = Intent()
         var strTask = GenerateRetrofit.generateGson().toJson(newTask)
@@ -162,7 +133,7 @@ class EditTaskActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                position = GenerateRetrofit.generateGson().fromJson(data.getStringExtra("position"),LatLng::class.java)
+                position = GenerateRetrofit.generateGson().fromJson(data.getStringExtra("position"), LatLng::class.java)
                 locationEditText.setText(position.toString())
 
             }

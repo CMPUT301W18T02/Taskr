@@ -16,11 +16,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import butterknife.*
-import ca.ualberta.taskr.Perms.PermsUtil
+import ca.ualberta.taskr.util.PermsUtil
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
@@ -33,11 +34,10 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.MapboxMapOptions
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import retrofit2.Response
 import retrofit2.Call
-import retrofit2.Callback
+import ca.ualberta.taskr.models.elasticsearch.Callback
 
 
 /**
@@ -59,6 +59,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private lateinit var editBidFragment: EditBidFragment
     private lateinit var acceptBidFragment: AcceptBidFragment
     private var lowestBidAmount : Double = Double.POSITIVE_INFINITY
+    private lateinit var oldTask: Task
+
 
     // Views to be modified by ViewTasksActivity
     @BindView(R.id.taskAuthorText)
@@ -87,6 +89,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private lateinit var position : LatLng
     private lateinit var marker: Marker
 
+
     /**
      * Initializes the Mapbox mapview, obtains the displayTask, populates and displays list of all
      * bids on tasks, and reformats ViewTaskActivity layout according to user type.
@@ -104,7 +107,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         if (intent != null) {
             val taskStr = intent.getStringExtra("TASK")
             if (taskStr != null) {
+
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
+                oldTask = displayTask
                 taskBidList.addAll(displayTask.bids) // Populate Bid list to be displayed.
 
                 //Update displayed attributes for Task
@@ -288,32 +293,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * displayed in activity.
      */
     private fun updateDisplayTask() {
-        lateinit var id: ElasticsearchID
-        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(displayTask.owner, displayTask.title, displayTask.description)).enqueue(object : Callback<ElasticsearchID> {
-            override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
-                Log.i("network", response.body().toString())
-                id = response.body() as ElasticsearchID
-                GenerateRetrofit.generateRetrofit().updateTask(id._id, displayTask).enqueue(object : Callback<Void>{
-                    override fun onFailure(call: Call<Void>?, t: Throwable?) {
-                        Log.e("network", "Network Failed!")
-                        if (t != null) {
-                            t.printStackTrace()
-                        }
-                        return
-                    }
-
-                    override fun onResponse(call: Call<Void>?, response: Response<Void>?) {
-                        Log.e("network", "Posted!")
-                    }
-                })
+        CachingRetrofit(this).updateTask(object: Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
             }
+        }).execute(Pair(oldTask, displayTask))
+        oldTask = displayTask
 
-            override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-                return
-            }
-        })
         // Reobtain list of Task's bids, then update RecyclerView.
         taskBidList.clear()
         taskBidList.addAll(displayTask.bids)
