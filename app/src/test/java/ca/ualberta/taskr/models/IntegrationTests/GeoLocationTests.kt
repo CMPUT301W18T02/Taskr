@@ -1,4 +1,4 @@
-package ca.ualberta.taskr.models
+package ca.ualberta.taskr.models.IntegrationTests
 
 import org.junit.Test
 import org.junit.runner.RunWith

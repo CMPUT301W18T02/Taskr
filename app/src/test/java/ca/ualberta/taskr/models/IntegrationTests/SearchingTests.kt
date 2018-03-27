@@ -1,11 +1,18 @@
-package ca.ualberta.taskr.models
+package ca.ualberta.taskr.models.IntegrationTests
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import ca.ualberta.taskr.BuildConfig
 import ca.ualberta.taskr.ListTasksActivity
 import ca.ualberta.taskr.adapters.TaskListAdapter
+import ca.ualberta.taskr.controllers.UserController
+import ca.ualberta.taskr.models.Bid
+import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
+import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -32,9 +39,8 @@ class SearchingTests {
     private var searchText = "TestTask"
     private var shownTaskList: ArrayList<Task> = ArrayList()
 
-    private var taskUser = "TestTaskUser"
-    private var taskTitle = "TestTaskTitle"
-    private var taskStatus: TaskStatus? = null
+    private var owner = "TestTaskUser"
+    private var title = "TestTaskTitle"
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -42,9 +48,21 @@ class SearchingTests {
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
+    private var status: TaskStatus? = null
+    private var bids = java.util.ArrayList<Bid>()
+    private var description = "TestTaskDescription"
+    private var photos = java.util.ArrayList<String>()
+    private var location: LatLng? = null
+    private var chosenBidder = "The Mask"
+    private lateinit var id: ElasticsearchID
+
     @Before
     fun setUp(){
         activity = Robolectric.setupActivity(ListTasksActivity::class.java)
+
+        val userController = UserController(activity)
+        username = userController.getLocalUserName()
+
     }
 
     @Test
@@ -53,16 +71,28 @@ class SearchingTests {
     }
 
     /**
-     * As a task provider, I want search results to show each task with its task requester username,
-     * title, status, lowest bid so far (if any).
+     * As a task provider, I want to specify a set of keywords, and search for all tasks,
+     * with status: requested or bidded, whose description contains all the keywords.
+     *
      */
 
     @Test
     fun searchTest() {
+        val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
+        GenerateRetrofit.generateRetrofit().createTask(task).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.i("network", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 Log.i("network", response.body().toString())
-                val masterTaskList: ArrayList<Task> = ArrayList()
                 masterTaskList.clear()
                 masterTaskList.addAll(response.body() as ArrayList<Task>)
                 activity.updateSearch(searchText)
@@ -75,10 +105,9 @@ class SearchingTests {
                         (it.description != null && it.description.contains(searchText, true)))
                 })
 
-                Assert.assertEquals("Text",searchText)
+                Assert.assertEquals("TestText",searchText)
 
-
-                //Assert.assertEquals()
+                Assert.assertTrue(shownTaskList.contains(task))
 
             }
 
@@ -88,6 +117,17 @@ class SearchingTests {
             }
         })
     }
+
+    /**
+     * As a task provider, I want search results to show each task with its task requester
+     * username, title, status, lowest bid so far (if any).
+     */
+
+    @Test
+    fun searchResultsTest(){
+        
+    }
+
 
 
 
