@@ -1,4 +1,4 @@
-package ca.ualberta.taskr.Perms;
+package ca.ualberta.taskr.util;
 
 import android.Manifest;
 import android.app.Activity;

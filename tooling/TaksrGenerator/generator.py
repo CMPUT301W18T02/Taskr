@@ -7,8 +7,6 @@ import random
 f = faker.Faker()
 f.seed(3423)
 
-base_url = 'http://cmput301.softwareprocess.es:8080/cmput301w18t02/'
-
 
 class User:
     def __init__(self):
@@ -37,6 +35,9 @@ class Task:
         self.location = {
             "latitude": random.uniform(53.433298, 53.635187),
             "longitude": random.uniform(-113.301333, -113.692089),
+            # "latitude": random.uniform(0.433298, 80.635187),
+            # "longitude": random.uniform(-170.301333, -0.692089),
+
             "altitude": 0.0}
         if len(self.bids) == 0:
             self.status = "REQUESTED"
