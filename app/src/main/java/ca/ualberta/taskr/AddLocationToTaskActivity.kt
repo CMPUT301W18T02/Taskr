@@ -60,7 +60,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
+        Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)

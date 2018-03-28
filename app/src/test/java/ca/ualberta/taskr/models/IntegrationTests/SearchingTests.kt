@@ -61,7 +61,7 @@ class SearchingTests {
     private var photos = java.util.ArrayList<String>()
     private var location: LatLng? = null
     private var chosenBidder = "The Mask"
-    private lateinit var id: ElasticsearchID
+    //private lateinit var id: ElasticsearchID
 
     lateinit var taskList: RecyclerView
 

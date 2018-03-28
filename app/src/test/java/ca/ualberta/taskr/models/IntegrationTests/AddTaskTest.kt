@@ -1,4 +1,4 @@
-package ca.ualberta.taskr.models.UserCases
+package ca.ualberta.taskr.models.IntegrationTests
 
 import ca.ualberta.taskr.models.Bid
 import org.junit.Assert.*

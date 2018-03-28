@@ -25,6 +25,7 @@ import android.content.Intent
 import android.os.Bundle
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import org.junit.Rule
 
 
 /**
@@ -79,6 +80,12 @@ class TaskBasicsTest {
                 return
             }
         })
+    }
+
+    @Test
+    fun checkActivityNotNull() {
+        //make sure that activity is not null before starting tests.
+        Assert.assertNotNull(editTaskActivity)
     }
 
     @Test

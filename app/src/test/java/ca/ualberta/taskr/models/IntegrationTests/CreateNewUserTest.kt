@@ -1,9 +1,9 @@
-package ca.ualberta.taskr.models.UserCases
+package ca.ualberta.taskr.models.IntegrationTests
 
 import android.content.Intent
 import android.widget.Button
+import android.widget.EditText
 import ca.ualberta.taskr.*
-import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
 import org.junit.Assert
 import org.junit.Assert.*
@@ -29,11 +29,26 @@ class CreateNewUserTest {
     private var username = "jsmith"
     private var image: String? = null
 
+    private lateinit var userText: EditText
+    private lateinit var button: Button
+
     @Before
     fun setUp(){
         activity = Robolectric.setupActivity(LoginActivity::class.java)
 
+        userText = activity.findViewById<EditText>(R.id.UsernameText)
+        button = activity.findViewById<Button>(R.id.NewUserButton)
+
     }
+
+    /**
+     *
+     * As a user, I want a profile with a unique username and my contact information.
+     *
+     *
+     * As a user, I want the contact information to include an email address and a phone number.
+     *
+     */
 
     @Test
     fun checkUser(){
@@ -51,7 +66,6 @@ class CreateNewUserTest {
 
         Assert.assertTrue(activity.userController.getLocalUserName() == username)
 
-        //Assert.assertTrue(activity.CheckIfUsernameExists(username))
     }
 
     @Test
@@ -66,13 +80,15 @@ class CreateNewUserTest {
     }
 
     @Test
-    fun testOnNewUserButtonClick(){
-        val button: Button = activity.findViewById(R.id.NewUserButton)
+    fun testOnNewUserButtonClick() {
+
+        userText.setText(username)
+
         button.performClick()
 
         val intent: Intent = Shadows.shadowOf(activity).peekNextStartedActivity()
 
-        assertEquals(EditUserActivity::class.java.canonicalName,intent.component.className)
+        assertEquals(EditUserActivity::class.java.canonicalName, intent.component.className)
     }
 
 }
