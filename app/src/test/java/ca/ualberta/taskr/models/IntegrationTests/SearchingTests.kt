@@ -1,9 +1,15 @@
 package ca.ualberta.taskr.models.IntegrationTests
 
+import android.content.Intent
+import android.support.design.widget.NavigationView
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.util.Log
-import ca.ualberta.taskr.BuildConfig
-import ca.ualberta.taskr.ListTasksActivity
+import android.widget.EditText
+import android.widget.RelativeLayout
+import butterknife.BindView
+import ca.ualberta.taskr.*
 import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
@@ -19,7 +25,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Robolectric
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,16 +44,15 @@ import retrofit2.Response
 class SearchingTests {
 
     private lateinit var activity: ListTasksActivity
+    private lateinit var nextActivity: ShadowActivity
     private var searchText = "TestTask"
     private var shownTaskList: ArrayList<Task> = ArrayList()
 
     private var owner = "TestTaskUser"
     private var title = "TestTaskTitle"
 
-    private lateinit var viewManager: RecyclerView.LayoutManager
-
     private var masterTaskList: ArrayList<Task> = ArrayList()
-    private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
+    //private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
     private var status: TaskStatus? = null
@@ -56,9 +63,16 @@ class SearchingTests {
     private var chosenBidder = "The Mask"
     private lateinit var id: ElasticsearchID
 
+    lateinit var taskList: RecyclerView
+
+    lateinit var searchBar: EditText
+
     @Before
     fun setUp(){
         activity = Robolectric.setupActivity(ListTasksActivity::class.java)
+
+        searchBar = activity.findViewById<EditText>(R.id.taskSearchBar)
+        taskList = activity.findViewById<RecyclerView>(R.id.taskList)
 
         val userController = UserController(activity)
         username = userController.getLocalUserName()
@@ -70,9 +84,31 @@ class SearchingTests {
         Assert.assertNotNull(activity)
     }
 
+    private fun deleteTestTask(){
+        //delete test task in elastic search, @JamesCook
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, title, description))
+                .enqueue(object : Callback<ElasticsearchID> {
+            override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                Log.i("network", response.body().toString())
+                val id = response.body() as ElasticsearchID
+                GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+            }
+
+            override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
+    }
+
     /**
+     *
      * As a task provider, I want to specify a set of keywords, and search for all tasks,
      * with status: requested or bidded, whose description contains all the keywords.
+     *
+     * As a task provider, I want search results to show each task with its task requester
+     * username, title, status, lowest bid so far (if any).
      *
      */
 
@@ -90,6 +126,7 @@ class SearchingTests {
                 return
             }
         })
+        searchBar.setText(searchText)
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 Log.i("network", response.body().toString())
@@ -105,9 +142,22 @@ class SearchingTests {
                         (it.description != null && it.description.contains(searchText, true)))
                 })
 
+                if(shownTaskList.size == 0){
+                    Log.d("Search Test Malfunction", shownTaskList.toString())
+                }
+
                 Assert.assertEquals("TestText",searchText)
 
                 Assert.assertTrue(shownTaskList.contains(task))
+
+                //check to see if next activity starts
+
+
+                taskList.performClick()
+
+                val intent: Intent = Shadows.shadowOf(activity).peekNextStartedActivity()
+
+                Assert.assertEquals(ViewTaskActivity::class.java.canonicalName, intent.component.className)
 
             }
 
@@ -116,19 +166,7 @@ class SearchingTests {
                 t.printStackTrace()
             }
         })
+        deleteTestTask()
     }
-
-    /**
-     * As a task provider, I want search results to show each task with its task requester
-     * username, title, status, lowest bid so far (if any).
-     */
-
-    @Test
-    fun searchResultsTest(){
-        
-    }
-
-
-
 
 }

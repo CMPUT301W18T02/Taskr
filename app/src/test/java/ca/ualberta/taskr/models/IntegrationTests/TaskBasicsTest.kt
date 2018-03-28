@@ -1,4 +1,4 @@
-package ca.ualberta.taskr.models
+package ca.ualberta.taskr.models.IntegrationTests
 
 import android.util.Log
 import android.widget.Button
@@ -23,6 +23,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.Intent
 import android.os.Bundle
+import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.TaskStatus
 
 
 /**
