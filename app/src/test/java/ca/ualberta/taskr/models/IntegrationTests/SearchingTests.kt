@@ -28,6 +28,7 @@ import org.robolectric.Robolectric
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowActivity
+import org.robolectric.shadows.ShadowLog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,7 +62,7 @@ class SearchingTests {
     private var photos = java.util.ArrayList<String>()
     private var location: LatLng? = null
     private var chosenBidder = "The Mask"
-    //private lateinit var id: ElasticsearchID
+    private lateinit var id: ElasticsearchID
 
     lateinit var taskList: RecyclerView
 
@@ -77,12 +78,10 @@ class SearchingTests {
         val userController = UserController(activity)
         username = userController.getLocalUserName()
 
+        ShadowLog.stream = System.out
+
     }
 
-    @Test
-    fun checkActivityNotNull() {
-        Assert.assertNotNull(activity)
-    }
 
     private fun deleteTestTask(){
         //delete test task in elastic search, @JamesCook
@@ -113,7 +112,12 @@ class SearchingTests {
      */
 
     @Test
-    fun searchTest() {
+    fun checkActivityNotNull() {
+        Assert.assertNotNull(activity)
+    }
+
+    @Test
+    fun testSearchContains() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
         GenerateRetrofit.generateRetrofit().createTask(task).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -146,18 +150,85 @@ class SearchingTests {
                     Log.d("Search Test Malfunction", shownTaskList.toString())
                 }
 
-                Assert.assertEquals("TestText",searchText)
+                Assert.assertEquals("TestTask",searchText)
 
                 Assert.assertTrue(shownTaskList.contains(task))
+
+            }
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+            }
+        })
+        deleteTestTask()
+    }
+
+    /**
+     *
+     * As a task provider, I want search results to show each task with its task requester
+     * username, title, status, lowest bid so far (if any).
+     *
+     */
+
+    @Test
+    fun onSearchResult(){
+        val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
+        GenerateRetrofit.generateRetrofit().createTask(task).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.i("network", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
+        Thread.sleep(1000)
+
+        searchBar.setText(searchText)
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                Log.i("network", response.body().toString())
+                masterTaskList.clear()
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                activity.updateSearch(searchText)
+                shownTaskList.clear()
+
+                shownTaskList.addAll(masterTaskList.filter {
+                    it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
+                        && (it.owner != username)
+                        && ((it.title != null && it.title.contains(searchText, true)) ||
+                        (it.description != null && it.description.contains(searchText, true)))
+                })
+
+                if(shownTaskList.size == 0){
+                    Log.d("Search Test Malfunction", shownTaskList.toString())
+                }
+
+
+                Assert.assertEquals("TestTask",searchText)
+
+                val newTask = shownTaskList[0]
+
+                Assert.assertTrue(shownTaskList[0] == task)
+
+                Assert.assertEquals(newTask.owner, owner)
+                Assert.assertEquals(newTask.title, title)
+                Assert.assertEquals(newTask.status, status)
+                Assert.assertEquals(newTask.bids, bids)
 
                 //check to see if next activity starts
 
 
                 taskList.performClick()
 
-                val intent: Intent = Shadows.shadowOf(activity).peekNextStartedActivity()
+                Thread.sleep(1000)
 
-                Assert.assertEquals(ViewTaskActivity::class.java.canonicalName, intent.component.className)
+                val intent = Intent(activity, ListTasksActivity::class.java)
+
+                Assert.assertEquals(EditTaskActivity::class.java.canonicalName, intent.component.className)
 
             }
 

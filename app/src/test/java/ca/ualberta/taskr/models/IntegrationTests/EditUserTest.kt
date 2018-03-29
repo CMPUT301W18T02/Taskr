@@ -38,8 +38,6 @@ class EditUserTest {
 
     lateinit var CurrentUser: User
     lateinit var OldUser: User
-    private var isNewUser = false
-    //lateinit var Username: String
 
     lateinit var UserSurnameText: EditText
     lateinit var UserPhoneNumberText: EditText
@@ -59,7 +57,7 @@ class EditUserTest {
     //var userController : UserController = UserController(activity)
 
     lateinit var activity: EditUserActivity
-    private var username = "jake"
+    private var username = "iamdumb69"
 
     @Before
     fun setUp(){
@@ -80,7 +78,7 @@ class EditUserTest {
     }
 
     private fun deleteTestUser(){
-        //delete test task in elastic search, @JamesCook
+        //delete test user in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(username))
                 .enqueue(object : Callback<ElasticsearchID> {
                     override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
@@ -99,6 +97,7 @@ class EditUserTest {
 
     /**
      * As a user, I want to edit the contact information in my profile.
+     *
      */
 
     @Test
@@ -110,9 +109,10 @@ class EditUserTest {
         UserPhoneNumberText.setText(phoneChange)
         UserEmailText.setText(emailChange)
 
-        ApplyChangesButton.performClick()
 
         CurrentUser = User(nameChange, phoneChange, null, emailChange, username)
+
+        ApplyChangesButton.performClick()
 
         Assert.assertFalse(CurrentUser.name == OldUser.name)
         Assert.assertFalse(CurrentUser.email == OldUser.name)
@@ -125,6 +125,11 @@ class EditUserTest {
         Assert.assertTrue(CurrentUser.email == emailChange)
 
         deleteTestUser()
+    }
+
+    @Test
+    fun checkMaxUserLength(){
+
     }
 
 }

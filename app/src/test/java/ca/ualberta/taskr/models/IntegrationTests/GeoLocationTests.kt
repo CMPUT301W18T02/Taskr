@@ -3,6 +3,7 @@ package ca.ualberta.taskr.models.IntegrationTests
 import android.content.Intent
 import android.widget.Button
 import ca.ualberta.taskr.AddLocationToTaskActivity
+import ca.ualberta.taskr.BuildConfig
 import ca.ualberta.taskr.EditTaskActivity
 import ca.ualberta.taskr.R
 import com.mapbox.mapboxsdk.maps.MapView
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
+import org.robolectric.annotation.Config
 
 /**
  * Created by marissasnihur on 2018-03-25.
@@ -20,19 +22,15 @@ import org.robolectric.Shadows
  */
 
 @RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class GeoLocationTests {
 
     private lateinit var activity: AddLocationToTaskActivity
-    @Test
-    fun TestGeoLocationTest() {
-
-    }
     @Before
     fun setUp(){
-        activity = Robolectric.setupActivity(AddLocationToTaskActivity::class.java)
-        //.create()
-        //.resume()
-        //.get()
+        activity = Robolectric.buildActivity(AddLocationToTaskActivity::class.java)
+                .create()
+                .get()
 
     }
 
