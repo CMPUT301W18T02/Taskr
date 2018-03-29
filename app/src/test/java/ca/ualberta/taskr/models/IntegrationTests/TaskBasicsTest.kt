@@ -170,6 +170,8 @@ class TaskBasicsTest {
 
         postTaskBtn.performClick()
 
+        Thread.sleep(1000)
+
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 var masterTaskList: ArrayList<Task> = ArrayList()
@@ -235,6 +237,8 @@ class TaskBasicsTest {
         newDescriptionEditText.setText(newTaskDescr)
         newPostTaskBtn.performClick()
 
+        Thread.sleep(1000)
+
         // Check if task is in Elastic Search
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
@@ -273,6 +277,7 @@ class TaskBasicsTest {
                 Assert.assertEquals(1, 2)
             }
         })
+        deleteTestTask()
     }
 
     @Test
@@ -284,6 +289,7 @@ class TaskBasicsTest {
 
         postTaskBtn.performClick()
 
+        Thread.sleep(1000)
         //make sure task is in server
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
