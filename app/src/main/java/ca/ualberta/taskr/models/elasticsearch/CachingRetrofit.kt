@@ -41,11 +41,21 @@ class CachingRetrofit(val context: Context) {
 
     private fun setUsers(users: List<User>) {
         val file = File(context.filesDir, "users.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(users))
     }
 
     private fun getUsersFromDisk(): List<User> {
         val file = File(context.filesDir, "users.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         val json = Files.asCharSource(file, Charsets.UTF_8).read()
         val taskListType = object : TypeToken<List<@JvmSuppressWildcards User>>() {}.type
         return gson.fromJson(json, taskListType)
@@ -53,12 +63,22 @@ class CachingRetrofit(val context: Context) {
 
     private fun setTasks(tasks: List<Task>) {
         val file = File(context.filesDir, "tasks.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(tasks))
     }
 
     private fun getTasksFromDisk(): List<Task> {
         // https://stackoverflow.com/questions/14376807/how-to-read-write-string-from-a-file-in-android
         val file = File(context.filesDir, "tasks.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         val json = Files.asCharSource(file, Charsets.UTF_8).read()
 
         val taskListType = object : TypeToken<List<@JvmSuppressWildcards Task>>() {}.type
@@ -76,6 +96,11 @@ class CachingRetrofit(val context: Context) {
 
     private fun addTaskToUpload(pair: Pair<Task?, Task>) {
         val file = File(context.filesDir, "tasksToUpload.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         val currentTasksToUpload = getTasksToUpload()
         currentTasksToUpload.add(pair)
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentTasksToUpload))
@@ -100,6 +125,11 @@ class CachingRetrofit(val context: Context) {
         val currentUsersToUpload = getUsersToUpload()
         currentUsersToUpload.add(pair)
         val file = File(context.filesDir, "usersToUpload.json")
+        if (!file.exists()) {
+            file.createNewFile()
+            Files.asCharSink(file, Charsets.UTF_8).write("[]")
+        }
+
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentUsersToUpload))
     }
 
@@ -126,17 +156,11 @@ class CachingRetrofit(val context: Context) {
         for (task in tasks.filter({ it -> it.owner == owner })) {
             for (old_task in oldTasks.filter { it -> (it.title == task.title && it.description == task.description) }) {
                 for (bid in task.bids) {
-                    var match = false
-                    for (old_bid in old_task.bids) {
-                        if (old_bid == bid) {
-                            match = true
-                        }
-                    }
-                    if (!match) {
+                    if (!old_task.bids.contains(bid)) {
 //                    if (i < 5) {
                         Log.i("NOTIFY_NEW_BID", task.title + bid.toString())
                         val CHANNEL_ID = "my_id_01"// The internal id of the channel.
-                        val CHANNEL_NAME = "Channel Name"// The public name of the channel.
+                        val CHANNEL_NAME = "Bids"// The public name of the channel.
                         val viewTaskIntent = Intent(context, ViewTaskActivity::class.java)
                         val bundle = Bundle()
                         val strTask = GenerateRetrofit.generateGson().toJson(task)
@@ -150,17 +174,17 @@ class CachingRetrofit(val context: Context) {
                                 .setContentIntent(pendingIntent)
                                 .setAutoCancel(true)
                                 .setColor(0x855bf7)
-                                .setLights(0x855bf7, 1000, 500)
+                                .setLights(0x855bf7, 1, 1)
                                 .setPriority(2)
                                 .setVibrate(longArrayOf(1000, 0, 1000, 0, 1000, 1000, 0, 1000, 0, 1000, 0, 1000, 1000, 0, 1000, 0, 1000, 0, 1000, 1000, 0, 1000))
 
                         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        if (Build.VERSION.SDK_INT >= VERSION_CODES.O) {
                             notificationManager.createNotificationChannel(NotificationChannel(CHANNEL_ID,
                                     CHANNEL_NAME,
-                                    NotificationManager.IMPORTANCE_DEFAULT))
+                                    NotificationManager.IMPORTANCE_HIGH))
                         }
                         notificationManager.notify(i, mBuilder.build())
                         i += 1
@@ -325,10 +349,12 @@ class CachingRetrofit(val context: Context) {
         val callback = object : Callback<Boolean> {
             override fun onResponse(response: Boolean, responseFromCache: Boolean) {}
         }
-        updateUser(callback).execute(*getUsersToUpload().toArray() as Array<User>)
-        updateTask(callback).execute(*getTasksToUpload().toArray() as Array<Pair<Task?, Task>>)
-
-
+        for (user in getUsersToUpload()) {
+            updateUser(callback).execute(user)
+        }
+        for (task in getTasksToUpload()) {
+            updateTask(callback).execute(task)
+        }
     }
 
     fun isOnline(): Boolean {
