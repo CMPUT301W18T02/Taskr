@@ -25,7 +25,7 @@ import javax.security.auth.callback.Callback
 class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
     @BindView(R.id.bidderName)
-    private lateinit var bidderNameView : TextView
+    lateinit var bidderNameView : TextView
     private var bidList: ArrayList<Bid> = taskBidList
     var itemClickListener : OnItemClickListener? = null
 

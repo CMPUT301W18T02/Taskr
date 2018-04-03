@@ -322,12 +322,13 @@ class CachingRetrofit(val context: Context) {
     }
 
     private fun tryUploads() {
-        val callback = object : Callback<Boolean> {
+        /**val callback = object : Callback<Boolean> {
             override fun onResponse(response: Boolean, responseFromCache: Boolean) {}
         }
         updateUser(callback).execute(*getUsersToUpload().toArray() as Array<User>)
         updateTask(callback).execute(*getTasksToUpload().toArray() as Array<Pair<Task?, Task>>)
-
+        */
+        Log.i("WHATEVER", "RIGHT")
 
     }
 

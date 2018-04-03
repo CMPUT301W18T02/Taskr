@@ -135,10 +135,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
                 val bid = taskBidList[position]
-                if (isRequester) {
-                    startAcceptBidFragment(bid)
-                } else if (username == bid.owner) {
-                    startEditBidFragment(bid)
+                if (view.id == R.id.bidderName) {
+                    //TODO: Start UserInfoFragment
+                    Log.i("YOU DID IT", "YOU CLICKED THE THING")
+                } else {
+                    if (isRequester) {
+                        startAcceptBidFragment(bid)
+                    } else if (username == bid.owner) {
+                        startEditBidFragment(bid)
+                    }
                 }
             }
         })
