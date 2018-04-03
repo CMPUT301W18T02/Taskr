@@ -9,9 +9,12 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.view.GravityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -81,6 +84,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var addOrMarkButton : Button
     @BindView(R.id.editTaskButton)
     lateinit var editTaskButton : Button
+    @BindView(R.id.viewTaskToolbar)
+    lateinit var toolbar: Toolbar
+    @BindView(R.id.viewTaskToolbarTitle)
+    lateinit var toolbarTitle: TextView
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -125,6 +132,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             reopenButton.visibility = View.VISIBLE
             editTaskButton.visibility = View.VISIBLE
         }
+
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
         // Build up RecyclerView
         viewManager = LinearLayoutManager(this)
@@ -191,6 +203,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private fun updateDetails() {
         taskAuthor.text = displayTask.owner
         taskTitle.text = displayTask.title
+        toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
     }
@@ -404,6 +417,19 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         } else {
             mapView.visibility = View.GONE
         }
+    }
+
+    /**
+     * Process button presses from the tool bar
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     //TODO: When map is clicked, open GoogleMaps for Task's location
