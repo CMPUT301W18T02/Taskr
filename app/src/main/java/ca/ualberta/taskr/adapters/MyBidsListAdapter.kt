@@ -9,16 +9,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
-import android.R.attr.onClick
-
-
 
 /**
- * TaskListAdapter class. Take in a task list and produce an adapter subclass that allows
+ * MyBidsListAdapter class. Take in a task list and produce an adapter subclass that allows
  * lists of tasks to be used with the recyclerview view
  */
-class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
+class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : RecyclerView.Adapter<MyBidsListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
+    private var username: String = username
 
     private lateinit var mClickListener: View.OnClickListener
 
@@ -32,9 +30,10 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         var taskDesc: TextView = view.findViewById(R.id.taskDesc)
         var taskStatus: TextView = view.findViewById(R.id.taskStatus)
         var taskLowestBid: TextView = view.findViewById(R.id.taskLowestBid)
+        var myBid: TextView = view.findViewById(R.id.myCurrentBid)
 
         override fun onClick(item: View?) {
-            Log.e("TEST", "onClick " + getAdapterPosition());
+            Log.e("TEST", "onClick $adapterPosition");
         }
 
     }
@@ -44,9 +43,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.row_task_item, parent, false)
-
-        //return LocalViewHolder(itemView)
+                .inflate(R.layout.row_my_bids, parent, false)
 
         val holder = LocalViewHolder(itemView)
         holder.itemView.setOnClickListener({ view -> mClickListener.onClick(view) })
@@ -62,11 +59,19 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskDesc.text = task.description
         holder.taskStatus.text = task.status.toString()
         val lowestBid = task.bids.minBy { it ->  it.amount }
+        val myBids = task.bids.filter { it -> it.owner == username}
+        val myLowestBid = myBids.minBy { it ->  it.amount }
         if (lowestBid != null){
             holder.taskLowestBid.text = "Top Bid: $" + lowestBid.amount
         }
         else{
             holder.taskLowestBid.text = "No bid!"
+        }
+        if (myLowestBid != null){
+            holder.myBid.text = "My bid: $" + myLowestBid.amount
+        }
+        else{
+            holder.myBid.text = "No bid!"
         }
     }
     /**

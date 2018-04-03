@@ -7,22 +7,20 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="ca.ualberta.taskr.MyTasksActivity">
+        tools:context="ca.ualberta.taskr.MyBidsActivity">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/myTasksToolbar"
+            android:id="@+id/myBidsToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginTop="8dp"
             android:background="?attr/colorPrimary"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:theme="@style/Toolbar">
@@ -33,47 +31,31 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
+
                 <TextView
                     android:id="@+id/myBidsToolbarTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="0dp"
                     android:layout_marginTop="0dp"
-                    android:text="@string/my_tasks"
+                    android:text="@string/my_bids"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
             </android.support.constraint.ConstraintLayout>
 
 
         </android.support.v7.widget.Toolbar>
 
-        <Button
-            android:id="@+id/addTaskButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/activity_my_tasks_add_task"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/myTasksToolbar" />
-
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/myTasksView"
+            android:id="@+id/myBidsList"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addTaskButton"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/myBidsToolbar" />
 
         <RelativeLayout
             android:id="@+id/loadingPanel"
@@ -85,7 +67,7 @@
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/myTasksView">
+            app:layout_constraintTop_toTopOf="@+id/myBidsList">
 
             <ProgressBar
                 android:layout_width="wrap_content"
@@ -93,9 +75,7 @@
                 android:indeterminate="true" />
         </RelativeLayout>
 
-
     </android.support.constraint.ConstraintLayout>
-
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
     <android.support.design.widget.NavigationView xmlns:app="http://schemas.android.com/apk/res-auto"
