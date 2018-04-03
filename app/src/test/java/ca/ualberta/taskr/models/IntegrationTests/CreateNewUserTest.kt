@@ -14,6 +14,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowIntent
 import org.robolectric.shadows.ShadowLog
 
@@ -22,6 +23,7 @@ import org.robolectric.shadows.ShadowLog
  */
 
 @RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class CreateNewUserTest {
     //Test for creating new user.
     private lateinit var activity: LoginActivity
@@ -82,6 +84,8 @@ class CreateNewUserTest {
 
         val intent = Intent(activity, ListTasksActivity::class.java)
 
+        Thread.sleep(1000)
+
         assertEquals(ListTasksActivity::class.java.canonicalName, intent.component.className)
 
     }
@@ -93,9 +97,15 @@ class CreateNewUserTest {
 
         button.performClick()
 
+        Thread.sleep(1000)
+
         val intent = Intent(activity, EditUserActivity::class.java)
 
+        Thread.sleep(1000)
+
         intent.putExtra("username",username)
+
+        Thread.sleep(1000)
 
         assertEquals(EditUserActivity::class.java.canonicalName, intent.component.className)
     }

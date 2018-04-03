@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import butterknife.BindView
+import ca.ualberta.taskr.BuildConfig
 import ca.ualberta.taskr.EditUserActivity
 import ca.ualberta.taskr.LoginActivity
 import ca.ualberta.taskr.R
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +36,7 @@ import java.security.AccessController.getContext
 
 
 @RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class EditUserTest {
 
     lateinit var CurrentUser: User
@@ -108,7 +111,6 @@ class EditUserTest {
         UserSurnameText.setText(nameChange)
         UserPhoneNumberText.setText(phoneChange)
         UserEmailText.setText(emailChange)
-
 
         CurrentUser = User(nameChange, phoneChange, null, emailChange, username)
 

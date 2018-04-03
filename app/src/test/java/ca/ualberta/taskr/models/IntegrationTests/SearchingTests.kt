@@ -149,10 +149,12 @@ class SearchingTests {
                 if(shownTaskList.size == 0){
                     Log.d("Search Test Malfunction", shownTaskList.toString())
                 }
+                else {
 
-                Assert.assertEquals("TestTask",searchText)
+                    Assert.assertEquals("TestTask", searchText)
 
-                Assert.assertTrue(shownTaskList.contains(task))
+                    Assert.assertTrue(shownTaskList.contains(task))
+                }
 
             }
 
@@ -206,29 +208,33 @@ class SearchingTests {
                 if(shownTaskList.size == 0){
                     Log.d("Search Test Malfunction", shownTaskList.toString())
                 }
+                else {
 
 
-                Assert.assertEquals("TestTask",searchText)
+                    Assert.assertEquals("TestTask", searchText)
 
-                val newTask = shownTaskList[0]
+                    val newTask = shownTaskList[0]
 
-                Assert.assertTrue(shownTaskList[0] == task)
+                    Assert.assertTrue(shownTaskList[0] == task)
 
-                Assert.assertEquals(newTask.owner, owner)
-                Assert.assertEquals(newTask.title, title)
-                Assert.assertEquals(newTask.status, status)
-                Assert.assertEquals(newTask.bids, bids)
+                    Assert.assertEquals(newTask.owner, owner)
+                    Assert.assertEquals(newTask.title, title)
+                    Assert.assertEquals(newTask.status, status)
+                    Assert.assertEquals(newTask.bids, bids)
 
-                //check to see if next activity starts
+                    //check to see if next activity starts
 
 
-                taskList.performClick()
+                    taskList.performClick()
 
-                Thread.sleep(1000)
+                    Thread.sleep(1000)
 
-                val intent = Intent(activity, ListTasksActivity::class.java)
+                    val intent = Intent(activity, ListTasksActivity::class.java)
 
-                Assert.assertEquals(EditTaskActivity::class.java.canonicalName, intent.component.className)
+                    Assert.assertEquals(EditTaskActivity::class.java.canonicalName, intent.component.className)
+
+                    Thread.sleep(1000)
+                }
 
             }
 

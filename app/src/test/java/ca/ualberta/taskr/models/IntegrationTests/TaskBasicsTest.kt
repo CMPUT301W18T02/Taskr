@@ -26,6 +26,7 @@ import android.os.Bundle
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import org.junit.Rule
+import org.robolectric.shadows.ShadowLog
 
 
 /**
@@ -54,6 +55,8 @@ class TaskBasicsTest {
 
         //set username
         UserController(editTaskActivity).setLocalUsername(username)
+
+        ShadowLog.stream = System.out
 
         //Setup views
         titleEditText = editTaskActivity.findViewById<EditText>(R.id.taskTitleEditText)
@@ -144,9 +147,11 @@ class TaskBasicsTest {
                 if(taskList.size == 0){
                     Log.d("Max Title Length Test", taskList.toString())
                 }
-                val task = taskList[0]
-                Log.d("Max Title Length Test", "Task Title: " + task.title)
-                Assert.assertTrue(task.title.length <= 30)
+                else {
+                    val task = taskList[0]
+                    Log.d("Max Title Length Test", "Task Title: " + task.title)
+                    Assert.assertTrue(task.title.length <= 30)
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -181,11 +186,14 @@ class TaskBasicsTest {
                         && (it.location.toString() == taskLocStr)
                 } as ArrayList<Task>
 
-                if(taskList.size == 0) Log.d("Max Description Length Test", taskList.toString())
-
-                val task = taskList[0]
-                Log.d("Max Description Length Test", "Task Description: " + task.description)
-                Assert.assertTrue(task.description.length <= 300)
+                if(taskList.size == 0) {
+                    Log.d("Max Description Length Test", taskList.toString())
+                }
+                else {
+                    val task = taskList[0]
+                    Log.d("Max Description Length Test", "Task Description: " + task.description)
+                    Assert.assertTrue(task.description.length <= 300)
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -303,10 +311,12 @@ class TaskBasicsTest {
                 if(taskList.size == 0){
                     Log.d("Add Task Test", taskList.toString())
                 }
-                val task = taskList[0]
-                Assert.assertEquals(taskTitle, task.title)
-                Assert.assertEquals(taskDescr, task.description)
-                Assert.assertEquals(taskLocStr, task.location.toString())
+                else {
+                    val task = taskList[0]
+                    Assert.assertEquals(taskTitle, task.title)
+                    Assert.assertEquals(taskDescr, task.description)
+                    Assert.assertEquals(taskLocStr, task.location.toString())
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
