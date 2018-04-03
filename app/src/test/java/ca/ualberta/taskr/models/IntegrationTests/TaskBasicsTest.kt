@@ -258,10 +258,13 @@ class TaskBasicsTest {
                         && (it.location.toString() == taskLocStr))
                 } as ArrayList<Task>
 
-                if(taskList.size == 0) Log.d("Change Task Test", taskList.toString())
+                if(taskList.size == 0) {
+                    Log.d("Change Task Test", taskList.toString())
+                } else {
 
-                val newTask = taskList[0]
-                Assert.assertEquals(newTaskDescr, newTask.description)
+                    val newTask = taskList[0]
+                    Assert.assertEquals(newTaskDescr, newTask.description)
+                }
 
                 // Delete test task in elastic search
                 GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, newTaskDescr)).enqueue(object : Callback<ElasticsearchID> {
