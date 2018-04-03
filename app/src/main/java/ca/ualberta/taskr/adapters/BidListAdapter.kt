@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import butterknife.BindView
+import butterknife.OnClick
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import kotlinx.android.synthetic.main.row_bid.view.*
+import org.w3c.dom.Text
 import javax.security.auth.callback.Callback
 
 /**
@@ -21,6 +24,8 @@ import javax.security.auth.callback.Callback
 
 class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
+    @BindView(R.id.bidderName)
+    private lateinit var bidderNameView : TextView
     private var bidList: ArrayList<Bid> = taskBidList
     var itemClickListener : OnItemClickListener? = null
 
@@ -59,4 +64,8 @@ class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListA
         return bidList.size
     }
 
+    @OnClick(R.id.bidderName)
+    fun openUserProfile() {
+
+    }
 }
