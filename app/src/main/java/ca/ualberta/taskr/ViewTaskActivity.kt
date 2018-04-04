@@ -262,6 +262,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * This method will either set the displayed Task's status to DONE if user is its Requester or
      * allow user to add a bid to the Task otherwise using EditBidFragment.
      */
+
+    @OnClick(R.id.taskAuthorText)
+    fun taskAuthorClick() {
+        startUserInfoFragment(taskAuthor.text.toString())
+    }
+
     @OnClick(R.id.addBidOrMarkDone)
     fun addBidOrMarkDone(view : View) {
         if (isRequester && displayTask.status == TaskStatus.ASSIGNED) {
