@@ -6,6 +6,9 @@ package ca.ualberta.taskr
 
 
 import android.app.Activity
+import android.support.v7.app.AlertDialog
+import android.app.PendingIntent.getActivity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -58,12 +61,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList)
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var displayTask: Task
+    private lateinit var oldTask: Task
+    private var lowestBidAmount : Double = Double.POSITIVE_INFINITY
+
     private lateinit var editBidFragment: EditBidFragment
     private lateinit var acceptBidFragment: AcceptBidFragment
     private lateinit var userInfoFragment: UserInfoFragment
-    private var lowestBidAmount : Double = Double.POSITIVE_INFINITY
-    private lateinit var oldTask: Task
-
+    private lateinit var errorPopup : ErrorDialogFragment
 
     // Views to be modified by ViewTasksActivity
     @BindView(R.id.taskAuthorText)
@@ -137,12 +141,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
          */
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
-                Log.i("I HEARD", "THAT")
                 val bid = taskBidList[position]
                 if (view.id == R.id.bidderName) {
                     startUserInfoFragment(bid.owner)
                 } else {
-                    Log.i("ELSE", "ID IS " + view.tag + "AND WE NEED " + R.id.bidderName)
                     if (isRequester) {
                         startAcceptBidFragment(bid)
                     } else if (username == bid.owner) {
@@ -279,11 +281,19 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
     @OnClick(R.id.addBidOrMarkDone)
     fun addBidOrMarkDone(view : View) {
-        if (isRequester && displayTask.status == TaskStatus.ASSIGNED) {
-            displayTask.status = TaskStatus.DONE
-            updateDisplayTask()
+        if (isRequester) {
+            if (displayTask.status == TaskStatus.ASSIGNED) {
+                displayTask.status = TaskStatus.DONE
+                updateDisplayTask()
+            } else {
+                showErrorDialog(R.string.activity_view_tasks_error_mark_done)
+            }
         } else if (!isRequester){
-            startEditBidFragment(null)
+            if (displayTask.status == TaskStatus.REQUESTED || displayTask.status == TaskStatus.BID) {
+                startEditBidFragment(null)
+            } else {
+                showErrorDialog(R.string.activity_view_tasks_error_add_bid)
+            }
         }
     }
 
@@ -302,17 +312,23 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             }
             displayTask.chosenBidder = ""
             updateDisplayTask()
+        } else {
+            showErrorDialog(R.string.activity_view_tasks_error_reopen)
         }
     }
 
     @OnClick(R.id.editTaskButton)
     fun editTask() {
-        var editTaskIntent = Intent(this, EditTaskActivity::class.java)
-        var editTaskBundle = Bundle()
-        var strTask = GenerateRetrofit.generateGson().toJson(displayTask)
-        editTaskBundle.putString("Task", strTask)
-        editTaskIntent.putExtras(editTaskBundle)
-        startActivityForResult(editTaskIntent, Activity.RESULT_OK)
+        if (displayTask.status == TaskStatus.REQUESTED) {
+            var editTaskIntent = Intent(this, EditTaskActivity::class.java)
+            var editTaskBundle = Bundle()
+            var strTask = GenerateRetrofit.generateGson().toJson(displayTask)
+            editTaskBundle.putString("Task", strTask)
+            editTaskIntent.putExtras(editTaskBundle)
+            startActivityForResult(editTaskIntent, Activity.RESULT_OK)
+        } else {
+            showErrorDialog(R.string.activity_view_tasks_error_edit)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -329,9 +345,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         if (displayTask.status == TaskStatus.BID) {
             taskBidList.addAll(displayTask.bids)
         } else if (displayTask.status != TaskStatus.REQUESTED){
-            var chosenBid = displayTask.bids.filter {u ->
-                (u.owner == displayTask.chosenBidder)}.single()
-            taskBidList.add(chosenBid)
+            var chosenBidFilter = displayTask.bids.filter {u ->
+                (u.owner == displayTask.chosenBidder)}
+            if (chosenBidFilter.isNotEmpty()) {
+                var chosenBid = chosenBidFilter[0]
+                taskBidList.add(chosenBid)
+            }
         }
         bidListAdapter.notifyDataSetChanged()
     }
@@ -458,5 +477,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         startActivity(intent)
     }
 
+    private fun showErrorDialog(messageID : Int) {
+        var message = getString(messageID)
+        errorPopup = ErrorDialogFragment()
+        var args = Bundle()
+        args.putString("DISPLAYBID", message)
+        errorPopup.arguments = args
+        errorPopup.show(fragmentManager, "DialogFragment")
+    }
 
 }
