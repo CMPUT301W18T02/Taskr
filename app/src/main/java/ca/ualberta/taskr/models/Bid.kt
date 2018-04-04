@@ -9,4 +9,4 @@ package ca.ualberta.taskr.models
  * @param amount the value of the bid in dollars
  * @constructor creates a new bid
  */
-data class Bid(val owner: String, val amount: Double)
+data class Bid(val owner: String, val amount: Double, val isDismissed: Boolean)
