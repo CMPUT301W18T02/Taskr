@@ -27,7 +27,7 @@ class UserInfoFragment : DialogFragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         var view =  inflater.inflate(R.layout.fragment_user_info, container, false)
         ButterKnife.bind(this, view)

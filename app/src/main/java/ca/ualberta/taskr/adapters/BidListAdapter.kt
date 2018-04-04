@@ -34,8 +34,10 @@ class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListA
         var bidderName: TextView = view.findViewById(R.id.bidderName)
         var bidderAmount: TextView = view.findViewById(R.id.bidAmount)
 
+
         init {
             view.setOnClickListener(this)
+            bidderName.setOnClickListener(this)
         }
 
         override fun onClick(v: View) {
@@ -66,6 +68,6 @@ class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListA
 
     @OnClick(R.id.bidderName)
     fun openUserProfile() {
-
+        Log.i("HELLO", "THINGS")
     }
 }

@@ -21,6 +21,7 @@ import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -58,6 +59,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private lateinit var displayTask: Task
     private lateinit var editBidFragment: EditBidFragment
     private lateinit var acceptBidFragment: AcceptBidFragment
+    private lateinit var userInfoFragment: UserInfoFragment
     private var lowestBidAmount : Double = Double.POSITIVE_INFINITY
     private lateinit var oldTask: Task
 
@@ -134,11 +136,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
          */
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
+                Log.i("I HEARD", "THAT")
                 val bid = taskBidList[position]
                 if (view.id == R.id.bidderName) {
-                    //TODO: Start UserInfoFragment
-                    Log.i("YOU DID IT", "YOU CLICKED THE THING")
+                    startUserInfoFragment(bid.owner)
                 } else {
+                    Log.i("ELSE", "ID IS " + view.tag + "AND WE NEED " + R.id.bidderName)
                     if (isRequester) {
                         startAcceptBidFragment(bid)
                     } else if (username == bid.owner) {
@@ -153,6 +156,21 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
+    private fun startUserInfoFragment(username: String) {
+        // Get User object from ElasticSearch index.
+        CachingRetrofit(this).getUsers(object: Callback<List<User>> {
+            override fun onResponse(response: List<User>, responseFromCache : Boolean) {
+                var user = response.filter {u -> (u.username == username)}[0]
+                var args = Bundle()
+                var userStr = GenerateRetrofit.generateGson().toJson(user, User::class.java)
+                args.putString("USER", userStr)
+
+                userInfoFragment = UserInfoFragment()
+                userInfoFragment.arguments = args
+                userInfoFragment.show(fragmentManager, "DialogFragment")
+            }
+        }).execute()
+    }
     /**
      * Displays pop-up fragment that allows Task Provider to update their selected bid.
      */
