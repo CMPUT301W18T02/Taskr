@@ -17,6 +17,12 @@
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
     <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
     <string name="activity_view_tasks_requester_edit_task">Edit Task</string>
+    <string name="activity_view_tasks_error_generic_title">Error</string>
+    <string name="activity_view_tasks_error_dismiss">OK</string>
+    <string name="activity_view_tasks_error_edit">Tasks with bids cannot be edited.</string>
+    <string name="activity_view_tasks_error_mark_done">Tasks must be assigned to be marked done.</string>
+    <string name="activity_view_tasks_error_reopen">Tasks must be assigned to be reopened.</string>
+    <string name="activity_view_tasks_error_add_bid">Cannot bid on assigned or done tasks.</string>
 
     <string name="row_bid_amount">$%.2f</string>
 
