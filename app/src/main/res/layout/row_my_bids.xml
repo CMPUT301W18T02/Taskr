@@ -1,76 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginTop="7dp"
+android:layout_marginBottom="7dp"
+android:layout_marginLeft="15dp"
+android:layout_marginRight="15dp"
+android:background="@color/colorContainer">
+
+<ImageView
+    android:id="@+id/taskHeaderImage"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@color/colorButton"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:srcCompat="@mipmap/ic_launcher" />
+
+<TextView
+    android:id="@+id/taskTitle"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="7dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="7dp"
-    android:background="@color/colorContainer">
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:text="Title"
+    android:textSize="24sp"
+    android:background="@color/colorButton"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/taskHeaderImage" />
 
-    <ImageView
-        android:id="@+id/taskHeaderImage"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/colorButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher" />
+<TextView
+    android:id="@+id/taskDesc"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:text="Description"
+    android:textSize="12sp"
+    android:background="@color/colorButton"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
 
-    <TextView
-        android:id="@+id/taskTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorButton"
-        android:singleLine="true"
-        android:text="Title"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskHeaderImage" />
-
-    <TextView
-        android:id="@+id/taskDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorButton"
-        android:text="Description"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
-
-    <TextView
-        android:id="@+id/taskStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorButton"
-        android:text="TaskStatus"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskDesc" />
+<TextView
+    android:id="@+id/taskStatus"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:text="TaskStatus"
+    android:textSize="18sp"
+    android:background="@color/colorButton"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/taskDesc" />
 
     <TextView
         android:id="@+id/myCurrentBid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:background="@color/colorButton"
         android:text="My bid: $5.00"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/taskStatus" />
 
@@ -78,13 +72,11 @@
         android:id="@+id/taskLowestBid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:background="@color/colorButton"
-        android:text="Top Bid: $5.00"
+        android:text="$5.00"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/taskStatus" />
 </android.support.constraint.ConstraintLayout>
