@@ -73,6 +73,7 @@ class Task:
 class Bid:
     def __init__(self, bidder):
         self.owner = bidder
+        self.isDeclined = random.choice([True, False])
         self.amount = round(random.random() * random.randint(0, 10000), 2)
 
 
