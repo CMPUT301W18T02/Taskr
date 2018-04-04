@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/task_group">
         <item
             android:id="@+id/nav_tasks"
             android:title="Tasks"
@@ -17,5 +18,13 @@
             android:id="@+id/nav_MyBids"
             android:title="My bids"
             android:icon="@drawable/ic_attach_money"/>
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/user_group">
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout"
+            android:icon="@drawable/ic_directions_run" />
     </group>
 </menu>

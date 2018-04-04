@@ -63,7 +63,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskStatus.text = task.status.toString()
         val lowestBid = task.bids.minBy { it ->  it.amount }
         if (lowestBid != null){
-            holder.taskLowestBid.text = lowestBid.amount.toString()
+            holder.taskLowestBid.text = "Top Bid: $" + lowestBid.amount
         }
         else{
             holder.taskLowestBid.text = "No bid!"

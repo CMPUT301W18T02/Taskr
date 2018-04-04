@@ -6,10 +6,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.widget.DrawerLayout
 import android.widget.ImageView
 import android.widget.TextView
-import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.ListTasksActivity
-import ca.ualberta.taskr.MyTasksActivity
-import ca.ualberta.taskr.R
+import ca.ualberta.taskr.*
 
 
 class NavViewController(var navView: NavigationView,
@@ -19,6 +16,7 @@ class NavViewController(var navView: NavigationView,
 
 
     init {
+        val userController = UserController(context)
         navView.setNavigationItemSelectedListener(
                 { menuItem ->
                     menuItem.isChecked = true
@@ -34,20 +32,40 @@ class NavViewController(var navView: NavigationView,
                                 MyTasksActivity::class.java)
                         context.startActivity(myTasksIntent)
                     }
+                    else if(menuItem.itemId == R.id.nav_todo){
+                        val toDoTaskListIntent = Intent(context,
+                                ToDoTaskListActivity::class.java)
+                        context.startActivity(toDoTaskListIntent)
+                    }
+                    else if(menuItem.itemId == R.id.nav_MyBids){
+                        val myBidsIntent = Intent(context,
+                                MyBidsActivity::class.java)
+                        context.startActivity(myBidsIntent)
+                    }
+                    else if(menuItem.itemId == R.id.nav_logout){
+                        logout(userController)
+                    }
 
                     true
                 })
 
-        var userController : UserController = UserController(context)
         val headerView =  navView.getHeaderView(0)
-        var usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
+        val usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
         usernameTextView.text = userController.getLocalUserName()
-        var userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
+        val userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
         userPhoto.setOnClickListener({
             val editUserIntent = Intent(context,
                     EditUserActivity::class.java)
             context.startActivity(editUserIntent)
         })
+    }
+
+    fun logout(userController: UserController){
+        userController.setLocalUsername("")
+        userController.setLocalUserObject(null)
+        val loginScreenIntent = Intent(context,
+                LoginActivity::class.java)
+        context.startActivity(loginScreenIntent)
 
     }
 }
