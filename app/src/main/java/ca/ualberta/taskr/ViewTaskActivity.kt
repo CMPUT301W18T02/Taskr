@@ -212,9 +212,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * Implemented method for stub in EditBidFragmentInteractionListener interface. Updates
      * selected Bid with modified amount, then updates Task in ElasticSearch index.
      */
+    //TODO replace isDismissed with actual functionality
     override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
         var index: Int = displayTask.bids.indexOf(originalBid)
-        var changedBid = Bid(displayTask.bids[index].owner, bidAmount)
+        var changedBid = Bid(displayTask.bids[index].owner, bidAmount, false)
         displayTask.setBidAtIndex(changedBid, index)
         updateDisplayTask()
     }
@@ -223,8 +224,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * Implemented method for stub in EditBidFragmentInteractionListener interface. Adds created
      * Bid to displayed Task's list of Bids, then updates Task in ElasticSearch index.
      */
+    //TODO actually implement declined tasks
     override fun bidAdd(bidAmount : Double) {
-        var newBid = Bid(username, bidAmount)
+        var newBid = Bid(username, bidAmount, false)
         displayTask.addBid(newBid)
         updateDisplayTask()
 
