@@ -37,6 +37,11 @@ class NavViewController(var navView: NavigationView,
                                 ToDoTaskListActivity::class.java)
                         context.startActivity(toDoTaskListIntent)
                     }
+                    else if(menuItem.itemId == R.id.nav_MyBids){
+                        val myBidsIntent = Intent(context,
+                                MyBidsActivity::class.java)
+                        context.startActivity(myBidsIntent)
+                    }
                     else if(menuItem.itemId == R.id.nav_logout){
                         logout(userController)
                     }
