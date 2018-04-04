@@ -7,6 +7,7 @@ package ca.ualberta.taskr
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -112,7 +113,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 oldTask = displayTask
-                taskBidList.addAll(displayTask.bids) // Populate Bid list to be displayed.
+                populateBidList() // Populate Bid list to be displayed.
 
                 //Update displayed attributes for Task
                 updateDetails()
@@ -235,9 +236,17 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     override fun bidAdd(bidAmount : Double) {
         var newBid = Bid(username, bidAmount)
-        displayTask.addBid(newBid)
+        var existingBid = displayTask.bids.filter {u->(u.owner == username)}
+        if (existingBid.isNotEmpty()) {
+            var existingIndex = displayTask.bids.indexOf(existingBid[0])
+            displayTask.bids[existingIndex] = newBid
+        } else {
+            displayTask.addBid(newBid)
+            if (displayTask.status == TaskStatus.REQUESTED) {
+                displayTask.status = TaskStatus.BID
+            }
+        }
         updateDisplayTask()
-
     }
 
     //TODO: Implement method for declining/removing selected Bid.
@@ -311,12 +320,21 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         if (resultCode == RESULT_OK) {
             var displayTaskStr = data?.extras?.getString("Task")
             displayTask = GenerateRetrofit.generateGson().fromJson(displayTaskStr, Task::class.java)
-            updateDetails()
-            updateLowestBidAmount()
-            updateLocationInfo()
+            updateDisplayTask()
         }
     }
 
+    private fun populateBidList() {
+        taskBidList.clear()
+        if (displayTask.status == TaskStatus.BID) {
+            taskBidList.addAll(displayTask.bids)
+        } else if (displayTask.status != TaskStatus.REQUESTED){
+            var chosenBid = displayTask.bids.filter {u ->
+                (u.owner == displayTask.chosenBidder)}.single()
+            taskBidList.add(chosenBid)
+        }
+        bidListAdapter.notifyDataSetChanged()
+    }
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.
@@ -330,9 +348,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         oldTask = displayTask
 
         // Reobtain list of Task's bids, then update RecyclerView.
-        taskBidList.clear()
-        taskBidList.addAll(displayTask.bids)
-        bidListAdapter.notifyDataSetChanged()
+        populateBidList()
         // Update remaining Task attributes in activity.
         updateDetails()
         updateLowestBidAmount()
@@ -435,9 +451,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
-    //TODO: When map is clicked, open GoogleMaps for Task's location
     override fun onMapClick(point : LatLng) {
-        Log.i("Hello", position.toString())
+        var mapsURL = "http://www.google.ca/maps/dir/?api=1&destination=" + point.latitude +
+                        "," + point.longitude
+        var intent = Intent(Intent.ACTION_VIEW, Uri.parse(mapsURL))
+        startActivity(intent)
     }
 
 
