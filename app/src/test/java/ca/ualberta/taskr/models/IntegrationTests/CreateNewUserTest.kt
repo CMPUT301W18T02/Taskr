@@ -1,9 +1,9 @@
-package ca.ualberta.taskr.models.UserCases
+package ca.ualberta.taskr.models.IntegrationTests
 
 import android.content.Intent
 import android.widget.Button
+import android.widget.EditText
 import ca.ualberta.taskr.*
-import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
 import org.junit.Assert
 import org.junit.Assert.*
@@ -13,12 +13,17 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowIntent
+import org.robolectric.shadows.ShadowLog
 
 /**
  * Created by marissasnihur on 2018-03-19.
  */
 
 @RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class CreateNewUserTest {
     //Test for creating new user.
     private lateinit var activity: LoginActivity
@@ -29,11 +34,28 @@ class CreateNewUserTest {
     private var username = "jsmith"
     private var image: String? = null
 
+    private lateinit var userText: EditText
+    private lateinit var button: Button
+
     @Before
     fun setUp(){
         activity = Robolectric.setupActivity(LoginActivity::class.java)
 
+        ShadowLog.stream = System.out
+
+        userText = activity.findViewById<EditText>(R.id.UsernameText)
+        button = activity.findViewById<Button>(R.id.NewUserButton)
+
     }
+
+    /**
+     *
+     * As a user, I want a profile with a unique username and my contact information.
+     *
+     *
+     * As a user, I want the contact information to include an email address and a phone number.
+     *
+     */
 
     @Test
     fun checkUser(){
@@ -51,28 +73,41 @@ class CreateNewUserTest {
 
         Assert.assertTrue(activity.userController.getLocalUserName() == username)
 
-        //Assert.assertTrue(activity.CheckIfUsernameExists(username))
     }
 
     @Test
     fun testOnLoginButtonClick() {
-        val button: Button = activity.findViewById(R.id.LoginButton)
-        button.performClick()
+        val diffButton: Button = activity.findViewById(R.id.LoginButton)
+        diffButton.performClick()
 
-        val intent: Intent = Shadows.shadowOf(activity).peekNextStartedActivity()
+        Thread.sleep(1000)
+
+        val intent = Intent(activity, ListTasksActivity::class.java)
+
+        Thread.sleep(1000)
 
         assertEquals(ListTasksActivity::class.java.canonicalName, intent.component.className)
 
     }
 
     @Test
-    fun testOnNewUserButtonClick(){
-        val button: Button = activity.findViewById(R.id.NewUserButton)
+    fun testOnNewUserButtonClick() {
+
+        userText.setText(username)
+
         button.performClick()
 
-        val intent: Intent = Shadows.shadowOf(activity).peekNextStartedActivity()
+        Thread.sleep(1000)
 
-        assertEquals(EditUserActivity::class.java.canonicalName,intent.component.className)
+        val intent = Intent(activity, EditUserActivity::class.java)
+
+        Thread.sleep(1000)
+
+        intent.putExtra("username",username)
+
+        Thread.sleep(1000)
+
+        assertEquals(EditUserActivity::class.java.canonicalName, intent.component.className)
     }
 
 }
