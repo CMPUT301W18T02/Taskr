@@ -21,7 +21,7 @@ android:
     
 
 script:
-    - ./gradlew clean assemble generateDebugSources compileDebugSources mockableAndroidJar DebugUnitTestSources testDebug --stacktrace
+    - ./gradlew clean assemble generateDebugSources compileDebugSources mockableAndroidJar testDebug --stacktrace
 
 notifications:
     slack: cmput301workspace:jkhKYjcVi1WZeI6rbCjj5Icu
