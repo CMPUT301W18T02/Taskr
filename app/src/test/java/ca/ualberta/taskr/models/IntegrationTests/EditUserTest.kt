@@ -22,6 +22,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
+import org.robolectric.Robolectric.buildActivity
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -66,7 +67,7 @@ class EditUserTest {
     @Before
     fun setUp(){
 
-        intent = Intent(RuntimeEnvironment.application,EditUserActivity::class.java)
+        intent = Intent(Intent.ACTION_VIEW)
         intent.putExtra("username", username)
 
         activity = Robolectric.buildActivity(EditUserActivity::class.java, intent).create().get()
