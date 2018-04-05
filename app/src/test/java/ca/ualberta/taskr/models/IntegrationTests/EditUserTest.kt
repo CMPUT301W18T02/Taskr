@@ -18,6 +18,7 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -130,6 +131,7 @@ class EditUserTest {
     }
 
     //TODO: Add test
+    @Ignore
     @Test
     fun checkMaxUserLength(){
         Assert.assertTrue(true)
