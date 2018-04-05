@@ -48,14 +48,23 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/myBidsList"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/myBidsRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/myBidsToolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/myBidsToolbar">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/myBidsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <RelativeLayout
             android:id="@+id/loadingPanel"
@@ -67,7 +76,7 @@
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/myBidsList">
+            app:layout_constraintTop_toTopOf="@+id/myBidsRefresh">
 
             <ProgressBar
                 android:layout_width="wrap_content"

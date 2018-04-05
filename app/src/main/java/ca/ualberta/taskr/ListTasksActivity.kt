@@ -21,6 +21,7 @@ import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import android.support.design.widget.NavigationView
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.View
 import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
@@ -54,6 +55,9 @@ class ListTasksActivity : AppCompatActivity() {
 
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
+
+    @BindView(R.id.taskListRefresh)
+    lateinit var taskListRefresh: SwipeRefreshLayout
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -115,6 +119,10 @@ class ListTasksActivity : AppCompatActivity() {
             viewTaskIntent.putExtras(bundle)
             startActivity(viewTaskIntent)
         })
+
+        taskListRefresh.setOnRefreshListener({
+            updateTasks()
+        })
     }
 
     /**
@@ -127,6 +135,7 @@ class ListTasksActivity : AppCompatActivity() {
                 masterTaskList.clear()
                 masterTaskList.addAll(response as ArrayList<Task>)
                 updateSearch(searchText)
+                taskListRefresh.isRefreshing = false
 
             }
         }).execute()

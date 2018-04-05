@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.widget.SwipeRefreshLayout
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -47,6 +48,9 @@ class MyTasksActivity : AppCompatActivity() {
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
 
+    @BindView(R.id.myTasksRefresh)
+    lateinit var myTasksRefresh: SwipeRefreshLayout
+
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var myTasksList: ArrayList<Task> = ArrayList()
@@ -82,6 +86,10 @@ class MyTasksActivity : AppCompatActivity() {
         })
 
         populateList()
+
+        myTasksRefresh.setOnRefreshListener({
+            populateList()
+        })
     }
 
     /**
@@ -108,6 +116,8 @@ class MyTasksActivity : AppCompatActivity() {
 
                 loadingPanel.visibility = View.GONE
                 myTasksAdapter.notifyDataSetChanged()
+
+                myTasksRefresh.isRefreshing = false
 
             }
         }).execute()
