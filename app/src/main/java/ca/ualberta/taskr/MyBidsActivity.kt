@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -15,7 +16,6 @@ import android.widget.RelativeLayout
 import butterknife.BindView
 import butterknife.ButterKnife
 import ca.ualberta.taskr.adapters.MyBidsListAdapter
-import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
@@ -23,6 +23,7 @@ import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+
 
 class MyBidsActivity : AppCompatActivity() {
 
@@ -40,6 +41,9 @@ class MyBidsActivity : AppCompatActivity() {
 
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
+
+    @BindView(R.id.myBidsRefresh)
+    lateinit var myBidsRefresh: SwipeRefreshLayout
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -82,6 +86,10 @@ class MyBidsActivity : AppCompatActivity() {
             viewTaskIntent.putExtras(bundle)
             startActivity(viewTaskIntent)
         })
+
+        myBidsRefresh.setOnRefreshListener({
+            updateTasks()
+        })
     }
 
     /**
@@ -94,6 +102,7 @@ class MyBidsActivity : AppCompatActivity() {
                 masterTaskList.clear()
                 masterTaskList.addAll(response as ArrayList<Task>)
                 filterTasks()
+                myBidsRefresh.isRefreshing = false
             }
         }).execute()
     }

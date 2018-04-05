@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -47,6 +48,9 @@ class ToDoTaskListActivity : AppCompatActivity() {
 
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
+
+    @BindView(R.id.todoTasksRefresh)
+    lateinit var todoTasksRefresh: SwipeRefreshLayout
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -104,6 +108,10 @@ class ToDoTaskListActivity : AppCompatActivity() {
             startActivity(viewTaskIntent)
         })
 
+        todoTasksRefresh.setOnRefreshListener({
+            updateTasks()
+        })
+
     }
 
     /**
@@ -116,6 +124,7 @@ class ToDoTaskListActivity : AppCompatActivity() {
                 masterTaskList.clear()
                 masterTaskList.addAll(response.body() as ArrayList<Task>)
                 updateSearch(searchText)
+                todoTasksRefresh.isRefreshing = false
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
