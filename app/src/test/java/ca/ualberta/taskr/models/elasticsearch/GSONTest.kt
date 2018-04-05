@@ -31,8 +31,8 @@ class GSONTest {
     private var newBidName2 = "A Bribe"
     private var newBidAmount1 = 0.01f
     private var newBidAmount2 = 6.66f
-    val newBid1 = Bid(newBidName1, newBidAmount1.toDouble())
-    val newBid2 = Bid(newBidName2, newBidAmount2.toDouble())
+    val newBid1 = Bid(newBidName1, newBidAmount1.toDouble(), false)
+    val newBid2 = Bid(newBidName2, newBidAmount2.toDouble(), false)
     private var bids = ArrayList<Bid>()
 
     init {
@@ -55,7 +55,7 @@ class GSONTest {
 
     @Test
     fun getTaskJson() {
-        val json = "{\"owner\":\"Corkus\",\"title\":\"I\\u0027m a wot\",\"status\":\"ASSIGNED\",\"bids\":[{\"owner\":\"Mr. MoneyBags McGee\\u0027s Monetary Mmmm\",\"amount\":0.009999999776482582},{\"owner\":\"A Bribe\",\"amount\":6.659999847412109}],\"description\":\"4 mana 7/7\",\"photos\":[],\"location\":{\"latitude\":40.1231,\"longitude\":12.12321,\"altitude\":0.0},\"chosenBidder\":\"The Mask\"}"
+        val json = "{\"owner\":\"Corkus\",\"title\":\"I\\u0027m a wot\",\"status\":\"ASSIGNED\",\"bids\":[{\"owner\":\"Mr. MoneyBags McGee\\u0027s Monetary Mmmm\",\"amount\":0.009999999776482582,\"isDismissed\":false},{\"owner\":\"A Bribe\",\"amount\":6.659999847412109,\"isDismissed\":false}],\"description\":\"4 mana 7/7\",\"photos\":[],\"location\":{\"latitude\":40.1231,\"longitude\":12.12321,\"altitude\":0.0},\"chosenBidder\":\"The Mask\"}"
         assertEquals(json,gson.toJson(task))
     }
 
