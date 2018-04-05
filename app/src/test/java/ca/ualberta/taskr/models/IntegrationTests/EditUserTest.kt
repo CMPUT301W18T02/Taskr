@@ -129,9 +129,10 @@ class EditUserTest {
         deleteTestUser()
     }
 
+    //TODO: Add test
     @Test
     fun checkMaxUserLength(){
-
+        Assert.assertTrue(true)
     }
 
 }
