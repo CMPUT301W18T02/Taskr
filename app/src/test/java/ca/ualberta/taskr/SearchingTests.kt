@@ -30,6 +30,9 @@ import retrofit2.Response
  *
  * Tests Use Cases 04.01.01 and 04.02.01
  *
+ * Deals with all of the test cases involved with Searching through tasks in the ListTasksActivity
+ * activity.
+ *
  */
 
 @RunWith(RobolectricTestRunner::class)
@@ -60,6 +63,10 @@ class SearchingTests {
 
     lateinit var searchBar: EditText
 
+    /**
+     * Sets up all of the information needed by the test class.
+     */
+
     @Before
     fun setUp(){
         activity = Robolectric.setupActivity(ListTasksActivity::class.java)
@@ -73,6 +80,11 @@ class SearchingTests {
         ShadowLog.stream = System.out
 
     }
+
+    /**
+     * Not a test case, instead a function that deletes tasks that are added to the database
+     * for the purpose of testing.
+     */
 
 
     /**
@@ -117,6 +129,7 @@ class SearchingTests {
     /**
      * Test Task searching
      */
+
     @Test
     fun testSearchContains() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
@@ -172,6 +185,9 @@ class SearchingTests {
      * As a task provider, I want search results to show each task with its task requester
      * username, title, status, lowest bid so far (if any).
      *
+     *
+     * Test to make sure that all of the information that needs to be displayed is indeed
+     * displayed by the task in the application.
      */
 
     /**

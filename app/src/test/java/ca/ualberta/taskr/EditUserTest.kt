@@ -22,8 +22,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 /**
- * Created by marissasnihur on 2018-03-28.
  *
+ * Created by marissasnihur on 2018-03-28 / editted by Nathan
+ *
+ * This test class handles all of the buttons and circumstances when we edit information for a
+ * current user, as well as when we are creating a user (since it is used in both places!)
  */
 
 
@@ -53,6 +56,11 @@ class EditUserTest {
 
     lateinit var activity: EditUserActivity
     private var username = "iamdumb69"
+
+    /**
+     * Sets up all of the buttons and info that the test class needs in order to carry out
+     * individual tests.
+     */
 
     @Before
     fun setUp(){
@@ -96,6 +104,9 @@ class EditUserTest {
     /**
      * As a user, I want to edit the contact information in my profile.
      *
+     * This function checks the ApplyChangesButton and makes sure that it takes the
+     * old information in and changes it, then outputs the changed information
+     * for the user.
      */
 
     /**

@@ -16,6 +16,8 @@ import org.robolectric.annotation.Config
 /**
  * Created by marissasnihur on 2018-04-06.
  *
+ * This Test Class handles all of the functionality of AddLocationToTaskActivity, and
+ * deals with maps and a button that sends a location back to the EditTaskActivity.
  */
 
 @RunWith(RobolectricTestRunner::class)
@@ -25,6 +27,10 @@ class GeoLocationTests {
     private lateinit var activity: AddLocationToTaskActivity
     private lateinit var button: Button
 
+    /**
+     * Sets up all of the variables needed by the Test Class.
+     */
+
     @Before
     fun setUp(){
 
@@ -32,6 +38,12 @@ class GeoLocationTests {
 
         button = activity.findViewById<Button>(R.id.add_location)
     }
+
+    /**
+     * Tests the Add Location button - makes sure that it sends the correct Latitude and Longitude
+     * to the activity. Makes sure that the activity that the location is sent to is indeed
+     * the correct activity as well.
+     */
 
     @Test
     fun onButtonClick(){

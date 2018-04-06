@@ -25,6 +25,8 @@ import org.robolectric.shadows.ShadowLog
 
 /**
  * Created by mrnic on 2018-03-24.
+ *
+ * This test class deals with all of the tests that involve the task basic requirements.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(26))
@@ -42,6 +44,10 @@ class TaskBasicsTest {
     private lateinit var descriptionEditText: EditText
     private lateinit var addressEditText: EditText
     private lateinit var postTaskBtn: Button
+
+    /**
+     * Sets up everything that is required for the TestClass to function properly.
+     */
 
     @Before
     fun setup() {
@@ -67,7 +73,8 @@ class TaskBasicsTest {
      */
     private fun deleteTestTask(){
         //delete test task in elastic search
-        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr)).enqueue(object : Callback<ElasticsearchID> {
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
+                .enqueue(object : Callback<ElasticsearchID> {
             override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                 Log.i("network", response.body().toString())
                 val id = response.body() as ElasticsearchID
@@ -87,7 +94,6 @@ class TaskBasicsTest {
      */
     @Test
     fun checkActivityNotNull() {
-        //make sure that activity is not null before starting tests.
         Assert.assertNotNull(editTaskActivity)
     }
 
@@ -115,10 +121,12 @@ class TaskBasicsTest {
                 if(taskList.size == 0){
                     Log.d("Add Task Test", taskList.toString())
                 }
-                val task = taskList[0]
-                Assert.assertEquals(taskTitle, task.title)
-                Assert.assertEquals(taskDescr, task.description)
-                Assert.assertEquals(taskLocStr, task.location.toString())
+                else {
+                    val task = taskList[0]
+                    Assert.assertEquals(taskTitle, task.title)
+                    Assert.assertEquals(taskDescr, task.description)
+                    Assert.assertEquals(taskLocStr, task.location.toString())
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -219,13 +227,10 @@ class TaskBasicsTest {
      * Test viewing a list of a users tasks
      */
     @Test
-    fun viewListOfMyTasks(){
+    fun viewListOfMyTasks(){ //TODO: check to make sure its associated w/ user
         //populate a task, post the task, check if its associated with this user
         titleEditText.setText(taskTitle)
-        descriptionEditText.setText(taskDescr + "Extra characters so that the test will show" +
-                "restriction on description. This one has to be" +
-                "particularly long, as I have to go over the 300 character limit, which, when your" +
-                "writing a test, is pretty doggone long. Whelp. Just a few characters le")
+        descriptionEditText.setText(taskDescr)
         addressEditText.setText(taskLocStr)
 
         postTaskBtn.performClick()
