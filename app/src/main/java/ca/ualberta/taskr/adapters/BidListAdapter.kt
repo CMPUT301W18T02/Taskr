@@ -12,6 +12,7 @@ import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.util.PhotoConversion
 import kotlinx.android.synthetic.main.row_bid.view.*
 import javax.security.auth.callback.Callback
 
@@ -19,9 +20,10 @@ import javax.security.auth.callback.Callback
  * Created by Jacob Bakker on 3/15/2018.
  */
 
-class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
+class BidListAdapter(taskBidList: ArrayList<Bid>, userList: ArrayList<User>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
     private var bidList: ArrayList<Bid> = taskBidList
+    private var userList: ArrayList<User> = userList
     var itemClickListener : OnItemClickListener? = null
 
     inner class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
@@ -54,6 +56,11 @@ class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListA
         val bid = bidList[position]
         holder.bidderName.text = bid.owner
         holder.bidderAmount.text = String.format(holder.bidderAmount.text.toString(), bid.amount)
+        val userProfile = userList.find { it.username == bid.owner }
+        if(userProfile != null && userProfile.profilePicture?.isNotEmpty() == true){
+            val imageString = userProfile.profilePicture
+            holder.bidderImage.setImageBitmap(PhotoConversion.getBitmapFromString(imageString as String))
+        }
     }
     override fun getItemCount(): Int {
         return bidList.size

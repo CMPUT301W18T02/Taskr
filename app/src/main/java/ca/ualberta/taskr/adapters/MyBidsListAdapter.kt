@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.util.PhotoConversion
 
 /**
  * MyBidsListAdapter class. Take in a task list and produce an adapter subclass that allows
@@ -72,6 +73,9 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
         }
         else{
             holder.myBid.text = "No bid!"
+        }
+        if (task.photos.size != 0){
+            holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[1]))
         }
     }
     /**
