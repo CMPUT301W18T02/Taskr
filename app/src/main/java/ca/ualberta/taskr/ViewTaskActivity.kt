@@ -496,6 +496,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateLocationInfo() {
         if (displayTask.location != null) {
+            if (marker != null) {
+                marker.remove()
+            }
             mapView.visibility = View.VISIBLE
             position = displayTask.location as LatLng
             marker = mapboxMap.addMarker(MarkerOptions().position(position))
