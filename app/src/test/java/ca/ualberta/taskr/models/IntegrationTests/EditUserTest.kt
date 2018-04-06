@@ -1,17 +1,13 @@
 package ca.ualberta.taskr.models.IntegrationTests
 
 import android.content.Intent
-import android.test.ActivityInstrumentationTestCase2
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import butterknife.BindView
 import ca.ualberta.taskr.BuildConfig
 import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.LoginActivity
 import ca.ualberta.taskr.R
-import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -22,14 +18,12 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
-import org.robolectric.Robolectric.buildActivity
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowApplication
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.security.AccessController.getContext
 
 /**
  * Created by marissasnihur on 2018-03-28.
@@ -67,10 +61,10 @@ class EditUserTest {
     @Before
     fun setUp(){
 
-        intent = Intent(Intent.ACTION_VIEW)
+        intent = Intent(ShadowApplication.getInstance().applicationContext, EditUserActivity::class.java)
         intent.putExtra("username", username)
 
-        activity = Robolectric.buildActivity(EditUserActivity::class.java, intent).create().get()
+        activity = Robolectric.buildActivity(EditUserActivity::class.java, intent).create().visible().get()
 
         //val userController = UserController(activity)
         //username = userController.getLocalUserName()
