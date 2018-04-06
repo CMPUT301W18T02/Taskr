@@ -1,11 +1,13 @@
 package ca.ualberta.taskr
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -20,6 +22,10 @@ import kotlinx.android.synthetic.main.activity_edit_user.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.provider.MediaStore
+import android.graphics.Bitmap
+import ca.ualberta.taskr.util.PhotoConversion
+
 
 /**
  * EditUserActivity
@@ -30,6 +36,10 @@ class EditUserActivity : AppCompatActivity() {
     lateinit var CurrentUser: User
     private var isNewUser = false
     lateinit var Username: String
+    val REQUEST_IMAGE_CAPTURE = 1
+
+    @BindView(R.id.ProfileImageButton)
+    lateinit var profileImageButton: ImageButton
 
     @BindView(R.id.UserSurnameText)
     lateinit var userSurnameText: EditText
@@ -45,6 +55,8 @@ class EditUserActivity : AppCompatActivity() {
 
     @BindView(R.id.EditUserErrorTextView)
     lateinit var editUserErrorTextView: TextView
+
+    var encodedProfileImage:String = ""
 
     var userController: UserController = UserController(this)
 
@@ -109,7 +121,7 @@ class EditUserActivity : AppCompatActivity() {
             return
         }
 
-        CurrentUser = User(name, phoneNumber, null, email, Username)
+        CurrentUser = User(name, phoneNumber, encodedProfileImage, email, Username)
         UpdateUser(CurrentUser)
     }
 
@@ -135,6 +147,9 @@ class EditUserActivity : AppCompatActivity() {
             CachingRetrofit(this).updateUser(object : ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
                 override fun onResponse(response: Boolean, responseFromCache: Boolean) {
                     //TODO offline functionality
+                    userController.setLocalUsername(Username)
+                    userController.setLocalUserObject(user)
+                    openListTasksActivity()
 
                 }
             }).execute(user)
@@ -149,7 +164,20 @@ class EditUserActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    @OnClick(R.id.ProfileImageButton)
     fun onPhotoClicked() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val extras = data.extras
+            val imageBitmap = extras!!.get("data") as Bitmap
+            profileImageButton.setImageBitmap(imageBitmap)
+            encodedProfileImage = PhotoConversion.getPhotoString(imageBitmap)
+        }
     }
 }

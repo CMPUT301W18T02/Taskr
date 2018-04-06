@@ -24,6 +24,7 @@ import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
@@ -56,7 +57,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var isRequester: Boolean = false
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
-    private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList)
+    private var userList: ArrayList<User> = ArrayList()
+    private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList, userList)
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var displayTask: Task
     private lateinit var editBidFragment: EditBidFragment
@@ -158,6 +160,21 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             layoutManager = viewManager
             adapter = bidListAdapter
         }
+
+        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                Log.i("network", response.body().toString())
+                userList.addAll(response.body() as ArrayList<User>)
+                bidListAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
+
     }
 
     /**
@@ -300,6 +317,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             updateDetails()
             updateLowestBidAmount()
             updateLocationInfo()
+
         }
     }
 
