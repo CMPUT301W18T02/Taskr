@@ -389,7 +389,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             updateDisplayTask()
         }
     }
-    
+
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.
