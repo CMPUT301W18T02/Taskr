@@ -1,33 +1,29 @@
 package ca.ualberta.taskr.models.IntegrationTests
 
 import android.content.Intent
-import android.test.ActivityInstrumentationTestCase2
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import butterknife.BindView
 import ca.ualberta.taskr.BuildConfig
 import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.LoginActivity
 import ca.ualberta.taskr.R
-import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowApplication
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.security.AccessController.getContext
 
 /**
  * Created by marissasnihur on 2018-03-28.
@@ -65,10 +61,10 @@ class EditUserTest {
     @Before
     fun setUp(){
 
-        intent = Intent(RuntimeEnvironment.application,EditUserActivity::class.java)
+        intent = Intent(ShadowApplication.getInstance().applicationContext, EditUserActivity::class.java)
         intent.putExtra("username", username)
 
-        activity = Robolectric.buildActivity(EditUserActivity::class.java, intent).create().get()
+        activity = Robolectric.buildActivity(EditUserActivity::class.java, intent).create().visible().get()
 
         //val userController = UserController(activity)
         //username = userController.getLocalUserName()
@@ -87,7 +83,7 @@ class EditUserTest {
                     override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                         Log.i("network", response.body().toString())
                         val id = response.body() as ElasticsearchID
-                        GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                        GenerateRetrofit.generateRetrofit().deleteUser(id.toString())
                     }
 
                     override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
@@ -131,7 +127,7 @@ class EditUserTest {
 
     @Test
     fun checkMaxUserLength(){
-
+        Assert.assertTrue(true)
     }
 
 }

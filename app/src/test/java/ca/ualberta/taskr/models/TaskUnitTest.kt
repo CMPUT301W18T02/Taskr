@@ -64,8 +64,8 @@ class TaskUnitTest {
     @Test
     fun testAddAndGetBid() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
-        val newBid1 = Bid(newBidName1, newBidAmount1.toDouble())
-        val newBid2 = Bid(newBidName2, newBidAmount2.toDouble())
+        val newBid1 = Bid(newBidName1, newBidAmount1.toDouble(), false)
+        val newBid2 = Bid(newBidName2, newBidAmount2.toDouble(), false)
         task.addBid(newBid1)
         task.addBid(newBid2)
         var testBid = task.getBidAtIndex(0)
@@ -77,8 +77,8 @@ class TaskUnitTest {
     @Test
     fun testSetBidAtIndex() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
-        val newBid1 = Bid(newBidName1, newBidAmount1.toDouble())
-        val newBid2 = Bid(newBidName2, newBidAmount2.toDouble())
+        val newBid1 = Bid(newBidName1, newBidAmount1.toDouble(), false)
+        val newBid2 = Bid(newBidName2, newBidAmount2.toDouble(), false)
         task.addBid(newBid1)
         task.setBidAtIndex(newBid2, 0)
         val testBid = task.getBidAtIndex(0)
