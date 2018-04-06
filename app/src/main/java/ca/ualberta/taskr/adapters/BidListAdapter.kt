@@ -36,7 +36,6 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList: ArrayList<User>): Re
         var bidderName: TextView = view.findViewById(R.id.bidderName)
         var bidderAmount: TextView = view.findViewById(R.id.bidAmount)
 
-
         init {
             view.setOnClickListener(this)
             bidderName.setOnClickListener(this)

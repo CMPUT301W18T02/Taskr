@@ -103,7 +103,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     @BindView(R.id.taskMapView)
     lateinit var mapView : MapView
     private lateinit var mapboxMap : MapboxMap
-    private lateinit var position : LatLng
+    private var position : LatLng? = null
     private lateinit var marker: Marker
 
 
@@ -513,10 +513,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateLocationInfo() {
         if (displayTask.location != null) {
-            if (marker != null) {
-                marker.remove()
-            }
             mapView.visibility = View.VISIBLE
+            try {
+                marker.remove()
+            } catch (e : Exception) {
+                Log.i("No marker exists", "Creating new one...")
+            }
             position = displayTask.location as LatLng
             marker = mapboxMap.addMarker(MarkerOptions().position(position))
             var cameraPosition : CameraPosition = CameraPosition.Builder()
