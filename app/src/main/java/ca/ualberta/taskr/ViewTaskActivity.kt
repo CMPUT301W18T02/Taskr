@@ -389,21 +389,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             updateDisplayTask()
         }
     }
-
-    private fun populateBidList() {
-        taskBidList.clear()
-        if (displayTask.status == TaskStatus.BID) {
-            taskBidList.addAll(displayTask.bids)
-        } else if (displayTask.status != TaskStatus.REQUESTED){
-            var chosenBidFilter = displayTask.bids.filter {u ->
-                (u.owner == displayTask.chosenBidder)}
-            if (chosenBidFilter.isNotEmpty()) {
-                var chosenBid = chosenBidFilter[0]
-                taskBidList.add(chosenBid)
-            }
-        }
-        bidListAdapter.notifyDataSetChanged()
-    }
+    
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.
