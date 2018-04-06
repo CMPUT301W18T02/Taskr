@@ -17,6 +17,7 @@
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
     <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
     <string name="activity_view_tasks_requester_edit_task">Edit Task</string>
+    <string name="activity_view_tasks_lowest_bid">Top Bid: $%.2f</string>
     <string name="activity_view_tasks_error_generic_title">Error</string>
     <string name="activity_view_tasks_error_dismiss">OK</string>
     <string name="activity_view_tasks_error_edit">Tasks with bids cannot be edited.</string>
@@ -32,7 +33,7 @@
     <string name="fragment_edit_bid_save_changes">Save</string>
     <string name="fragment_accept_bid_title">Accept Bid</string>
     <string name="fragment_accept_bid_username">from %1$s?</string>
-    <string name="fragment_accept_bid_remove">Remove</string>
+    <string name="fragment_accept_bid_remove">Decline</string>
     <string name="fragment_accept_bid_yes">Yes</string>
 
     <string name="prefs_name">"TaskrPrefs"</string>

@@ -46,6 +46,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import retrofit2.Response
 import retrofit2.Call
 import ca.ualberta.taskr.models.elasticsearch.Callback
+import java.util.*
 
 
 /**
@@ -61,7 +62,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var isRequester: Boolean = false
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
-    private var bidListAdapter: BidListAdapter = BidListAdapter(taskBidList)
+    private lateinit var bidListAdapter: BidListAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var displayTask: Task
     private lateinit var oldTask: Task
@@ -147,20 +148,28 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
         // Build up RecyclerView
         viewManager = LinearLayoutManager(this)
+        createBidAdapter()
+
+    }
+
+    private fun createBidAdapter() {
         /**
          * Set listener for rows in Bid list. If user is a Task Requester, allows user to
          * select Bid and accept/decline it using AcceptBidFragment.
          */
+        bidListAdapter = BidListAdapter(taskBidList)
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
-                val bid = taskBidList[position]
-                if (view.id == R.id.bidderName) {
-                    startUserInfoFragment(bid.owner)
-                } else {
-                    if (isRequester) {
-                        startAcceptBidFragment(bid)
-                    } else if (username == bid.owner) {
-                        startEditBidFragment(bid)
+                if (displayTask.status == TaskStatus.BID) {
+                    val bid = taskBidList[position]
+                    if (view.id == R.id.bidderName) {
+                        startUserInfoFragment(bid.owner)
+                    } else {
+                        if (isRequester) {
+                            startAcceptBidFragment(bid)
+                        } else if (username == bid.owner) {
+                            startEditBidFragment(bid)
+                        }
                     }
                 }
             }
@@ -170,6 +179,31 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             adapter = bidListAdapter
         }
     }
+
+    private fun populateBidList() {
+        taskBidList.clear()
+        if (displayTask.status == TaskStatus.BID) {
+            for (bid in displayTask.bids) {
+                if (!bid.isDismissed) {taskBidList.add(bid)}
+            }
+        } else if (displayTask.status != TaskStatus.REQUESTED){
+            var chosenBidFilter = displayTask.bids.filter {b ->
+                (b.owner == displayTask.chosenBidder) &&
+                (b.isDismissed == false)}
+            if (chosenBidFilter.isNotEmpty()) {
+                var chosenBid = chosenBidFilter[0]
+                taskBidList.add(chosenBid)
+            }
+        }
+        taskBidList.sortWith(Comparator { bid1, bid2 ->
+            when {
+                bid1.amount < bid2.amount -> -1
+                bid1.amount > bid2.amount -> 1
+                else -> 0
+            }
+        })
+    }
+
 
     private fun startUserInfoFragment(username: String) {
         // Get User object from ElasticSearch index.
@@ -250,10 +284,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * Implemented method for stub in EditBidFragmentInteractionListener interface. Adds created
      * Bid to displayed Task's list of Bids, then updates Task in ElasticSearch index.
      */
-    //TODO actually implement declined tasks
     override fun bidAdd(bidAmount : Double) {
-
-        var newBid = Bid(username, bidAmount)
+        var newBid = Bid(username, bidAmount, false)
         var existingBid = displayTask.bids.filter {u->(u.owner == username)}
         if (existingBid.isNotEmpty()) {
             var existingIndex = displayTask.bids.indexOf(existingBid[0])
@@ -267,9 +299,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         updateDisplayTask()
     }
 
-    //TODO: Implement method for declining/removing selected Bid.
     override fun declinedBid(bid: Bid) {
-        Log.i("Hit", "Decline")
+        var changedBid = Bid(bid.owner, bid.amount, true)
+        var i = displayTask.bids.indexOf(bid)
+        displayTask.bids[i] = changedBid
+        updateDisplayTask()
     }
 
     /**
@@ -335,41 +369,26 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
     @OnClick(R.id.editTaskButton)
     fun editTask() {
-        if (displayTask.status == TaskStatus.REQUESTED) {
+        if (taskBidList.isEmpty()) {
             var editTaskIntent = Intent(this, EditTaskActivity::class.java)
             var editTaskBundle = Bundle()
             var strTask = GenerateRetrofit.generateGson().toJson(displayTask)
             editTaskBundle.putString("Task", strTask)
             editTaskIntent.putExtras(editTaskBundle)
-            startActivityForResult(editTaskIntent, Activity.RESULT_OK)
+            startActivityForResult(editTaskIntent, 0)
         } else {
             showErrorDialog(R.string.activity_view_tasks_error_edit)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
+        if (resultCode == 1) {
             var displayTaskStr = data?.extras?.getString("Task")
             displayTask = GenerateRetrofit.generateGson().fromJson(displayTaskStr, Task::class.java)
             updateDisplayTask()
         }
     }
 
-    private fun populateBidList() {
-        taskBidList.clear()
-        if (displayTask.status == TaskStatus.BID) {
-            taskBidList.addAll(displayTask.bids)
-        } else if (displayTask.status != TaskStatus.REQUESTED){
-            var chosenBidFilter = displayTask.bids.filter {u ->
-                (u.owner == displayTask.chosenBidder)}
-            if (chosenBidFilter.isNotEmpty()) {
-                var chosenBid = chosenBidFilter[0]
-                taskBidList.add(chosenBid)
-            }
-        }
-        bidListAdapter.notifyDataSetChanged()
-    }
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.
@@ -384,6 +403,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
         // Reobtain list of Task's bids, then update RecyclerView.
         populateBidList()
+        createBidAdapter()
         // Update remaining Task attributes in activity.
         updateDetails()
         updateLowestBidAmount()
@@ -398,12 +418,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             lowestBidView.text = ""
             return
         }
+        lowestBidAmount = Double.POSITIVE_INFINITY
         for (bid : Bid in taskBidList) {
             if (lowestBidAmount > bid.amount) {
                 lowestBidAmount = bid.amount
             }
         }
-        lowestBidView.text = String.format(getString(R.string.row_bid_amount), lowestBidAmount)
+        lowestBidView.text = String.format(getString(R.string.activity_view_tasks_lowest_bid), lowestBidAmount)
     }
 
     /**
@@ -510,7 +531,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         var message = getString(messageID)
         errorPopup = ErrorDialogFragment()
         var args = Bundle()
-        args.putString("DISPLAYBID", message)
+        args.putString("MESSAGE", message)
         errorPopup.arguments = args
         errorPopup.show(fragmentManager, "DialogFragment")
     }

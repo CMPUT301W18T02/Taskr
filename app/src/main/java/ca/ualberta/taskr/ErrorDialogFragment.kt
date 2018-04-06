@@ -24,7 +24,7 @@ class ErrorDialogFragment : DialogFragment() {
         var view = inflater.inflate(R.layout.fragment_error_dialog, container, false)
         ButterKnife.bind(this, view)
         if (arguments != null) {
-            message = arguments?.getString("MESSAGE") as String
+            message = arguments?.getString("MESSAGE", "oops") as String
             messageView.text = message
         }
         return view
