@@ -63,6 +63,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
     private lateinit var bidListAdapter: BidListAdapter
+    private var userList: ArrayList<User> = ArrayList()
+
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var displayTask: Task
     private lateinit var oldTask: Task
@@ -157,7 +159,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
          * Set listener for rows in Bid list. If user is a Task Requester, allows user to
          * select Bid and accept/decline it using AcceptBidFragment.
          */
-        bidListAdapter = BidListAdapter(taskBidList)
+        bidListAdapter = BidListAdapter(taskBidList, userList)
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
                 if (displayTask.status == TaskStatus.BID) {
@@ -178,6 +180,21 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             layoutManager = viewManager
             adapter = bidListAdapter
         }
+
+        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                Log.i("network", response.body().toString())
+                userList.addAll(response.body() as ArrayList<User>)
+                bidListAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
+
     }
 
     private fun populateBidList() {

@@ -17,7 +17,7 @@ class PhotoConversion {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArray)
             val imageBytes = byteArray.toByteArray()
             val imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT)
-            if (imageString.toByteArray().size < MaxImageByte){
+            if (imageString.toByteArray().size > MaxImageByte){
                 throw ImageTooLargeException(imageString.toByteArray().size)
             }
             return Base64.encodeToString(imageBytes, Base64.DEFAULT)

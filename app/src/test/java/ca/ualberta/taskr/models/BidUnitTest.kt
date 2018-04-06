@@ -20,14 +20,14 @@ class BidUnitTest {
 
     @Test
     fun testGetBidder(){
-        val bid = Bid(owner, amount)
+        val bid = Bid(owner, amount, false)
         val otherBidder = bid.owner
         assertEquals(owner, otherBidder)
     }
 
     @Test
     fun testGetValue(){
-        val bid = Bid(owner, amount)
+        val bid = Bid(owner, amount, false)
         val otherBidVal = bid.amount
         assertEquals(amount, otherBidVal, 0.001)
     }
