@@ -154,7 +154,6 @@ class TaskBasicsTest {
      * required for the application specifications.
      */
 
-    @Ignore // TODO: FIX
     @Test
     fun maxLengthOfTaskTitle(){
         //Add a task with large title, check if stored title is less than or equal to 30
@@ -243,13 +242,40 @@ class TaskBasicsTest {
      */
 
     @Test
-    fun viewListOfMyTasks(){ //TODO: check to make sure its associated w/ user
+    fun viewListOfMyTasks(){
         //populate a task, post the task, check if its associated with this user
         titleEditText.setText(taskTitle)
         descriptionEditText.setText(taskDescr)
         addressEditText.setText(taskLocStr)
 
         postTaskBtn.performClick()
+
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                var masterTaskList: ArrayList<Task> = ArrayList()
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                val taskList: ArrayList<Task> = masterTaskList.filter {
+                    it -> (it.title == taskTitle)
+                        && (it.location.toString() == taskLocStr)
+                } as ArrayList<Task>
+
+                if(taskList.size == 0) {
+                    Log.d("Max Description Length Test", taskList.toString())
+                }
+                else {
+                    val task = taskList[0]
+                    Assert.assertTrue(task.owner == username)
+                }
+            }
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                Assert.assertEquals(1, 2)
+            }
+
+
+    })
     }
 
     /**
@@ -257,7 +283,6 @@ class TaskBasicsTest {
      * that it is posted correctly.
      */
 
-    @Ignore // This test works, but it breaks travis TODO: Make this not break travis
     @Test
     fun editDescription(){
         //Create a task, pass it to the EditTaskActivity, edit it, see if its been edited correctly
@@ -336,9 +361,8 @@ class TaskBasicsTest {
      * requested to be deleted.
      */
 
-    @Ignore //TODO: Update test
     @Test
-    fun delTask(){
+    fun delTask(){ //TODO: Fix Erroring out "ca.ualberta.taskr.exceptions.ResourceDoesNotExistException"
         //populate text fields, push add task button, delete task, check server for deletion
         titleEditText.setText(taskTitle)
         descriptionEditText.setText(taskDescr)
