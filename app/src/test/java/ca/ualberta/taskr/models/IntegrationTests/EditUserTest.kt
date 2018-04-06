@@ -89,7 +89,7 @@ class EditUserTest {
                     override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                         Log.i("network", response.body().toString())
                         val id = response.body() as ElasticsearchID
-                        GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                        GenerateRetrofit.generateRetrofit().deleteUser(id.toString())
                     }
 
                     override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
