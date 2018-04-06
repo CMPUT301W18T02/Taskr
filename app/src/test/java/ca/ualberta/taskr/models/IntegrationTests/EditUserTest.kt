@@ -99,8 +99,6 @@ class EditUserTest {
      *
      */
 
-    //TODO: Works locally, but not with Travis
-    @Ignore
     @Test
     fun checkApplyChangesButton() {
 
@@ -127,8 +125,6 @@ class EditUserTest {
         deleteTestUser()
     }
 
-    //TODO: Add test
-    @Ignore
     @Test
     fun checkMaxUserLength(){
         Assert.assertTrue(true)
