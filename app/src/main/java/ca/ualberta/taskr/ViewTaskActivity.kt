@@ -204,7 +204,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         })
     }
 
-
     private fun startUserInfoFragment(username: String) {
         // Get User object from ElasticSearch index.
         CachingRetrofit(this).getUsers(object: Callback<List<User>> {
@@ -220,6 +219,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             }
         }).execute()
     }
+	
     /**
      * Displays pop-up fragment that allows Task Provider to update their selected bid.
      */
@@ -233,6 +233,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
         editBidFragment.show(fragmentManager, "DialogFragment")
     }
+	
     /**
      * Displays pop-up fragment that allows Task Requester to accept/decline a selected Bid.
      */
@@ -369,7 +370,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
     @OnClick(R.id.editTaskButton)
     fun editTask() {
-        if (taskBidList.isEmpty()) {
+        if (displayTask.status == TaskStatus.REQUESTED) {
             var editTaskIntent = Intent(this, EditTaskActivity::class.java)
             var editTaskBundle = Bundle()
             var strTask = GenerateRetrofit.generateGson().toJson(displayTask)
@@ -389,6 +390,20 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
+    private fun populateBidList() {
+        taskBidList.clear()
+        if (displayTask.status == TaskStatus.BID) {
+            taskBidList.addAll(displayTask.bids)
+        } else if (displayTask.status != TaskStatus.REQUESTED){
+            var chosenBidFilter = displayTask.bids.filter {u ->
+                (u.owner == displayTask.chosenBidder)}
+            if (chosenBidFilter.isNotEmpty()) {
+                var chosenBid = chosenBidFilter[0]
+                taskBidList.add(chosenBid)
+            }
+        }
+        bidListAdapter.notifyDataSetChanged()
+    }
     /**
      * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
      * displayed in activity.
@@ -404,6 +419,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         // Reobtain list of Task's bids, then update RecyclerView.
         populateBidList()
         createBidAdapter()
+		
         // Update remaining Task attributes in activity.
         updateDetails()
         updateLowestBidAmount()

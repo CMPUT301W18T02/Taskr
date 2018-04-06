@@ -17,6 +17,7 @@
     <string name="activity_view_tasks_provider_reopen">Reopen</string>
     <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
     <string name="activity_view_tasks_requester_edit_task">Edit Task</string>
+
     <string name="activity_view_tasks_lowest_bid">Top Bid: $%.2f</string>
     <string name="activity_view_tasks_error_generic_title">Error</string>
     <string name="activity_view_tasks_error_dismiss">OK</string>
