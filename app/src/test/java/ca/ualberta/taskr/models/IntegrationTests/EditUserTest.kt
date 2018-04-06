@@ -26,8 +26,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 /**
- * Created by marissasnihur on 2018-03-28.
  *
+ * Created by marissasnihur on 2018-03-28 / editted by Nathan
+ *
+ * This test class handles all of the buttons and circumstances when we edit information for a
+ * current user, as well as when we are creating a user (since it is used in both places!)
  */
 
 
@@ -58,6 +61,11 @@ class EditUserTest {
     lateinit var activity: EditUserActivity
     private var username = "iamdumb69"
 
+    /**
+     * Sets up all of the buttons and info that the test class needs in order to carry out
+     * individual tests.
+     */
+
     @Before
     fun setUp(){
 
@@ -75,6 +83,11 @@ class EditUserTest {
         ApplyChangesButton = activity.findViewById<Button>(R.id.ApplyChangesButton)
         EditUSerErrorTextView = activity.findViewById<TextView>(R.id.EditUserErrorTextView)
     }
+
+    /**
+     * This method is not a test, but instead provides a way for us to delete the test User
+     * from the database after the tests have been run with the User.
+     */
 
     private fun deleteTestUser(){
         //delete test user in elastic search, @JamesCook
@@ -97,6 +110,9 @@ class EditUserTest {
     /**
      * As a user, I want to edit the contact information in my profile.
      *
+     * This function checks the ApplyChangesButton and makes sure that it takes the
+     * old information in and changes it, then outputs the changed information
+     * for the user.
      */
 
     @Test
@@ -124,6 +140,13 @@ class EditUserTest {
 
         deleteTestUser()
     }
+
+    /**
+     * TODO: Finish checkMaxUserLength Test
+     *
+     * This test assures that the Username length of the individual does not exceed
+     * the maximum username length for the database/requirements of the application.
+     */
 
     @Test
     fun checkMaxUserLength(){

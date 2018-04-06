@@ -20,6 +20,10 @@ import org.robolectric.shadows.ShadowLog
 
 /**
  * Created by marissasnihur on 2018-03-19.
+ *
+ * Tests that involve creating new users, checking to make sure that we don't have two
+ * identical usernames in the database, as well as logging in users are in this Test Class.
+ *
  */
 
 @RunWith(RobolectricTestRunner::class)
@@ -35,7 +39,8 @@ class CreateNewUserTest {
     private var image: String? = null
 
     private lateinit var userText: EditText
-    private lateinit var button: Button
+    private lateinit var newUserButton: Button
+    private lateinit var loginButton: Button
 
     @Before
     fun setUp(){
@@ -44,17 +49,20 @@ class CreateNewUserTest {
         ShadowLog.stream = System.out
 
         userText = activity.findViewById<EditText>(R.id.UsernameText)
-        button = activity.findViewById<Button>(R.id.NewUserButton)
+        newUserButton = activity.findViewById<Button>(R.id.NewUserButton)
+        loginButton = activity.findViewById(R.id.LoginButton)
 
     }
 
     /**
      *
      * As a user, I want a profile with a unique username and my contact information.
-     *
-     *
      * As a user, I want the contact information to include an email address and a phone number.
      *
+     *
+     * checkUser() makes sure that the user isn't already in the database before adding
+     * a user to the database. In essence checks to make sure that we don't have two people
+     * with the same username in the database.
      */
 
     @Test
@@ -75,10 +83,15 @@ class CreateNewUserTest {
 
     }
 
+    /**
+     * Tests the Login Button, makes sure that it sends the correct information to the correct
+     * activity - also makes sure that the activity that the button is sending the
+     * information to is indeed the correct activity.
+     */
+
     @Test
     fun testOnLoginButtonClick() {
-        val diffButton: Button = activity.findViewById(R.id.LoginButton)
-        diffButton.performClick()
+        loginButton.performClick()
 
         Thread.sleep(1000)
 
@@ -90,12 +103,18 @@ class CreateNewUserTest {
 
     }
 
+    /**
+     * Tests the button that adds a new user, makes sure that the button sends the correct
+     * information to the EditUserActivity activity. Makes sure that the activity that
+     * it is sending it to is indeed the right activity.
+     */
+
     @Test
     fun testOnNewUserButtonClick() {
 
         userText.setText(username)
 
-        button.performClick()
+        newUserButton.performClick()
 
         Thread.sleep(1000)
 

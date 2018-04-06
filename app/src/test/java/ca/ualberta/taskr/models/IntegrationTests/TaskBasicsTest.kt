@@ -28,6 +28,8 @@ import org.robolectric.shadows.ShadowLog
 
 /**
  * Created by mrnic on 2018-03-24.
+ *
+ * This test class deals with all of the tests that involve the task basic requirements.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(26))
@@ -45,6 +47,10 @@ class TaskBasicsTest {
     private lateinit var descriptionEditText: EditText
     private lateinit var addressEditText: EditText
     private lateinit var postTaskBtn: Button
+
+    /**
+     * Sets up everything that is required for the TestClass to function properly.
+     */
 
     @Before
     fun setup() {
@@ -65,9 +71,15 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Not a test case, instead a function that deletes the test task after it is used in a test
+     * case.
+     */
+
     private fun deleteTestTask(){
         //delete test task in elastic search
-        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr)).enqueue(object : Callback<ElasticsearchID> {
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
+                .enqueue(object : Callback<ElasticsearchID> {
             override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                 Log.i("network", response.body().toString())
                 val id = response.body() as ElasticsearchID
@@ -82,11 +94,22 @@ class TaskBasicsTest {
         })
     }
 
+    /**
+     * Makes sure that the activity is not null prior to starting functionality tests.
+     */
+
     @Test
     fun checkActivityNotNull() {
-        //make sure that activity is not null before starting tests.
         Assert.assertNotNull(editTaskActivity)
     }
+
+    /**
+     * Test case that makes sure that data that is set in the EditText Fields are properly passed
+     * to the database after pressing the post task button.
+     *
+     * Makes sure that the data that was input for the task indeed matches the data
+     * that was stored in the server for the task.
+     */
 
     @Test
     fun addATask() {
@@ -109,10 +132,12 @@ class TaskBasicsTest {
                 if(taskList.size == 0){
                     Log.d("Add Task Test", taskList.toString())
                 }
-                val task = taskList[0]
-                Assert.assertEquals(taskTitle, task.title)
-                Assert.assertEquals(taskDescr, task.description)
-                Assert.assertEquals(taskLocStr, task.location.toString())
+                else {
+                    val task = taskList[0]
+                    Assert.assertEquals(taskTitle, task.title)
+                    Assert.assertEquals(taskDescr, task.description)
+                    Assert.assertEquals(taskLocStr, task.location.toString())
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -123,6 +148,11 @@ class TaskBasicsTest {
         })
         deleteTestTask()
     }
+
+    /**
+     * Checks that the task title (either new or editted) does not exceed the maximum length
+     * required for the application specifications.
+     */
 
     @Ignore // TODO: FIX
     @Test
@@ -160,6 +190,11 @@ class TaskBasicsTest {
         })
         deleteTestTask()
     }
+
+    /**
+     * Makes sure that the length of the task description does not surpass
+     * the maximum length of the task description required for the application specifications
+     */
 
     @Test
     fun maxLengthOfTaskDesc(){
@@ -203,18 +238,24 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Tests to check if the user can view a list of their tasks on the screen.
+     */
+
     @Test
-    fun viewListOfMyTasks(){
+    fun viewListOfMyTasks(){ //TODO: check to make sure its associated w/ user
         //populate a task, post the task, check if its associated with this user
         titleEditText.setText(taskTitle)
-        descriptionEditText.setText(taskDescr + "Extra characters so that the test will show" +
-                "restriction on description. This one has to be" +
-                "particularly long, as I have to go over the 300 character limit, which, when your" +
-                "writing a test, is pretty doggone long. Whelp. Just a few characters le")
+        descriptionEditText.setText(taskDescr)
         addressEditText.setText(taskLocStr)
 
         postTaskBtn.performClick()
     }
+
+    /**
+     * Test that checks to make sure that when you edit the description of a task
+     * that it is posted correctly.
+     */
 
     @Ignore // This test works, but it breaks travis TODO: Make this not break travis
     @Test
@@ -289,6 +330,11 @@ class TaskBasicsTest {
         })
         deleteTestTask()
     }
+
+    /**
+     * Test that checks to make sure that the task is deleted in the server after it has been
+     * requested to be deleted.
+     */
 
     @Ignore //TODO: Update test
     @Test
