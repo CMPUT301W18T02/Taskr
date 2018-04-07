@@ -46,8 +46,8 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
 
     /**
      * Create a view for a selected view
-     * @property parent the [ViewGroup] the viewHolder is a part of
-     * @property viewType the type of view
+     * @param parent the [ViewGroup] the viewHolder is a part of
+     * @param viewType the type of view
      * @return an instance of [LocalViewHolder] containing a view pointing towards our item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
@@ -63,8 +63,8 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
 
     /**
      * Bind a selected view
-     * @property holder the [LocalViewHolder] to bind
-     * @property position the position within the view to bind
+     * @param holder the [LocalViewHolder] to bind
+     * @param position the position within the view to bind
      */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val task = taskList[position]
@@ -90,7 +90,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
 
     /**
      * Set the callback click function
-     * @property callback take in a view's [View.OnClickListener] and produce a callback
+     * @param callback take in a view's [View.OnClickListener] and produce a callback
      */
     fun setClickListener(callback: View.OnClickListener) {
         mClickListener = callback

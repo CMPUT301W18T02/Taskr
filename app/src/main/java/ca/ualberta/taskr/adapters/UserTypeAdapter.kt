@@ -26,11 +26,25 @@ class UserTypeAdapter : TypeAdapter<List<User>>() {
     private val delegate = gson.getAdapter(object : TypeToken<List<User>>(){})
     private val elementAdapter = gson.getAdapter(JsonElement::class.java)
 
+    /**
+     * Write the [List] of [User] objects in JSON format
+     * @param out a [JsonWriter] instance
+     * @param value a [List] of [User] objects to write in JSON format
+     *
+     * @see [JsonWriter]
+     */
     override fun write(out: JsonWriter?, value: List<User>?) {
         delegate.write(out, value)
 
     }
 
+    /**
+     * Read the [List] of [User] objects in JSON format
+     * @param in a [JsonReader] instance
+     * @param value a [List] of [User] objects to write in JSON format
+     *
+     * @see [JsonReader]
+     */
     override fun read(`in`: JsonReader?): List<User> {
         val jsonElement = elementAdapter.read(`in`)
         val jsonObject = jsonElement.asJsonObject

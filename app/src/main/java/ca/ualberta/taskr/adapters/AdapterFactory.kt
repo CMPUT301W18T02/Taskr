@@ -27,9 +27,8 @@ class AdapterFactory : TypeAdapterFactory {
     /**
      * Create the TypeAdapter the given Gson
      * @param T the type of object to produce an adapter for
-     * @property gson the [Gson] instance of the object
-     * @property type the type of the information contained within the gson object
-     * @constructor non-existant
+     * @param gson the [Gson] instance of the object
+     * @param type the type of the information contained within the gson object
      * @see [TypeToken]
      * @see [Gson]
      * @see [TypeAdapter]
@@ -46,13 +45,23 @@ class AdapterFactory : TypeAdapterFactory {
         val taskListType = object : TypeToken<List<@JvmSuppressWildcards Task>>() {}
         val elasticsearchIDType = object : TypeToken<ElasticsearchID>() {}
 
-
         return object : TypeAdapter<T>() {
+
+            /**
+             * Write out an object in JSON format
+             * @param out the output [JsonWriter] instance
+             * @param value the Object write
+             */
             @Throws(IOException::class)
             override fun write(out: JsonWriter, value: T) {
                 delegate?.write(out, value)
             }
 
+            /**
+             * Read in an object from JSON format
+             * @param in the [JsonReader] instance
+             * @return the object
+             */
             @Throws(IOException::class)
             override fun read(`in`: JsonReader): T {
                 val jsonElement = elementAdapter.read(`in`)

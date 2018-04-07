@@ -5,19 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.OnClick
 import ca.ualberta.taskr.R
+import ca.ualberta.taskr.adapters.BidListAdapter.OnItemClickListener
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.util.PhotoConversion
-import kotlinx.android.synthetic.main.row_bid.view.*
-import org.w3c.dom.Text
-import javax.security.auth.callback.Callback
 
 /**
  * Created by Jacob Bakker on 3/15/2018.
@@ -25,7 +21,7 @@ import javax.security.auth.callback.Callback
 
 /**
  * BidListAdapter Class. This class takes in an [ArrayList] of Bids and produces a [RecyclerView.Adapter]
- * for displaying the views.
+ * for displaying the views of bids associated with a specific [Task]
  *
  * @property taskBidList An [ArrayList] containing all of the bids
  * @constructor initializes the bidlist and links into the [OnItemClickListener]
@@ -62,21 +58,22 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): R
     }
 
     /**
+     *
      * OnItemClickListener interface implementation
      */
     interface OnItemClickListener {
 
         /**
          * Called when an item is clicked
-         * @property view The specified [View]
-         * @property position The position within the ListView
+         * @param view The specified [View]
+         * @param position The position within the ListView
          */
         fun onItemClick(view : View, position : Int)
     }
 
     /**
      * Sets the itemClickListener
-     * @property itemClickListener the [OnItemClickListener] instance
+     * @param itemClickListener the [OnItemClickListener] instance
      */
     fun setOnItemClickListener(itemClickListener : OnItemClickListener) {
         this.itemClickListener = itemClickListener
@@ -84,8 +81,8 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): R
 
     /**
      * Create a view for a selected view
-     * @property parent the [ViewGroup] the viewHolder is a part of
-     * @property viewType the type of view
+     * @param parent the [ViewGroup] the viewHolder is a part of
+     * @param viewType the type of view
      * @return an instance of [LocalViewHolder] containing a view pointing towards our item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
@@ -95,8 +92,8 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): R
 
     /**
      * Bind a selected view
-     * @property holder the [LocalViewHolder] to bind
-     * @property position the position within the view to bind
+     * @param holder the [LocalViewHolder] to bind
+     * @param position the position within the view to bind
      */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val bid = bidList[position]
@@ -117,6 +114,9 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): R
         return bidList.size
     }
 
+    /**
+     * Callback for when the user profile is opened
+     */
     @OnClick(R.id.bidderName)
     fun openUserProfile() {
         Log.i("HELLO", "THINGS")
