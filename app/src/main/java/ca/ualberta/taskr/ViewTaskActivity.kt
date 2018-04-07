@@ -62,6 +62,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var isRequester: Boolean = false
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
+
     private lateinit var bidListAdapter: BidListAdapter
     private var userList: ArrayList<User> = ArrayList()
 
