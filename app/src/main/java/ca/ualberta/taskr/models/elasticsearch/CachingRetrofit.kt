@@ -349,6 +349,7 @@ class CachingRetrofit(val context: Context) {
         val callback = object : Callback<Boolean> {
             override fun onResponse(response: Boolean, responseFromCache: Boolean) {}
         }
+
         for (user in getUsersToUpload()) {
             updateUser(callback).execute(user)
         }

@@ -19,9 +19,22 @@ import com.google.gson.JsonElement
  *
  *  UserType AdapterFactory Class. Assembles Usertypes into a useable datatype for elasticsearch
  *  and retrofit
+ *
+ *  @constructor creates the framework for the AdapterFactory
  */
 class AdapterFactory : TypeAdapterFactory {
 
+    /**
+     * Create the TypeAdapter the given Gson
+     * @param T the type of object to produce an adapter for
+     * @property gson the [Gson] instance of the object
+     * @property type the type of the information contained within the gson object
+     * @constructor non-existant
+     * @see [TypeToken]
+     * @see [Gson]
+     * @see [TypeAdapter]
+     * @throws [IOException]
+     */
     override fun <T : Any?> create(gson: Gson?, type: TypeToken<T>?): TypeAdapter<T> {
         if (gson == null) {
             throw IOException()
