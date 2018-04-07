@@ -55,6 +55,7 @@ class CreateNewUserTest {
     }
 
     /**
+     * US 03.01.01, US 03.01.03
      *
      * As a user, I want a profile with a unique username and my contact information.
      * As a user, I want the contact information to include an email address and a phone number.
