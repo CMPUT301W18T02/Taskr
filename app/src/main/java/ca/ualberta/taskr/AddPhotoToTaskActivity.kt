@@ -3,23 +3,20 @@ package ca.ualberta.taskr
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.media.ThumbnailUtils
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
+import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.AddPhotosListAdapter
 import ca.ualberta.taskr.util.PhotoConversion
-import java.io.IOException
-import android.media.ThumbnailUtils
-
-
 
 
 /**
@@ -35,6 +32,9 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     @BindView(R.id.addPhotosList)
     lateinit var photoList: RecyclerView
 
+    @BindView(R.id.addPhotosToolbar)
+    lateinit var toolbar: Toolbar
+
     lateinit var photoListAdapter: AddPhotosListAdapter
 
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -45,6 +45,11 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_photo_to_task)
         ButterKnife.bind(this)
+
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
         currentPhotosList.addAll(intent.getStringArrayListExtra("currentPhotos"))
 
@@ -88,6 +93,16 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         intent.putStringArrayListExtra("currentPhotos", currentPhotosList)
         setResult(RESULT_OK, intent)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

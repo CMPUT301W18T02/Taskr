@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.MenuItem
 import android.widget.EditText
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -33,6 +35,9 @@ class EditTaskActivity : AppCompatActivity() {
     @BindView(R.id.locationEditText)
     lateinit var locationEditText: EditText
 
+    @BindView(R.id.editTaskToolbar)
+    lateinit var toolbar: Toolbar
+
     var taskPassedIn: Boolean = false
     private var editTask: Task? = null
     private var position: LatLng? = null
@@ -43,6 +48,11 @@ class EditTaskActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_task)
         ButterKnife.bind(this)
+
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
         if (intent.getStringExtra("Task") != null) {
             taskPassedIn = true
@@ -135,6 +145,16 @@ class EditTaskActivity : AppCompatActivity() {
             photos.clear()
             photos.addAll(data.getStringArrayListExtra("currentPhotos"))
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     @OnClick(R.id.taskAddImageButton)
