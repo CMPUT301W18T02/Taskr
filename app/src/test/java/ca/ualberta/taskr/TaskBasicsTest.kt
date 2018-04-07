@@ -100,6 +100,9 @@ class TaskBasicsTest {
     /**
      * US 01.01.01
      *
+     * As a task requester, I want to add a task to my tasks, each denoted with a title, brief
+     * description, and initial status: requested.
+     *
      * Test case that makes sure that data that is set in the EditText Fields are properly passed
      * to the database after pressing the post task button.
      *
@@ -147,6 +150,9 @@ class TaskBasicsTest {
     /**
      * US 01.01.02
      *
+     * As a task requester, I want the maximum length of the task title to be at least 30
+     * characters.
+     *
      * Checks that the task title (either new or edited) does not exceed the maximum length
      * required for the application specifications.
      */
@@ -189,6 +195,9 @@ class TaskBasicsTest {
 
     /**
      * US 01.01.03
+     *
+     * As a task requester, I want the maximum length of the task description to be at least
+     * 300 characters.
      *
      * Makes sure that the length of the task description does not surpass
      * the maximum length of the task description required for the application specifications
@@ -238,6 +247,8 @@ class TaskBasicsTest {
     /**
      * US 01.02.01
      *
+     * As a task requester, I want to view a list of my tasks, with their titles and statuses.
+     *
      * Tests to check if the user can view a list of their tasks on the screen.
      */
     @Test
@@ -279,6 +290,8 @@ class TaskBasicsTest {
 
     /**
      * US 01.03.01
+     *
+     * As a task requester, I want to edit the details for any one of my tasks with status: requested.
      *
      * Test that checks to make sure that you can edit a Task.
      */
@@ -357,6 +370,8 @@ class TaskBasicsTest {
 
     /**
      * US 01.04.01
+     *
+     * As a task requester, I want to delete a task of mine.
      *
      * Test that checks to make sure that the task is deleted in the server after it has been
      * requested to be deleted.

@@ -22,8 +22,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 /**
- *
- * Created by marissasnihur on 2018-03-28 / edited by Nathan
+ * Created by marissasnihur on 2018-03-28 / edited by Nathan, James
  *
  * This test class handles all of the buttons and circumstances when we edit information for a
  * current user, as well as when we are creating a user (since it is used in both places!)
@@ -81,7 +80,7 @@ class EditUserTest {
     }
 
     /**
-     * Test deleting a user from the elasticsearch database
+     * Delete the test User from the database after the tests have been run with the User.
      */
     private fun deleteTestUser(){
         //delete test user in elastic search, @JamesCook
@@ -102,6 +101,8 @@ class EditUserTest {
     }
 
     /**
+     * US 03.02.01
+     *
      * As a user, I want to edit the contact information in my profile.
      *
      * This function checks the ApplyChangesButton and makes sure that it takes the
