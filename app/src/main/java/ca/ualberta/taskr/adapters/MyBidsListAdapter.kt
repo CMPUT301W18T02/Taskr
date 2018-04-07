@@ -75,7 +75,7 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
             holder.myBid.text = "No bid!"
         }
         if (task.photos.size != 0){
-            holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[1]))
+            holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
         }
     }
     /**

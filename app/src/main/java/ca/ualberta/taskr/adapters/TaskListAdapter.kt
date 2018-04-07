@@ -9,8 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
-import android.R.attr.onClick
-
+import ca.ualberta.taskr.util.PhotoConversion
 
 
 /**
@@ -46,15 +45,13 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.row_task_item, parent, false)
 
-        //return LocalViewHolder(itemView)
-
         val holder = LocalViewHolder(itemView)
         holder.itemView.setOnClickListener({ view -> mClickListener.onClick(view) })
         return holder
     }
 
     /**
-     * Bind a subset window of the dataset to the LocalViewHolder
+     * Bind a subset window of the data set to the LocalViewHolder
      */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val task = taskList[position]
@@ -67,6 +64,9 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         }
         else{
             holder.taskLowestBid.text = "No bid!"
+        }
+        if (task.photos.size != 0){
+            holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
         }
     }
     /**

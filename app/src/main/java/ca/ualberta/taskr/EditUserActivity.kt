@@ -82,6 +82,10 @@ class EditUserActivity : AppCompatActivity() {
                 userSurnameText.setText(oldUserObject.name)
                 userEmailText.setText(oldUserObject.email)
                 userPhoneNumberText.setText(oldUserObject.phoneNumber)
+                if (oldUserObject.profilePicture != null &&
+                        oldUserObject.profilePicture.isNotEmpty()){
+                    profileImageButton.setImageBitmap(PhotoConversion.getBitmapFromString(oldUserObject.profilePicture))
+                }
             }
         }
 
@@ -172,7 +176,8 @@ class EditUserActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (data == null) return
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val extras = data.extras
             val imageBitmap = extras!!.get("data") as Bitmap
