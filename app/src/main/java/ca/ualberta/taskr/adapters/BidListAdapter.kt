@@ -23,7 +23,6 @@ import javax.security.auth.callback.Callback
  * Created by Jacob Bakker on 3/15/2018.
  */
 
-class BidListAdapter(taskBidList: ArrayList<Bid>, userList: ArrayList<User>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 /**
  * BidListAdapter Class. This class takes in an [ArrayList] of Bids and produces a [RecyclerView.Adapter]
  * for displaying the views.
@@ -32,7 +31,7 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList: ArrayList<User>): Re
  * @constructor initializes the bidlist and links into the [OnItemClickListener]
  * @see [RecyclerView.Adapter]
  */
-class BidListAdapter(taskBidList: ArrayList<Bid>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
+class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
     @BindView(R.id.bidderName)
     lateinit var bidderNameView : TextView
