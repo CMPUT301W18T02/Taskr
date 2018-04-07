@@ -418,6 +418,7 @@ class TaskBasicsTest {
         })
 
         //delete the task
+        // TODO: Make it so this is a button press in the appropriate activity.
         deleteTestTask()
 
         //check if task is still in server
