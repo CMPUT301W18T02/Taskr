@@ -82,6 +82,10 @@ class EditUserActivity : AppCompatActivity() {
                 userSurnameText.setText(oldUserObject.name)
                 userEmailText.setText(oldUserObject.email)
                 userPhoneNumberText.setText(oldUserObject.phoneNumber)
+                if (oldUserObject.profilePicture != null &&
+                        oldUserObject.profilePicture.isNotEmpty()){
+                    profileImageButton.setImageBitmap(PhotoConversion.getBitmapFromString(oldUserObject.profilePicture))
+                }
             }
         }
 
