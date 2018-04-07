@@ -553,7 +553,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         startActivity(intent)
     }
 
-
     private fun showErrorDialog(messageID : Int) {
         var message = getString(messageID)
         errorPopup = ErrorDialogFragment()
