@@ -1,6 +1,5 @@
 package ca.ualberta.taskr.models
 
-import ca.ualberta.taskr.controllers.UserTaskController
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
 import org.junit.Test
