@@ -35,6 +35,7 @@ class GenerateRetrofit {
 
         /**
          * Generate JSON using googles GSON library
+         * @return a [Gson] instance
          */
         @JvmStatic
         fun generateGson(): Gson {
@@ -52,6 +53,7 @@ class GenerateRetrofit {
 
         /**
          * Generate a Retrofit compatible profile from the elasticsearch information
+         * @return a constructed set of [ElasticSearch] calls
          */
         @JvmStatic
         fun generateRetrofit(): ElasticSearch {
