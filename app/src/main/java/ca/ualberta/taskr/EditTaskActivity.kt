@@ -2,12 +2,10 @@ package ca.ualberta.taskr
 
 import android.app.Activity
 import android.content.Intent
-import android.media.Image
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.EditText
-import android.widget.ImageView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -15,13 +13,9 @@ import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import ca.ualberta.taskr.models.elasticsearch.Query
-import com.mapbox.mapboxsdk.geometry.LatLng
-import retrofit2.Call
 import ca.ualberta.taskr.models.elasticsearch.Callback
-import retrofit2.Response
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * EditTaskActivity.
@@ -29,9 +23,6 @@ import retrofit2.Response
  * This Activity is responsible for allowing a task to be edited
  */
 class EditTaskActivity : AppCompatActivity() {
-
-    @BindView(R.id.taskImageView)
-    lateinit var taskImageView: ImageView
 
     @BindView(R.id.taskTitleEditText)
     lateinit var titleEditText: EditText
@@ -45,6 +36,7 @@ class EditTaskActivity : AppCompatActivity() {
     var taskPassedIn: Boolean = false
     private var editTask: Task? = null
     private var position: LatLng? = null
+    private var photos: ArrayList<String> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +52,7 @@ class EditTaskActivity : AppCompatActivity() {
             val task = editTask
             if (task != null) {
                 position = task.location
+                photos = task.photos
                 fillBoxes(task)
             }
         } else {
@@ -99,7 +92,7 @@ class EditTaskActivity : AppCompatActivity() {
         val taskStatus: TaskStatus = TaskStatus.REQUESTED
         val taskBids: ArrayList<Bid> = ArrayList()
         val taskDetails: String = detailsEditText.text.toString()
-        val taskPhotos: ArrayList<String> = ArrayList()
+        val taskPhotos: ArrayList<String> = photos
 
         // Convert String to latlng
 //        val taskLatLng = GenerateRetrofit.generateGson().fromJson(locationEditText.text.toString(), LatLng::class.java)
@@ -129,15 +122,25 @@ class EditTaskActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if(data == null) return
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 position = GenerateRetrofit.generateGson().fromJson(data.getStringExtra("position"), LatLng::class.java)
                 locationEditText.setText(position.toString())
-
             }
         }
+        if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
+            photos.clear()
+            photos.addAll(data.getStringArrayListExtra("currentPhotos"))
+        }
+    }
 
+    @OnClick(R.id.taskAddImageButton)
+    fun addImagesToTask(){
+        val addImagesIntent = Intent(this, AddPhotoToTaskActivity::class.java)
+        addImagesIntent.putStringArrayListExtra("currentPhotos", photos)
+        startActivityForResult(addImagesIntent, 2)
     }
 }

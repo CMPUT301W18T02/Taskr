@@ -7,9 +7,8 @@ package ca.ualberta.taskr
 
 import android.app.Activity
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.view.GravityCompat
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -17,18 +16,21 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import butterknife.*
-import ca.ualberta.taskr.util.PermsUtil
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
 import ca.ualberta.taskr.adapters.BidListAdapter
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
+import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import ca.ualberta.taskr.models.elasticsearch.Query
+import ca.ualberta.taskr.util.PermsUtil
+import ca.ualberta.taskr.util.PhotoConversion
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -39,9 +41,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import retrofit2.Response
 import retrofit2.Call
-import ca.ualberta.taskr.models.elasticsearch.Callback
+import retrofit2.Response
 
 
 /**
@@ -90,6 +91,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var toolbar: Toolbar
     @BindView(R.id.viewTaskToolbarTitle)
     lateinit var toolbarTitle: TextView
+    @BindView(R.id.taskBannerImage)
+    lateinit var taskBannerImage: ImageView
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -223,6 +226,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
+        if (displayTask.photos.size != 0){
+            taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
+        }
     }
 
     /**
@@ -456,6 +462,4 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     override fun onMapClick(point : LatLng) {
         Log.i("Hello", position.toString())
     }
-
-
 }
