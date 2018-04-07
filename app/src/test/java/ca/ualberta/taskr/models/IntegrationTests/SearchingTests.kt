@@ -90,8 +90,7 @@ class SearchingTests {
     }
 
     /**
-     * Not a test case, instead a function that deletes tasks that are added to the database
-     * for the purpose of testing.
+     * Delete tasks that are added to the database for the purpose of testing.
      */
 
 
@@ -115,6 +114,8 @@ class SearchingTests {
 
     /**
      *
+     * US 04.01.01, US 04.02.01
+     *
      * As a task provider, I want to specify a set of keywords, and search for all tasks,
      * with status: requested or bidded, whose description contains all the keywords.
      *
@@ -136,7 +137,6 @@ class SearchingTests {
     /**
      * Test to check if the tasks in the database contain any of the test
      * that is entered into the searchBar.
-     *
      */
 
     @Test
@@ -190,10 +190,10 @@ class SearchingTests {
     }
 
     /**
+     * US 04.02.01
      *
      * As a task provider, I want search results to show each task with its task requester
      * username, title, status, lowest bid so far (if any).
-     *
      *
      * Test to make sure that all of the information that needs to be displayed is indeed
      * displayed by the task in the application.
