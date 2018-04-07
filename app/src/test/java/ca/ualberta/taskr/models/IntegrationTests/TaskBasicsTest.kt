@@ -27,7 +27,7 @@ import org.robolectric.shadows.ShadowLog
 
 
 /**
- * Created by mrnic on 2018-03-24.
+ * Created by James Cook on 2018-03-24.
  *
  * This test class deals with all of the tests that involve the task basic requirements.
  */
