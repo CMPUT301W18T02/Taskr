@@ -27,7 +27,7 @@ import retrofit2.Response
 
 /**
  *
- * Created by marissasnihur on 2018-03-28 / editted by Nathan
+ * Created by marissasnihur on 2018-03-28 / edited by Nathan
  *
  * This test class handles all of the buttons and circumstances when we edit information for a
  * current user, as well as when we are creating a user (since it is used in both places!)

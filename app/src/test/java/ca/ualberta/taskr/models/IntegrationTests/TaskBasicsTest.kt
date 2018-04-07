@@ -72,8 +72,7 @@ class TaskBasicsTest {
     }
 
     /**
-     * Not a test case, instead a function that deletes the test task after it is used in a test
-     * case.
+     * Deletes the test task after it is used in a test case.
      */
 
     private fun deleteTestTask(){
@@ -95,7 +94,7 @@ class TaskBasicsTest {
     }
 
     /**
-     * Makes sure that the activity is not null prior to starting functionality tests.
+     * Tests that the activity is not null prior to starting functionality tests.
      */
 
     @Test
@@ -104,6 +103,8 @@ class TaskBasicsTest {
     }
 
     /**
+     * US 01.01.01
+     *
      * Test case that makes sure that data that is set in the EditText Fields are properly passed
      * to the database after pressing the post task button.
      *
@@ -150,7 +151,9 @@ class TaskBasicsTest {
     }
 
     /**
-     * Checks that the task title (either new or editted) does not exceed the maximum length
+     * US 01.01.02
+     *
+     * Checks that the task title (either new or edited) does not exceed the maximum length
      * required for the application specifications.
      */
 
@@ -191,6 +194,8 @@ class TaskBasicsTest {
     }
 
     /**
+     * US 01.01.03
+     *
      * Makes sure that the length of the task description does not surpass
      * the maximum length of the task description required for the application specifications
      */
@@ -238,6 +243,8 @@ class TaskBasicsTest {
     }
 
     /**
+     * US 01.02.01
+     *
      * Tests to check if the user can view a list of their tasks on the screen.
      */
 
@@ -279,8 +286,9 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test that checks to make sure that when you edit the description of a task
-     * that it is posted correctly.
+     * US 01.03.01
+     *
+     * Test that checks to make sure that you can edit a Task.
      */
 
     @Test
@@ -357,12 +365,16 @@ class TaskBasicsTest {
     }
 
     /**
+     * US 01.04.01
+     *
      * Test that checks to make sure that the task is deleted in the server after it has been
      * requested to be deleted.
      */
 
     @Test
     fun delTask(){ //TODO: Fix Erroring out "ca.ualberta.taskr.exceptions.ResourceDoesNotExistException"
+        //TODO: Make sure to use buttons to delete task. Don't simply just request it be deleted.
+
         //populate text fields, push add task button, delete task, check server for deletion
         titleEditText.setText(taskTitle)
         descriptionEditText.setText(taskDescr)
