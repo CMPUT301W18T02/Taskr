@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 
-
 /**
  *  3/5/2018
  *
@@ -63,7 +62,6 @@ class GenerateRetrofit {
             val client = OkHttpClient.Builder()
                     .addInterceptor(interceptor).build()
 
-            //TODO https://stackoverflow.com/questions/43455825/retrofit-2-gson-and-custom-deserializer
             val retrofit = Retrofit
                     .Builder()
                     .client(client)
@@ -73,6 +71,5 @@ class GenerateRetrofit {
 
             return retrofit.create(ElasticSearch::class.java)
         }
-
     }
 }

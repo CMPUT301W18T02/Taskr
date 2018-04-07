@@ -7,8 +7,6 @@ import random
 f = faker.Faker()
 f.seed(3423)
 
-base_url = 'http://cmput301.softwareprocess.es:8080/cmput301w18t02/'
-
 
 class User:
     def __init__(self):
@@ -29,24 +27,44 @@ class User:
 class Task:
     def __init__(self, owner_username, bidders):
         self.owner = owner_username
-        self.title = f.bs()
-        self.status = random.choice(["REQUESTED", "BID", "ASSIGNED", "DONE"])
-        self.bids = [Bid(bidder) for bidder in bidders if random.choice([True,False])]
-        self.description = f.text()
+        self.title = f.bs().capitalize()
+        self.bids = self.random_null_bids([Bid(bidder) for bidder in bidders if random.choice([True,False])])
+        self.description = f.text().replace("\n", "")
         # self.photos = [str(base64.encodebytes(bytes(f.text(), "utf-8"))) for i in range(random.randint(0, 10))]
         self.photos = []
         self.location = {
-            "latitude": random.uniform(54.237022, 52.713658) + random.random(),
-            "longitude": random.uniform(-115.094366, -111.748048) + random.random(),
-            "altitude": 0.0}
-        self.chosenBidder = self.choose_bid(bidders)
+            "latitude": random.uniform(53.433298, 53.635187),
+            "longitude": random.uniform(-113.301333, -113.692089),
+            # "latitude": random.uniform(0.433298, 80.635187),
+            # "longitude": random.uniform(-170.301333, -0.692089),
 
+            "altitude": 0.0}
+        if len(self.bids) == 0:
+            self.status = "REQUESTED"
+        else:
+            self.status = random.choice(["BID", "ASSIGNED", "DONE"])
+        if self.status in ["ASSIGNED", "DONE"]:
+            self.chosenBidder = self.choose_bid([bid.owner for bid in self.bids])
+        else:
+            self.chosenBidder = None
+
+
+    def __str__(self):
+        return self.title + ": LatLng(" + str(self.location) + ")"
     @staticmethod
     def choose_bid(bidders):
         if random.choice([True, False]):
             return random.choice(bidders)
         else:
             return None
+
+    @staticmethod
+    def random_null_bids(bids):
+        if random.choice([True, True, True, False]):
+            return bids
+        else:
+            return []
+
 
     def to_json(self):
         return json.dumps(self.__dict__, default=lambda x: x.__dict__)

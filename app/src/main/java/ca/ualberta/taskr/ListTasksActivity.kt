@@ -20,13 +20,15 @@ import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import android.support.design.widget.NavigationView
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.View
-import android.widget.TextView
+import android.widget.RelativeLayout
 import ca.ualberta.taskr.controllers.NavViewController
+import ca.ualberta.taskr.controllers.UserController
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Callback
+
 
 
 /**
@@ -48,8 +50,14 @@ class ListTasksActivity : AppCompatActivity() {
     @BindView(R.id.taskListToolbar)
     lateinit var toolbar: Toolbar
 
+    @BindView(R.id.loadingPanel)
+    lateinit var loadingPanel: RelativeLayout
+
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
+
+    @BindView(R.id.taskListRefresh)
+    lateinit var taskListRefresh: SwipeRefreshLayout
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
@@ -57,6 +65,7 @@ class ListTasksActivity : AppCompatActivity() {
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var shownTaskList: ArrayList<Task> = ArrayList()
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
+    private lateinit var username: String
 
     /**
      * The on create method for the ListTasksActivity.
@@ -73,6 +82,8 @@ class ListTasksActivity : AppCompatActivity() {
         actionbar!!.setDisplayHomeAsUpEnabled(true)
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu)
 
+        username = UserController(this).getLocalUserName()
+
         // Build up recycle view
         viewManager = LinearLayoutManager(this)
         taskList.apply {
@@ -82,19 +93,7 @@ class ListTasksActivity : AppCompatActivity() {
 
         NavViewController(navView, drawerLayout, applicationContext)
 
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
-                masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
-                updateSearch(searchText)
-            }
-
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-            }
-        })
+        updateTasks()
 
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -112,14 +111,34 @@ class ListTasksActivity : AppCompatActivity() {
         })
 
         taskListAdapter.setClickListener(View.OnClickListener {
-            val position = taskList.indexOfChild(it)
-            val nearbyTasksIntent = Intent(applicationContext, ViewTaskActivity::class.java)
+            val position = taskList.getChildLayoutPosition(it)
+            val viewTaskIntent = Intent(applicationContext, ViewTaskActivity::class.java)
             val bundle = Bundle()
             val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
             bundle.putString("TASK", strTask)
-            nearbyTasksIntent.putExtras(bundle)
-            startActivity(nearbyTasksIntent)
+            viewTaskIntent.putExtras(bundle)
+            startActivity(viewTaskIntent)
         })
+
+        taskListRefresh.setOnRefreshListener({
+            updateTasks()
+        })
+    }
+
+    /**
+     * Network call to generate the master task list
+     */
+    private fun updateTasks() {
+        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
+            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
+                //TODO Deal with offline
+                masterTaskList.clear()
+                masterTaskList.addAll(response as ArrayList<Task>)
+                updateSearch(searchText)
+                taskListRefresh.isRefreshing = false
+
+            }
+        }).execute()
     }
 
     /**
@@ -139,11 +158,17 @@ class ListTasksActivity : AppCompatActivity() {
      * Use to update the shownTaskList by applying a search filter to the master list
      */
     fun updateSearch(textToSearch : String){
+        loadingPanel.visibility = View.VISIBLE
         shownTaskList.clear()
+        taskListAdapter.notifyDataSetChanged()
+
         shownTaskList.addAll(masterTaskList.filter {
-            it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE) &&
-                (it.title.contains(textToSearch) || it.description.contains(textToSearch))
+            it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
+                && (it.owner != username)
+                && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
         })
+        loadingPanel.visibility = View.GONE
+
         taskListAdapter.notifyDataSetChanged()
     }
 
@@ -151,6 +176,11 @@ class ListTasksActivity : AppCompatActivity() {
     fun openMapView(){
         val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
-        finish()
     }
+
+    override fun onResume() {
+        super.onResume()
+        updateTasks()
+    }
+
 }

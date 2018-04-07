@@ -20,7 +20,8 @@ import ca.ualberta.taskr.models.Task
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
 
     private var taskList: List<Task> = masterTaskList
-    var mClickListener: View.OnClickListener? = null
+
+    private lateinit var mClickListener: View.OnClickListener
 
     /**
      * Local view of the [TaskListAdapter]
@@ -56,7 +57,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         //return LocalViewHolder(itemView)
 
         val holder = LocalViewHolder(itemView)
-        holder.itemView.setOnClickListener({ view -> mClickListener!!.onClick(view) })
+        holder.itemView.setOnClickListener({ view -> mClickListener.onClick(view) })
         return holder
     }
 
@@ -72,7 +73,7 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskStatus.text = task.status.toString()
         val lowestBid = task.bids.minBy { it ->  it.amount }
         if (lowestBid != null){
-            holder.taskLowestBid.text = lowestBid.amount.toString()
+            holder.taskLowestBid.text = "Top Bid: $" + lowestBid.amount
         }
         else{
             holder.taskLowestBid.text = "No bid!"

@@ -53,11 +53,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="@string/activity_edit_task_task_title"
         android:inputType="textPersonName"
-        android:text="@string/activity_edit_task_task_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/taskImageView"
+        android:maxLength="30"
+        />
 
     <EditText
         android:id="@+id/detailsEditText"
@@ -67,11 +69,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="@string/activity_edit_task_details"
         android:inputType="textMultiLine"
-        android:text="@string/activity_edit_task_details"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskTitleEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/taskTitleEditText"
+        android:maxLength="300"
+        />
 
     <EditText
         android:id="@+id/locationEditText"
@@ -81,8 +85,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="@string/activity_edit_task_address"
         android:inputType="textPersonName"
-        android:text="@string/activity_edit_task_address"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailsEditText" />

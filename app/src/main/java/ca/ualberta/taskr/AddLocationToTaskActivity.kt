@@ -2,6 +2,7 @@ package ca.ualberta.taskr
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -19,6 +20,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ca.ualberta.taskr.R.id.mapView
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 
 import com.mapbox.mapboxsdk.constants.Style
 
@@ -35,7 +38,7 @@ import com.mapbox.mapboxsdk.constants.Style
 class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
     @BindView(R.id.rangeMapView)
     lateinit var mapView: MapView
-    private var mapboxMap: MapboxMap? = null
+    private lateinit var mapboxMap: MapboxMap
     @BindView(R.id.add_location)
     lateinit var button: Button
     private var position: LatLng? = null
@@ -47,43 +50,43 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     @OnClick(R.id.add_location)
     fun sendBack() {
-        val intent = Intent(applicationContext, EditTaskActivity::class.java)
-        intent.putExtra("LatLng", position)
-        startActivity(intent)
+        val intent = Intent()
+        intent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
+        setResult(RESULT_OK, intent)
+        finish()
 
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
+        Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
         mapView.onCreate(savedInstanceState)
-
         mapView.getMapAsync(this)
+        position = GenerateRetrofit.generateGson().fromJson(intent.getStringExtra("position"), LatLng::class.java)
+        println(position)
 
     }
 
 
-
-
-    override fun onStart(){
+    override fun onStart() {
         super.onStart()
         mapView.onStart()
     }
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
         mapView.onPause()
     }
 
-    override fun onStop(){
+    override fun onStop() {
         super.onStop()
         mapView.onStop()
     }
@@ -106,6 +109,12 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
+        if (position != null) {
+            setCameraPosition(position!!)
+
+            marker = mapboxMap.addMarker(MarkerOptions()
+                    .position(position))
+        }
         mapboxMap.addOnMapClickListener(this)
 
     }
@@ -114,25 +123,38 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         return true
     }
 
+    /**
+     * On Map Click - places a marker on the map, if a marker is currently placed
+     * on the map - removes it and places a marker in the new position.
+     */
+
 
     override fun onMapClick(point: LatLng) {
         /*iconFactory = IconFactory.getInstance(this)
         iconDrawable = ContextCompat.getDrawable(this, R.drawable.purple_marker)
         icon = iconFactory.fromDrawable(iconDrawable)*/
+        println(point)
         if (position == null) {
-            marker = mapboxMap!!.addMarker(MarkerOptions()
-                    .position(point)
-                    .icon(icon))
+            marker = mapboxMap.addMarker(MarkerOptions()
+                    .position(point))
             position = point
         } else {
             marker.remove()
-            marker = mapboxMap!!.addMarker(MarkerOptions()
+            marker = mapboxMap.addMarker(MarkerOptions()
                     .position(point))
             position = point
 
         }
     }
 
+    private fun latLngFromLocation(location: Location): LatLng {
+        return LatLng(location.latitude, location.longitude)
+    }
+
+    private fun setCameraPosition(point: LatLng) {
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                point, 10.0))
+    }
 
 
 }

@@ -14,8 +14,9 @@ tools:context="ca.ualberta.taskr.NearbyTasksActivity">
     mapbox:mapbox_cameraTargetLat="41.885"
     mapbox:mapbox_cameraTargetLng="-87.679"
     mapbox:mapbox_styleUrl="@string/style_url"
-    mapbox:mapbox_cameraTilt="60"
+    mapbox:mapbox_cameraTilt="0"
     mapbox:mapbox_cameraZoom="12"
+    mapbox:mapbox_myLocation="true"
     />
 
 </RelativeLayout>
