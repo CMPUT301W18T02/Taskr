@@ -59,4 +59,8 @@
     <string name="prefs_user">user_key</string>
     <string name="my_bids">My Bids</string>
     <string name="my_tasks">My Tasks</string>
+    <string name="taskimages">TaskImages</string>
+    <string name="add_photos">Add Photos</string>
+    <string name="select_photo_from_gallery">Select photo from gallery</string>
+    <string name="take_photo">Take Photo</string>
 </resources>
