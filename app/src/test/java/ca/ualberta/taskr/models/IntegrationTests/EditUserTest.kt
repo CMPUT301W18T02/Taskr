@@ -141,20 +141,5 @@ class EditUserTest {
         deleteTestUser()
     }
 
-    /**
-     * TODO: Finish checkMaxUserLength Test
-     *
-     * US 03.01.02
-     *
-     * As a user, I want the maximum length of a username to be at least 8 characters.
-     *
-     * This test assures that the Username length of the individual does not exceed
-     * the maximum username length for the database/requirements of the application.
-     */
-
-    @Test
-    fun checkMaxUserLength(){
-        Assert.assertTrue(true)
-    }
 
 }
