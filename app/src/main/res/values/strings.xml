@@ -25,6 +25,7 @@
     <string name="activity_view_tasks_error_mark_done">Tasks must be assigned to be marked done.</string>
     <string name="activity_view_tasks_error_reopen">Tasks must be assigned to be reopened.</string>
     <string name="activity_view_tasks_error_add_bid">Cannot bid on assigned or done tasks.</string>
+    <string name="activity_view_tasks_error_delete">Cannot delete tasks with bids that are not done.</string>
 
     <string name="row_bid_amount">$%.2f</string>
 

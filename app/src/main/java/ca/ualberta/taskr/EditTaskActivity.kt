@@ -134,6 +134,9 @@ class EditTaskActivity : AppCompatActivity() {
         val taskBids: ArrayList<Bid> = ArrayList()
         val taskDetails: String = detailsEditText.text.toString()
         val taskPhotos: ArrayList<String> = photos
+        if (taskTitle.isEmpty() == true || taskDetails.isEmpty() == true) {
+            return
+        }
 
         // Convert String to latlng
 //        val taskLatLng = GenerateRetrofit.generateGson().fromJson(locationEditText.text.toString(), LatLng::class.java)
