@@ -104,6 +104,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
     var userController: UserController = UserController(this)
+    private var authorImageStr : String = ""
 
     private lateinit var bidListAdapter: BidListAdapter
     private var userList: ArrayList<User> = ArrayList()
@@ -143,6 +144,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var toolbarTitle: TextView
     @BindView(R.id.taskBannerImage)
     lateinit var taskBannerImage: ImageView
+    @BindView(R.id.taskAuthorImage)
+    lateinit var authorImage : ImageView
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -368,6 +371,24 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateDetails() {
         taskAuthor.text = displayTask.owner
+        CachingRetrofit(this).getUsers(object: Callback<List<User>> {
+            override fun onResponse(response: List<User>, responseFromCache : Boolean) {
+                var userList = response.filter {u -> (u.username == displayTask.owner)}
+                if (userList.isNotEmpty()) {
+                    var user = userList[0]
+                    Log.i("RRRRRRRR", user.name + user.phoneNumber)
+                    if (user.profilePicture != null) {
+                        authorImageStr = user.profilePicture!!
+                    }
+                }
+            }
+        }).execute()
+        Log.i("HEY", authorImageStr + "HHHH")
+        if (authorImageStr.isNotEmpty()) {
+            authorImage.setImageBitmap(PhotoConversion.getBitmapFromString(authorImageStr))
+        } else {
+            authorImage.visibility = View.GONE
+        }
         taskTitle.text = displayTask.title
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
