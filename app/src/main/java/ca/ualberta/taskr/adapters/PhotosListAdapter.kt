@@ -10,15 +10,22 @@ import ca.ualberta.taskr.util.PhotoConversion
 
 
 /**
- * AddPhotosListAdapter class.
+ * AddPhotosListAdapter class. This class takes in an [ArrayList] of encoded photo strings and
+ * produces a [RecyclerView.Adapter] for displaying the photos in that [ArrayList].
+ *
+ * @param photosList List of photos to show
+ * @see RecyclerView.Adapter
  */
-class AddPhotosListAdapter(photosList: ArrayList<String>) : RecyclerView.Adapter<AddPhotosListAdapter.LocalViewHolder>() {
+class PhotosListAdapter(photosList: ArrayList<String>) : RecyclerView.Adapter<PhotosListAdapter.LocalViewHolder>() {
     private var photosList: List<String> = photosList
 
     private lateinit var mClickListener: View.OnClickListener
 
     /**
-     * LocalViewHolder function
+     * Local view of the [PhotosListAdapter]
+     * @param view the specified [View] containing the local view
+     * @see [RecyclerView.ViewHolder]
+     * @see [View.OnClickListener]
      */
     class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
@@ -30,7 +37,10 @@ class AddPhotosListAdapter(photosList: ArrayList<String>) : RecyclerView.Adapter
     }
 
     /**
-     * Create the LocalViewHolder
+     * Create a view for a selected view
+     * @param parent the [ViewGroup] the viewHolder is a part of
+     * @param viewType the type of view
+     * @return an instance of [LocalViewHolder] containing a view pointing towards our item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -42,19 +52,26 @@ class AddPhotosListAdapter(photosList: ArrayList<String>) : RecyclerView.Adapter
     }
 
     /**
-     * Bind a subset window of the dataset to the LocalViewHolder
+     * Bind a selected view
+     * @param holder the [LocalViewHolder] to bind
+     * @param position the position within the view to bind
      */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val photo = photosList[position]
         holder.photoToBeAdded.setImageBitmap(PhotoConversion.getBitmapFromString(photo))
     }
     /**
-     * Return the size of the dataset
+     * Get the size of the photos list
+     * @return the size of the photos list
      */
     override fun getItemCount(): Int {
         return photosList.size
     }
 
+    /**
+     * Set the click listener to a callback function
+     * @param callback a [View.OnClickListener]
+     */
     fun setClickListener(callback: View.OnClickListener) {
         mClickListener = callback
     }

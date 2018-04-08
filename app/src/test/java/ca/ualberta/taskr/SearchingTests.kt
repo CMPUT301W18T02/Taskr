@@ -1,16 +1,9 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.content.Intent
-import android.support.design.widget.NavigationView
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.EditText
-import android.widget.RelativeLayout
-import butterknife.BindView
-import ca.ualberta.taskr.*
-import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
@@ -25,7 +18,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Robolectric
-import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowActivity
 import org.robolectric.shadows.ShadowLog
