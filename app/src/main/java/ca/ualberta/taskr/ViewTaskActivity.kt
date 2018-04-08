@@ -720,4 +720,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         errorPopup.arguments = args
         errorPopup.show(fragmentManager, "DialogFragment")
     }
+
+    @OnClick(R.id.taskBannerImage)
+    fun onClickTaskImage(){
+        val intent = Intent(this, PhotoGalleryActivity::class.java).apply {
+            putExtra("currentPhotos", displayTask.photos)
+        }
+        startActivity(intent)
+    }
 }

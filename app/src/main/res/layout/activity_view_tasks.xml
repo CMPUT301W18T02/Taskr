@@ -92,7 +92,7 @@
                 app:layout_constraintStart_toEndOf="@+id/taskAuthorImage"
                 app:layout_constraintTop_toBottomOf="@+id/taskBannerImage" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/taskBannerImage"
                 android:layout_width="0dp"
                 android:layout_height="144dp"

@@ -2,8 +2,6 @@ package ca.ualberta.taskr
 
 import android.app.ActionBar
 import android.app.DialogFragment
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,8 +28,10 @@ class UserInfoFragment : DialogFragment() {
     private lateinit var user : User
     @BindView(R.id.usernamePopup)
     lateinit var username : TextView
+
     @BindView(R.id.userEmailAddressPopup)
     lateinit var userEmail : TextView
+
     @BindView(R.id.userPhoneNumberPopup)
     lateinit var userPhone : TextView
 
