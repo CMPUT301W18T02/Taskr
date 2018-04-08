@@ -21,12 +21,9 @@ import android.content.Intent
 import ca.ualberta.taskr.controllers.UserController
 import org.junit.Before
 import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.support.test.InstrumentationRegistry
-
-
-
-
-
+import android.support.test.espresso.action.ViewActions.scrollTo
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -53,7 +50,7 @@ class TaskBiddingTests {
 
     @Rule
     @JvmField
-    val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, true)
+    val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
     private lateinit var launchedActivity: Activity
 
     @Before
@@ -112,16 +109,15 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
-
-        val i = Intent()
         val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
         i.putExtra("TASK", taskStr)
         launchedActivity = rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
         UserController(context).setLocalUsername(username)
 
-        onView(withId(R.id.addBidOrMarkDone)).perform(click())
+        onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
 
         deleteTestTask()
     }
