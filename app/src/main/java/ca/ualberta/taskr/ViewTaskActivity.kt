@@ -21,6 +21,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.BidListAdapter
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
@@ -55,6 +56,7 @@ import java.util.*
  * @property isRequester [Boolean] set to true if current user is task requester.
  * @property username Obtained from shared preferences using [UserController]
  * @property taskBidList [RecyclerView] displaying all bids on displayed task.
+ * @property userController [UserController] for getting current user's username
  *
  * @property bidListAdapter [BidListAdapter] for taskBidList.
  * @property userList List of all users with bids on task. Required for [BidListAdapter].
@@ -92,6 +94,7 @@ import java.util.*
  * @see [UserInfoFragment]
  * @see [ErrorDialogFragment]
  * @see [MapBoxMap]
+ * @see [UserController]
  */
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInteractionListener,
                         AcceptBidFragment.AcceptBidFragmentInteractionListener, OnMapReadyCallback,
@@ -100,6 +103,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var isRequester: Boolean = false
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
+    var userController: UserController = UserController(this)
 
     private lateinit var bidListAdapter: BidListAdapter
     private var userList: ArrayList<User> = ArrayList()
@@ -223,16 +227,14 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         bidListAdapter = BidListAdapter(taskBidList, userList)
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
-                if (displayTask.status == TaskStatus.BID) {
-                    val bid = taskBidList[position]
-                    if (view.id == R.id.bidderName) {
-                        startUserInfoFragment(bid.owner)
-                    } else {
-                        if (isRequester) {
-                            startAcceptBidFragment(bid)
-                        } else if (username == bid.owner) {
-                            startEditBidFragment(bid)
-                        }
+                val bid = taskBidList[position]
+                if (view.id == R.id.bidderName) {
+                    startUserInfoFragment(bid.owner)
+                } else if (displayTask.status == TaskStatus.BID) {
+                    if (isRequester) {
+                        startAcceptBidFragment(bid)
+                    } else if (username == bid.owner) {
+                        startEditBidFragment(bid)
                     }
                 }
             }
@@ -355,8 +357,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * @see [UserController]
      */
     private fun getUserType() {
-        var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        username = editor.getString("Username", null)
+        username = userController.getLocalUserName()
         if (username == displayTask.owner) {
             isRequester = true
         }
