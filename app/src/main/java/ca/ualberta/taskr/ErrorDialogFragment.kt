@@ -11,13 +11,25 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 
 
+/**
+ * Fragment for displaying an error message.
+ *
+ * @property message [String] of the displayed error message.
+ * @property messageView [TextView] for the error message.
+ * @see [DialogFragment]
+ */
 class ErrorDialogFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters
     private lateinit var message : String
     @BindView(R.id.errorMessage)
     lateinit var messageView : TextView
 
-
+    /**
+     * Populates text fields.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -33,6 +45,12 @@ class ErrorDialogFragment : DialogFragment() {
     companion object {
         private val ARG_MESSAGE = "MESSAGE"
 
+        /**
+         * Returns instance of [ErrorDialogFragment] given an error message string.
+         *
+         * @param message [String] of the error message.
+         * @return fragment
+         */
         fun newInstance(message : String) : ErrorDialogFragment {
             val fragment = ErrorDialogFragment()
             val args = Bundle()
@@ -42,6 +60,11 @@ class ErrorDialogFragment : DialogFragment() {
         }
     }
 
+    /**
+     * Closes the fragment when "OK" button is clicked.
+     *
+     * @param view
+     */
     @OnClick(R.id.errorDismiss)
     fun dismiss(view : View) {
         this.dismiss()

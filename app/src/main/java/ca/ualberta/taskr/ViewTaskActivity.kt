@@ -55,6 +55,7 @@ import java.util.*
  * an assigned task. Requesters can also accept/decline bids. Task Providers can place
  * bids with an inputted monetary amount.
  *
+ * @author jtbakker
  * @property isRequester [Boolean] set to true if current user is task requester.
  * @property username Obtained from shared preferences using [UserController]
  * @property taskBidList [RecyclerView] displaying all bids on displayed task.

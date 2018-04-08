@@ -33,6 +33,7 @@ import com.mapbox.mapboxsdk.constants.Style
  * If Location is specified, returns position (LatLng) when add_location button is pressed.
  *
  * @author marissasnihur
+ * @author xrendan
  * @property mapView
  * @property button Button for confirming selected location.
  * @property position Coordinates of marker on map.
