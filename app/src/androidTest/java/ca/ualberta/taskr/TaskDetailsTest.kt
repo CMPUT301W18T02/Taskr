@@ -1,18 +1,13 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import butterknife.BindView
-import ca.ualberta.taskr.BuildConfig
-import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.R
-import ca.ualberta.taskr.ViewTaskActivity
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert
 import org.junit.Before
@@ -22,7 +17,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
-import org.robolectric.shadows.ShadowSettings.ShadowSystem.getString
 
 /**
  * Created by marissasnihur on 2018-04-06.
@@ -61,6 +55,8 @@ class TaskDetailsTest {
     private lateinit var task: Task
 
     private var lowestBid : Double = Double.POSITIVE_INFINITY
+    private val username = "TestUsername"
+
 
     @Before
     fun setUp(){
@@ -81,10 +77,14 @@ class TaskDetailsTest {
         val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
         bundle.putString("TASK", strTask)
 
-        //Mapbox.getInstance(ShadowApplication.getInstance().applicationContext, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
+
 
 
         //TODO: Stop Mapbox from breAKING THINGSSS
+        val editTaskActivity = Robolectric.setupActivity(EditTaskActivity::class.java)
+
+        UserController(editTaskActivity).setLocalUsername(username)
+
         activity = Robolectric.buildActivity(ViewTaskActivity::class.java, intent).create().visible().get()
 
         taskAuthor = activity.findViewById<TextView>(R.id.taskAuthorText)
