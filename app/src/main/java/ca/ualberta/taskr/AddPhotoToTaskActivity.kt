@@ -25,7 +25,15 @@ import ca.ualberta.taskr.util.PhotoConversion
  * This class allows for the ability to add a photos to a given task.
  *
  * @author eyesniper2
+ * @property REQUEST_IMAGE_CAPTURE RequestCode for opening camera app.
+ * @property REQUEST_IMAGE_GALLERY RequestCode for opening image gallery.
+ * @property photoList [RecyclerView] for currentPhotosList
+ * @property toolbar [Toolbar] containing back button.
+ * @property photoListAdapter [AddPhotosListAdapter] for rows of currentPhotosList
+ * @property viewManager [RecyclerView.LayoutManager] for list adapter.
+ * @property currentPhotosList List of task's photos
  * @see AppCompatActivity
+>>>>>>> Added remaining documentation for ListTasksActivity, AddPhotosToTaskActivity
  */
 class AddPhotoToTaskActivity : AppCompatActivity() {
 
@@ -48,7 +56,6 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
      * Initializes the view and obtains previous photos from an [Intent] object.
      *
      * @param savedInstanceState
-     * @see [Intent]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +86,7 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
 
+
     /**
      * Start up a photo capture activity to capture a picture for the users camera.
      *
@@ -93,6 +101,7 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
     /**
+
      * Start up a gallery import activity to capture a picture for the users camera.
      *
      * @see Intent.ACTION_PICK
@@ -135,6 +144,7 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
     /**
+<<<<<<< HEAD
      * Receives new photos and processes them.
      *
      * @param requestCode Request id
