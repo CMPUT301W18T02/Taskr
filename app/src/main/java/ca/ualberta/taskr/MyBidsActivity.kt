@@ -29,24 +29,18 @@ class MyBidsActivity : AppCompatActivity() {
 
     @BindView(R.id.myBidsList)
     lateinit var myBidsList: RecyclerView
-
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
-
     @BindView(R.id.myBidsToolbar)
     lateinit var toolbar: Toolbar
-
     @BindView(R.id.loadingPanel)
     lateinit var loadingPanel: RelativeLayout
-
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
-
     @BindView(R.id.myBidsRefresh)
     lateinit var myBidsRefresh: SwipeRefreshLayout
 
     private lateinit var viewManager: RecyclerView.LayoutManager
-
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var shownTaskList: ArrayList<Task> = ArrayList()
     private lateinit var myBidsListAdapter: MyBidsListAdapter

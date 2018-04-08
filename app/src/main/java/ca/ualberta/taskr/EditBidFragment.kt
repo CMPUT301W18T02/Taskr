@@ -19,9 +19,11 @@ import java.lang.Exception
 
 
 /**
- * EditBidFragment class
+ * A fragment that allows task providers to add/edit Bids on some Task.
  *
- * Allows task providers to add/edit Bids on some Task.
+ * @property displayBid
+ * @property enterAmountView EditText view for inputting new bid amount.
+ * @property fragmentTitle TextView for fragment title "Edit Bid"
  */
 class EditBidFragment : DialogFragment() {
 
@@ -35,11 +37,14 @@ class EditBidFragment : DialogFragment() {
     /**
      * Creates the view for EditBidFragment's layout, then updates displayed bid amount with
      * value obtained from a provided Bid object. If no Bid was provided, no update is made.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
-
         var view = inflater.inflate(R.layout.fragment_edit_bid, container, false)
         ButterKnife.bind(this, view)
         try {
@@ -47,8 +52,10 @@ class EditBidFragment : DialogFragment() {
                 enterAmountView.setText(displayBid.amount.toString())
             }
         } catch (e : UninitializedPropertyAccessException) {
-            // If displayBid not initialized, then no Bid object was provided by
-            // container activity.
+            /**
+             *  If displayBid not initialized, then no Bid object was provided by
+             *  container activity.
+             */
             Log.e("DisplayBid Object", "No Bid object provided")
         }
         if (arguments != null) {
@@ -62,7 +69,7 @@ class EditBidFragment : DialogFragment() {
     }
 
     /**
-     * Update layout width to MATCH_PARENT so that fragment width expands to fit screen width.
+     * Update fragment width to fit screen width.
      */
     override fun onStart() {
         super.onStart()
@@ -70,7 +77,9 @@ class EditBidFragment : DialogFragment() {
     }
 
     /**
-     * Default onAttach function.
+     * Default onAttach function for fragments.
+     *
+     * @param context
      */
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -82,7 +91,7 @@ class EditBidFragment : DialogFragment() {
     }
 
     /**
-     * Default onDetach function
+     * Default onDetach function for fragments.
      */
     override fun onDetach() {
         super.onDetach()
@@ -102,6 +111,9 @@ class EditBidFragment : DialogFragment() {
 
         /**
          * Factory method for creating instance of EditBidFragment given a Bid object.
+         *
+         * @param bid
+         * @return fragment
          */
         fun newInstance(bid: Bid): EditBidFragment {
             val fragment = EditBidFragment()
@@ -115,6 +127,8 @@ class EditBidFragment : DialogFragment() {
 
     /**
      * Cancels adding/editing bid by closing EditBidFragment.
+     *
+     * @param view
      */
     @OnClick(R.id.cancel)
     fun cancel(view : View) {
@@ -124,6 +138,8 @@ class EditBidFragment : DialogFragment() {
     /**
      * Verifies that inputted bid amount is a valid Double, then passes it back to container activity
      * using bidUpdate to allow bid to be created/edited. Closes EditBidFragment afterwards.
+     *
+     * @param view
      */
     @OnClick(R.id.confirm)
     fun confirm(view : View) {
