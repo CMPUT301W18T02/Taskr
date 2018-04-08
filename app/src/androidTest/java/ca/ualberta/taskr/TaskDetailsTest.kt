@@ -20,7 +20,9 @@ import org.junit.runner.RunWith
  * Created by marissasnihur on 2018-04-06.
  *
  */
+
 @RunWith(AndroidJUnit4::class)
+
 class TaskDetailsTest {
 
     private val taskTitle = "Test Title for a Task"

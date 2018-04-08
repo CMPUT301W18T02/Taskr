@@ -109,15 +109,28 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
+<<<<<<< HEAD
+=======
+
+        val targetContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(targetContext,ViewTaskActivity::class.java)
+>>>>>>> Small fixes
         val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val i = Intent(context, ViewTaskActivity::class.java)
         i.putExtra("TASK", taskStr)
-        launchedActivity = rule.launchActivity(i)
+        rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
+<<<<<<< HEAD
         UserController(context).setLocalUsername(username)
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
+=======
+        //val context = InstrumentationRegistry.getInstrumentation().targetContext
+        UserController(targetContext).setLocalUsername(username)
+
+        //onView(withId(R.id.addBidOrMarkDone)).perform(click())
+>>>>>>> Small fixes
 
         deleteTestTask()
     }
