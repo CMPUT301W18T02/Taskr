@@ -12,7 +12,6 @@ import org.junit.runner.RunWith
 import retrofit2.Response
 import retrofit2.Call
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -23,7 +22,9 @@ import org.junit.Before
 import android.app.Activity
 import android.app.PendingIntent.getActivity
 import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.action.ViewActions.scrollTo
+import android.support.test.espresso.action.ViewActions.*
+import ca.ualberta.taskr.models.Bid
+import org.junit.After
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -37,6 +38,9 @@ class TaskBiddingTests {
     private val taskDescr = "This is a description for a task. I am describing a task."
     private val taskLatLng = LatLng(80.0, 80.0)
     private val taskLocStr: String = taskLatLng.toString()
+    private lateinit var bidStr: String
+
+    private val bidAmountStr: String = "10.00"
 
     private lateinit var testTask: Task
 
@@ -53,12 +57,28 @@ class TaskBiddingTests {
     val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
     private lateinit var launchedActivity: Activity
 
+    /**
+     * Create a task, setup the activity and launch the activity before every test.
+     */
     @Before
     fun setup() {
         createTestTask()
+        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
+        i.putExtra("TASK", taskStr)
+        launchedActivity = rule.launchActivity(i)
+        rule.activity.supportFragmentManager.beginTransaction()
+        UserController(context).setLocalUsername(username)
     }
 
-
+    /**
+     * Destroy the created task.
+     */
+    @After
+    fun takeDown(){
+        deleteTestTask()
+    }
 
     /**
      * Posts a dummy task to be bid on.
@@ -82,13 +102,33 @@ class TaskBiddingTests {
      * Delete the test Task.
      */
     private fun deleteTestTask(){
-        //delete test task in elastic search
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(taskPosterUsername, taskTitle, taskDescr))
                 .enqueue(object : Callback<ElasticsearchID> {
                     override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                         Log.i("network", response.body().toString())
                         val id = response.body() as ElasticsearchID
                         GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                    }
+
+                    override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                        Log.e("network", "Network Failed!")
+                        t.printStackTrace()
+                        return
+                    }
+                })
+    }
+
+    /**
+     * Return the test task bid from database.
+     */
+    private fun getTaskBid(){
+        GenerateRetrofit.generateRetrofit().getUserBids(Query.userQuery(username))
+                .enqueue(object : Callback<ElasticsearchID> {
+                    override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                        Log.i("network", response.body().toString())
+                        val bidESearchID = response.body() as ElasticsearchID
+                        bidStr = bidESearchID.toString()
+                        return
                     }
 
                     override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
@@ -110,18 +150,11 @@ class TaskBiddingTests {
     @Test
     fun makeBid(){
 
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        rule.launchActivity(i)
-        rule.activity.supportFragmentManager.beginTransaction()
-
-        UserController(context).setLocalUsername(username)
-
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
-
-        deleteTestTask()
+        onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
+        onView(withId(R.id.confirm)).perform(click())
+        getTaskBid()
+        println(bidStr)
     }
 
     /**
