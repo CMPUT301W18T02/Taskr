@@ -50,10 +50,52 @@ import java.util.*
 
 
 /**
- * ViewTaskActivity class
+ * Displays all information for a selected task including title, location, and bids.
+ * Task Requesters can change the Task's status by either reopening or marking as done
+ * an assigned task. Requesters can also accept/decline bids. Task Providers can place
+ * bids with an inputted monetary amount.
  *
- * This activity displays all details for a selected Task while allowing User to modify certain
- * Task attributes based on their user type.
+ * @author jtbakker
+ * @property isRequester [Boolean] set to true if current user is task requester.
+ * @property username Obtained from shared preferences using [UserController]
+ * @property taskBidList [RecyclerView] displaying all bids on displayed task.
+ *
+ * @property bidListAdapter [BidListAdapter] for taskBidList.
+ * @property userList List of all users with bids on task. Required for [BidListAdapter].
+ *
+ * @property viewManager [RecyclerView.LayoutManager] for taskBidList.
+ * @property displayTask [Task] object for viewed task.
+ * @property oldTask
+ * @property lowestBidAmount Updated with every update to task (e.g. change title, place bid).
+ *
+ * @property editBidFragment [EditBidFragment] for changing existing bids.
+ * @property acceptBidFragment [AcceptBidFragment] for accepting/declining bids.
+ * @property userInfoFragment [UserInfoFragment] containing user details for clicked username.
+ * @property errorPopup [ErrorDialogFragment] displaying error message for some invalid action.
+ *
+ * @property taskAuthor [TextView] displaying this task's creator.
+ * @property taskTitle [TextView] displaying this task's title.
+ * @property taskStatus [TextView] displaying this tasks's status.
+ * @property lowestBidView [TextView] displaying lowest bid amount on task.
+ * @property bidListView [RecyclerView] showing all non-declined bids on task.
+ * @property reopenButton [Button] for requesters to reopen task.
+ * @property addOrMarkButton [Button] for adding bid if requester or marking done if provider.
+ * @property editTaskButton [Button] for requester to modify task information.
+ * @property toolbar [Toolbar] at top of screen. Contains back button and task title.
+ * @property toolbarTitle [TextView] for displaying task title in toolbar.
+ *
+ * @property mapView [MapView] displaying task location.
+ * @property mapboxMap [MapBoxMap] used to create displayed map.
+ * @property position Current task's location as a [LatLng] object.
+ * @property marker [Marker] denoting task's location on map.
+ *
+ * @see [UserController]
+ * @see [BidListAdapter]
+ * @see [EditBidFragment]
+ * @see [AcceptBidFragment]
+ * @see [UserInfoFragment]
+ * @see [ErrorDialogFragment]
+ * @see [MapBoxMap]
  */
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInteractionListener,
                         AcceptBidFragment.AcceptBidFragmentInteractionListener, OnMapReadyCallback,
@@ -109,8 +151,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
 
     /**
-     * Initializes the Mapbox mapview, obtains the displayTask, populates and displays list of all
+     * Initializes the MapBox mapview, obtains the displayTask, populates and displays list of all
      * bids on tasks, and reformats ViewTaskActivity layout according to user type.
+     * Task to be displayed is obtained as a serialized [Task] object.
+     * If requester, displays buttons for editing, reopening, or marking done the task. If provider
+     * only a button for adding bids is displaying.
+     *
+     * @param savedInstanceState
+     * @see [MapBoxMap]
+     * @see [GenerateRetrofit]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +174,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         if (intent != null) {
             val taskStr = intent.getStringExtra("TASK")
             if (taskStr != null) {
-
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 oldTask = displayTask
                 populateBidList() // Populate Bid list to be displayed.
@@ -144,6 +192,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             editTaskButton.visibility = View.VISIBLE
         }
 
+        // Initialize toolbar for back button and task title.
         setSupportActionBar(toolbar)
         val actionbar = supportActionBar
         actionbar!!.setDisplayHomeAsUpEnabled(true)
@@ -155,11 +204,24 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
     }
 
+    /**
+     * Set listener for rows in Bid list. If user is a Task Requester, allows user to
+     * select Bid and accept/decline it using [AcceptBidFragment]. If user is a Task
+     * Provider and the clicked bid is their's, allows user to edit bid amount using
+     * [EditBidFragment]. If task is assigned or done, neither fragment will be started
+     * since bid details cannot be modified at that time.
+     * If the [TextView] displaying the bidder's name is clicked, opens a [UserInfoFragment]
+     * displaying that the bid owner's information instead.
+     * [BidListAdapter] requires a list of all users with bids on the task to properly
+     * display user profile images.
+     *
+     * @see [BidListAdapter]
+     * @see [AcceptBidFragment]
+     * @see [EditBidFragment]
+     * @see [UserInfoFragment]
+     * @see [GenerateRetrofit]
+     */
     private fun createBidAdapter() {
-        /**
-         * Set listener for rows in Bid list. If user is a Task Requester, allows user to
-         * select Bid and accept/decline it using AcceptBidFragment.
-         */
         bidListAdapter = BidListAdapter(taskBidList, userList)
         bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
             override fun onItemClick(view : View, position : Int) {
@@ -177,33 +239,40 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 }
             }
         })
+        // Set adapter for bid list.
         bidListView.apply {
             layoutManager = viewManager
             adapter = bidListAdapter
         }
-
+        // Get all users from server, then pass them as a list to adapter.
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
                 userList.addAll(response.body() as ArrayList<User>)
                 bidListAdapter.notifyDataSetChanged()
             }
-
             override fun onFailure(call: Call<List<User>>, t: Throwable) {
                 Log.e("network", "Network Failed!")
                 t.printStackTrace()
                 return
             }
         })
-
     }
 
+    /**
+     * Repopulates list of bids on task.
+     * If task's status is BID, all non-declined bids are added to the displayed list. If the task's
+     * status is ASSIGNED or DONE, only the accepted bid is added.
+     * Bids are sorted in increasing order of their amount using a [Comparator].
+     */
     private fun populateBidList() {
         taskBidList.clear()
+        // Task status is BID iff no bid is accepted.
         if (displayTask.status == TaskStatus.BID) {
             for (bid in displayTask.bids) {
                 if (!bid.isDismissed) {taskBidList.add(bid)}
             }
+        // If ASSIGNED or DONE, filter out non-accepted bids.
         } else if (displayTask.status != TaskStatus.REQUESTED){
             var chosenBidFilter = displayTask.bids.filter {b ->
                 (b.owner == displayTask.chosenBidder) &&
@@ -213,6 +282,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 taskBidList.add(chosenBid)
             }
         }
+        // Sort bids in increasing order of their amount.
         taskBidList.sortWith(Comparator { bid1, bid2 ->
             when {
                 bid1.amount < bid2.amount -> -1
@@ -222,6 +292,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         })
     }
 
+    /**
+     * Starts [UserInfoFragment] containing user information corresponding to a clicked username
+     * in the activity.
+     *
+     * @param username The clicked username
+     * @see [CachingRetrofit]
+     * @see [UserInfoFragment]
+     * @see [GenerateRetrofit]
+     */
     private fun startUserInfoFragment(username: String) {
         // Get User object from ElasticSearch index.
         CachingRetrofit(this).getUsers(object: Callback<List<User>> {
@@ -239,7 +318,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 	
     /**
-     * Displays pop-up fragment that allows Task Provider to update their selected bid.
+     * Displays [EditBidFragment] to allow Task Provider to update their selected bid.
+     *
+     * @param bid The selected bid.
+     * @see [EditBidFragment]
      */
     private fun startEditBidFragment(bid : Bid?) {
         editBidFragment = EditBidFragment()
@@ -253,7 +335,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 	
     /**
-     * Displays pop-up fragment that allows Task Requester to accept/decline a selected Bid.
+     * Displays [AcceptBidFragment] to allow Task Requester to accept/decline a selected Bid.
+     *
+     * @param bid The selected bid.
+     * @see [AcceptBidFragment]
      */
     private fun startAcceptBidFragment(bid : Bid) {
         acceptBidFragment = AcceptBidFragment()
@@ -265,8 +350,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Determines user type. If the user is the owner of the displayed Task, then the user is
-     * a Task Requester in this context. Otherwise, the user is a Task Provider.
+     * Gets username from shared preferences using [UserController], then determines user type.
+     * If the user is the owner of the displayed Task, then the user is a Task Requester in this
+     * context. Otherwise, the user is a Task Provider.
+     *
+     * @see [UserController]
      */
     private fun getUserType() {
         var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
@@ -288,10 +376,13 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Implemented method for stub in EditBidFragmentInteractionListener interface. Updates
-     * selected Bid with modified amount, then updates Task in ElasticSearch index.
+     * Implemented method for stub in interface of [EditBidFragment]. Updates
+     * selected [Bid] with modified amount, then updates Task on server.
+     *
+     * @param bidAmount The new bid amount.
+     * @param originalBid The previous bid before changes.
+     * @see [EditBidFragment]
      */
-    //TODO replace isDismissed with actual functionality
     override fun bidUpdate(bidAmount : Double, originalBid : Bid) {
         var index: Int = displayTask.bids.indexOf(originalBid)
         var changedBid = Bid(displayTask.bids[index].owner, bidAmount, false)
@@ -300,8 +391,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Implemented method for stub in EditBidFragmentInteractionListener interface. Adds created
-     * Bid to displayed Task's list of Bids, then updates Task in ElasticSearch index.
+     * Implemented method for stub in interface of [EditBidFragment]. Adds created
+     * Bid to displayed Task's list of Bids, then updates Task on server.
+     *
+     * @param bidAmount The new bid amount.
+     * @see [EditBidFragment]
      */
     override fun bidAdd(bidAmount : Double) {
         var newBid = Bid(username, bidAmount, false)
@@ -318,6 +412,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         updateDisplayTask()
     }
 
+    /**
+     * Sets a selected [Bid] to declined, then updates the task on server.
+     *
+     * @param bid The bid to be declined.
+     */
     override fun declinedBid(bid: Bid) {
         var changedBid = Bid(bid.owner, bid.amount, true)
         var i = displayTask.bids.indexOf(bid)
@@ -326,9 +425,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Implemented method for stub in AcceptBidFragmentInteractionListener interface. If Task's
-     * status is not DONE or ASSIGNED, updates both Task's chosen bidder to selected Bid's owner
-     * and Task's status to ASSIGNED before updating Task in ElasticSearch index.
+     * Implemented method for stub in interface of [AcceptBidFragment]. If Task' status is not DONE
+     * or ASSIGNED, updates both Task's chosen bidder to selected Bid's owner and Task's status to
+     * ASSIGNED before updating Task in ElasticSearch index. Task is then updated on server.
+     *
+     * @param bid The [Bid] to be accepted.
+     * @see [AcceptBidFragment]
      */
     override fun acceptedBid(bid: Bid) {
         if (displayTask.status != TaskStatus.ASSIGNED && displayTask.status != TaskStatus.DONE) {
@@ -339,15 +441,29 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * This method will either set the displayed Task's status to DONE if user is its Requester or
-     * allow user to add a bid to the Task otherwise using EditBidFragment.
+     * Opens [UserInfoFragment] displaying task author's information when the task author's name
+     * is clicked.
+     *
+     * @see [UserInfoFragment]
      */
-
     @OnClick(R.id.taskAuthorText)
     fun taskAuthorClick() {
         startUserInfoFragment(taskAuthor.text.toString())
     }
 
+    /**
+     * This method will either set the displayed Task's status to DONE if user is its Requester or
+     * allow user to add a bid to the Task otherwise using [EditBidFragment].
+     * If the user is a Requester trying to mark the task done, the task status will be changed iff
+     * the task is currently ASSIGNED. Otherwise, an [ErrorDialogFragment] is shown.
+     * If the user is a provider trying to add a bid, the [EditBidFragment] will be opened iff the
+     * task is open for bids (i.e. status is REQUESTED or BID). Otherwise, an [ErrorDialogFragment]
+     * is shown.
+     *
+     * @param view
+     * @see [EditBidFragment]
+     * @see [ErrorDialogFragment]
+     */
     @OnClick(R.id.addBidOrMarkDone)
     fun addBidOrMarkDone(view : View) {
         if (isRequester) {
@@ -368,8 +484,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
 
     /**
      * If displayed Task's status is ASSIGNED, update it to REQUESTED if it has no bids or
-     * BID otherwise. Remove Task's chosen bidder since Task is no longer assigned.
-     * One changes have been made, updates Task in ElasticSearch index.
+     * BID otherwise. Remove Task's chosen bidder since Task is no longer assigned Once changes
+     * have been made, updates Task in ElasticSearch index.
+     * If the displayed Task's status is not ASSIGNED, show an [ErrorDialogFragment] instead.
+     *
+     * @param view
+     * @see [ErrorDialogFragment]
      */
     @OnClick(R.id.reopenButton)
     fun reopen(view: View) {
@@ -386,6 +506,15 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
+    /**
+     * Starts [EditTaskActivity] to allow requester to change their task's information and if the
+     * task has no bids (i.e. status is REQUESTED).
+     * If the status is not REQUESTED, display an [ErrorDialogFragment] instead.
+     *
+     * @see [EditTaskActivity]
+     * @see [ErrorDialogFragment]
+     * @see [GenerateRetrofit]
+     */
     @OnClick(R.id.editTaskButton)
     fun editTask() {
         if (displayTask.status == TaskStatus.REQUESTED) {
@@ -400,6 +529,16 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         }
     }
 
+    /**
+     * Executed when [EditTaskActivity] is finished. If the activity finished successfully, the
+     * modified task is returned.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data Contains a string representing the modified task.
+     * @see [EditTaskActivity]
+     * @see [GenerateRetrofit]]
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == 1) {
             var displayTaskStr = data?.extras?.getString("Task")
@@ -409,8 +548,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Updates displayed Task in the ElasticSearch index, then updates every Task detail being
-     * displayed in activity.
+     * Updates displayed Task on server using [CachingRetrofit], then updates every task detail
+     * being displayed in activity.
+     *
+     * @see [CachingRetrofit]
      */
     private fun updateDisplayTask() {
         CachingRetrofit(this).updateTask(object: Callback<Boolean> {
@@ -511,6 +652,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     /**
      * Sets mapView camera position to geolocation data in displayed Task. If no such data
      * is available, hide mapView instead.
+     *
+     * @see [MapBoxMap]
      */
     private fun updateLocationInfo() {
         if (displayTask.location != null) {
@@ -533,7 +676,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     }
 
     /**
-     * Process button presses from the tool bar
+     * Process button presses from the tool bar.
+     *
+     * @param item
+     * @return [Boolean]
+     * @see [Toolbar]
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -545,6 +692,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * On mapview click, shows task location in Google Maps.
+     * Adapted from https://stackoverflow.com/questions/42677389/android-how-to-pass-lat-long-route-info-to-google-maps-app/45554195#45554195
+     *
+     * @param point
+     */
     override fun onMapClick(point : LatLng) {
         var mapsURL = "http://www.google.ca/maps/dir/?api=1&destination=" + point.latitude +
                         "," + point.longitude
@@ -552,6 +705,12 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         startActivity(intent)
     }
 
+    /**
+     * Starts an [ErrorDialogFragment] displaying an error message with ID = messageID.
+     *
+     * @param messageID The string ID of the error message.
+     * @see [ErrorDialogFragment]
+     */
     private fun showErrorDialog(messageID : Int) {
         var message = getString(messageID)
         errorPopup = ErrorDialogFragment()
@@ -560,5 +719,4 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         errorPopup.arguments = args
         errorPopup.show(fragmentManager, "DialogFragment")
     }
-
 }

@@ -24,21 +24,25 @@ import ca.ualberta.taskr.models.elasticsearch.Callback
 import retrofit2.Response
 
 /**
- * EditTaskActivity.
+ * Allows user to input title, description, and location for a task. The task can either
+ * be a newly created one or an existing one to be edited.
  *
- * This Activity is responsible for allowing a task to be edited
+ * @property taskImageView ImageView for displaying task's images (if any).
+ * @property titleEditText EditText for changing task title.
+ * @property detailsEditText EditText for changing task details.
+ * @property locationEditText EditText for displaying task location.
+ * @property taskPassedIn Boolean indicating whether the task is being created (false) or edited (true).
+ * @property editTask [Task] object representing the existing task to be edited (if provided).
+ * @property position [LatLng] object for Task's location.
  */
 class EditTaskActivity : AppCompatActivity() {
 
     @BindView(R.id.taskImageView)
     lateinit var taskImageView: ImageView
-
     @BindView(R.id.taskTitleEditText)
     lateinit var titleEditText: EditText
-
     @BindView(R.id.detailsEditText)
     lateinit var detailsEditText: EditText
-
     @BindView(R.id.locationEditText)
     lateinit var locationEditText: EditText
 
@@ -47,6 +51,13 @@ class EditTaskActivity : AppCompatActivity() {
     private var position: LatLng? = null
 
 
+    /**
+     * Initializes task title, details, and location if a serialized [Task] object generated
+     * by [GenerateRetrofit] is provided.
+     *
+     * @param savedInstanceState
+     * @see [GenerateRetrofit]
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_task)
@@ -67,6 +78,12 @@ class EditTaskActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Populates views for task images, title, details, and location if task
+     * was provided to activity.
+     *
+     * @param task [Task] object whose attributes are used to populate views.
+     */
     private fun fillBoxes(task: Task) {
         // TODO: populate images
         titleEditText.setText(task.title)
@@ -75,6 +92,14 @@ class EditTaskActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Starts [AddLocationToTaskActivity] to allow user to select new location for task. If
+     * the task is being edited and already has a location, a LatLng] object is passed to the
+     * activity so that the map camera starts on the location.
+     *
+     * @see [AddLocationToTaskActivity]
+     * @see [GenerateRetrofit]
+     */
     @OnClick(R.id.getLocationButton)
     fun openLocationActivity() {
         val addLocationIntent = Intent(this, AddLocationToTaskActivity::class.java)
@@ -85,7 +110,10 @@ class EditTaskActivity : AppCompatActivity() {
     }
 
     /**
-     * On clicking postTaskButton, post the newly created task to the server
+     * On clicking postTaskButton, creates the new task using inputted details and posts it
+     * to the server. New/modified [Task] object is passed back to previous activity.
+     *
+     * @see [CachingRetrofit]
      */
     @OnClick(R.id.postTaskButton)
     fun postTask() {
@@ -122,6 +150,7 @@ class EditTaskActivity : AppCompatActivity() {
             }
         }).execute(Pair(editTask, newTask))
 
+        // Serialize new/modified Task object and pass back to ViewTaskActivity.
         val editTaskIntent = Intent()
         var strTask = GenerateRetrofit.generateGson().toJson(newTask)
         editTaskIntent.putExtra("Task", strTask)
@@ -129,6 +158,15 @@ class EditTaskActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Receives new location for task from [AddLocationToTaskActivity].
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data Contains serialized [LatLng] object for task location
+     * @see [AddLocationToTaskActivity]
+     * @see [GenerateRetrofit]
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1) {
