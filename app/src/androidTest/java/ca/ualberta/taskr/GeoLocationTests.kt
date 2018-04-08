@@ -28,12 +28,6 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
 //@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class GeoLocationTests {
 
-    //private lateinit var activity: AddLocationToTaskActivity
-    private lateinit var button: Button
-
-    /**
-     * Sets up all of the variables needed by the Test Class.
-     */
 
     @Rule @JvmField
     var activity = ActivityTestRule<AddLocationToTaskActivity>(AddLocationToTaskActivity::class.java)
