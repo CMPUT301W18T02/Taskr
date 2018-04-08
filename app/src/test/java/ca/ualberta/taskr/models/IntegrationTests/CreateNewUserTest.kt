@@ -132,7 +132,6 @@ class CreateNewUserTest {
     }
 
     /**
-     * TODO: Finish checkMaxUserLength Test
      *
      * US 03.01.02
      *
