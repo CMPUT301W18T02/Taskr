@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
      * session.
      *
      * @param: savedInstanceState
-     * @see ButterKnife
+     * @see [ButterKnife]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +64,9 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * This method is executed on activity startup. If the user is still logged
-     * in from a previous session, the @ListTasksActivity is started.
+     * in from a previous session, the [ListTasksActivity] is started.
      *
-     * @see UserController
-     * @see onCreate
-     * @see launchTaskList
+     * @see [UserController]
      */
     private fun checkIfUserIsLoggedIn() {
         if (userController.getLocalUserName() != "") {
@@ -94,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Attempts to login user using inputted username.
      * If username exists in User index, the username is stored to Shared Preferences to be later
-     * used in other activities before the @ListTasksActivity is launched. If the username does not
+     * used in other activities before the [ListTasksActivity] is launched. If the username does not
      * exist, an error is instead displayed.
      *
      * @param view
@@ -131,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * Starts the @ListTasksActivity.
+     * Starts the [ListTasksActivity].
      *
      * @see ListTasksActivity
      */

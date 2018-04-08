@@ -34,9 +34,6 @@ import retrofit2.Response
  * @property taskPassedIn Boolean indicating whether the task is being created (false) or edited (true).
  * @property editTask [Task] object representing the existing task to be edited (if provided).
  * @property position [LatLng] object for Task's location.
- *
- * @see [Task]
- * @see [LatLng]
  */
 class EditTaskActivity : AppCompatActivity() {
 
@@ -59,7 +56,6 @@ class EditTaskActivity : AppCompatActivity() {
      * by [GenerateRetrofit] is provided.
      *
      * @param savedInstanceState
-     * @see [Task]
      * @see [GenerateRetrofit]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +83,6 @@ class EditTaskActivity : AppCompatActivity() {
      * was provided to activity.
      *
      * @param task [Task] object whose attributes are used to populate views.
-     * @see [Task]
      */
     private fun fillBoxes(task: Task) {
         // TODO: populate images
@@ -99,11 +94,10 @@ class EditTaskActivity : AppCompatActivity() {
 
     /**
      * Starts [AddLocationToTaskActivity] to allow user to select new location for task. If
-     * the task is being edited and already has a location, a serialized [LatLng] object generated
-     * by [GenerateRetrofit] is passed to the activity so that the map camera starts on the location.
+     * the task is being edited and already has a location, a LatLng] object is passed to the
+     * activity so that the map camera starts on the location.
      *
      * @see [AddLocationToTaskActivity]
-     * @see [LatLng]
      * @see [GenerateRetrofit]
      */
     @OnClick(R.id.getLocationButton)
@@ -117,8 +111,7 @@ class EditTaskActivity : AppCompatActivity() {
 
     /**
      * On clicking postTaskButton, creates the new task using inputted details and posts it
-     * to the server using [CachingRetrofit]. New/modified [Task] object is passed back
-     * to previous activity
+     * to the server. New/modified [Task] object is passed back to previous activity.
      *
      * @see [CachingRetrofit]
      */
@@ -165,6 +158,15 @@ class EditTaskActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Receives new location for task from [AddLocationToTaskActivity].
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data Contains serialized [LatLng] object for task location
+     * @see [AddLocationToTaskActivity]
+     * @see [GenerateRetrofit]
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1) {

@@ -24,7 +24,6 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
  * @property username [TextView] displaying username
  * @property userEmail [TextView] displaying user email address
  * @property userPhone [TextView] displaying user phone number
- * @see [User]
  */
 class UserInfoFragment : DialogFragment() {
 

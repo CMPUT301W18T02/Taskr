@@ -46,7 +46,6 @@ import ca.ualberta.taskr.util.PhotoConversion
  * @property encodedProfileImage String-encoded user profile image.
  * @property userController [UserController] for saving username/[User] object to shared preferences.
  *
- * @see [User]
  * @see [LoginActivity]
  */
 class EditUserActivity : AppCompatActivity() {
@@ -77,7 +76,6 @@ class EditUserActivity : AppCompatActivity() {
      * activity (i.e. user is editing their information).
      *
      * @param savedInstanceState
-     * @see [User]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,8 +138,6 @@ class EditUserActivity : AppCompatActivity() {
      * information in saved preferences.
      * Inputted info is checked and an error message is displayed instead if some of the
      * information is invalid.
-     *
-     * @see [User]
      */
     @OnClick(R.id.ApplyChangesButton)
     fun onApplyChangesClicked() {
@@ -164,15 +160,13 @@ class EditUserActivity : AppCompatActivity() {
 
     /**
      * Update the current user's information on the server using async network calls.
-     * If new user, [GenerateRetrofit] is used to push the new [User] object to the server. If
-     * successful, current username and [User] object are stored to shared preferences via
-     * [UserController].
-     * If existing user, [CachingRetrofit] is used to update [User] object on server and the user
-     * info is similarly saved to shared preferences. Otherwise, updated [User] object is stored
-     * locally until server connectivity is established.
+     * If new user, the new [User] object to the server. If successful, current username and [User]
+     * object are stored to shared preferences.
+     * If existing user, update [User] object on server and the user info is similarly saved to
+     * shared preferences. Otherwise, updated [User] object is stored locally until server
+     * connectivity is established.
      *
      * @param user The user object to get updated
-     * @see [User]
      * @see [GenerateRetrofit]
      * @see [CachingRetrofit]
      * @see [UserController]

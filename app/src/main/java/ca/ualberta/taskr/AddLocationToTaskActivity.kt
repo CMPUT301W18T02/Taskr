@@ -54,7 +54,7 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
 
 
     /**
-     * Returns a serialized location generated using [GenerateRetrofit].
+     * Returns the selected location.
      *
      * @see [GenerateRetrofit]
      */
@@ -68,11 +68,9 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
     }
 
     /**
-     * Initializes map view and obtains marker location from a serialized [LatLng] object
-     * generated using [GenerateRetrofit].
+     * Initializes map view and obtains marker location from a serialized [LatLng] object.
      *
      * @param savedInstanceState
-     * @see [LatLng]
      * @see [GenerateRetrofit]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -175,7 +173,6 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
      * removes it and places a marker in the new position.
      *
      * @param point
-     * @see [LatLng]
      * @see [MapBoxMap]
      */
     override fun onMapClick(point: LatLng) {
@@ -204,7 +201,6 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
      * Moves camera to a given point on the map.
      *
      * @param point
-     * @see [LatLng]
      * @see [MapboxMap]
      */
     private fun setCameraPosition(point: LatLng) {

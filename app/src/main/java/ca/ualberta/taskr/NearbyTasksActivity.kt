@@ -134,9 +134,9 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Once [MapBoxMap] is initialized, populate masterTaskList using [CachingRetrofit] and add
-     * tasks within 5km radius of user to the map. Updates user's current location before setting
-     * the camera's position to their location.
+     * Once [MapBoxMap] is initialized, populate masterTaskList and add tasks within 5km radius
+     * of user to the map. Updates user's current location before setting the camera's position to
+     * their location.
      * Sets a listener for each marker's info window so that, when clicked, a [ViewTaskActivity]
      * is started and provided with the task corresponding to that marker.
      *
@@ -252,8 +252,6 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
      *
      * @param location The [Location] to be converted.
      * @return [LatLng] The converted location.
-     * @see [LatLng]
-     * @see [Location]
      */
     private fun latLngFromLocation(location: Location): LatLng {
         return LatLng(location.latitude, location.longitude)

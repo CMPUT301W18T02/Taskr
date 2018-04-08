@@ -24,7 +24,24 @@ import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
-
+/**
+ * Displays a list of all tasks the current user has bidded on. Tasks are only displayed
+ * if they are not ASSIGNED or DONE, and displayed tasks can be clicked to open a
+ * [ViewTaskActivity] for that task.
+ *
+ * @property myBidsList [RecyclerView] displaying list of tasks bidded on by user.
+ * @property drawerLayout [DrawerLayout] for [NavViewController]
+ * @property toolbar [Toolbar] for top of screen with back button.
+ * @property loadingPanel [RelativeLayout] for loading panel.
+ * @property navView [NavigationView] for [NavViewController]
+ * @property myBidsRefresh [SwipeRefreshLayout] for refreshing bidded task list.
+ *
+ * @property viewManager
+ * @property masterTaskList List of all tasks on server.
+ * @property shownTaskList List of tasks bidden on by user with BID status.
+ * @property myBidsListAdapter [TaskListAdapter] for shownTaskList.
+ * @property username Username of current user.
+ */
 class MyBidsActivity : AppCompatActivity() {
 
     @BindView(R.id.myBidsList)
@@ -46,6 +63,13 @@ class MyBidsActivity : AppCompatActivity() {
     private lateinit var myBidsListAdapter: MyBidsListAdapter
     private lateinit var username: String
 
+    /**
+     * Initializes all views including toolbar and [RecyclerView] for task list.
+     * Sets listener for task list that starts [ViewTaskActivity] for the clicked task and sets
+     * the refresh listener to repopulate the task list on refresh.
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_bids)
@@ -87,7 +111,9 @@ class MyBidsActivity : AppCompatActivity() {
     }
 
     /**
-     * Network call to generate the master task list
+     * Network call to generate the master task list.
+     *
+     * @see [CachingRetrofit]
      */
     private fun updateTasks() {
         CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
@@ -102,7 +128,10 @@ class MyBidsActivity : AppCompatActivity() {
     }
 
     /**
-     * The android built in listener for the menu button on the toolbar
+     * The android built in listener for the menu button on the toolbar.
+     *
+     * @see [Toolbar]
+     * @see [DrawerLayout]
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -115,7 +144,7 @@ class MyBidsActivity : AppCompatActivity() {
     }
 
     /**
-     * Use to update the myBidsList by applying a filter to the master list
+     * Use to update the myBidsList by applying a filter to the master list.
      */
     fun filterTasks(){
         loadingPanel.visibility = View.VISIBLE
@@ -132,6 +161,9 @@ class MyBidsActivity : AppCompatActivity() {
         myBidsListAdapter.notifyDataSetChanged()
     }
 
+    /**
+     * Refresh list each time activity is resumed.
+     */
     override fun onResume() {
         super.onResume()
         updateTasks()
