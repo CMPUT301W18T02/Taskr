@@ -116,9 +116,9 @@ class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): R
 
     /**
      * Callback for when the user profile is opened
-     */
+
     @OnClick(R.id.bidderName)
     fun openUserProfile() {
         Log.i("HELLO", "THINGS")
-    }
+    }*/
 }

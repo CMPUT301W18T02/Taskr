@@ -225,32 +225,31 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * @see [GenerateRetrofit]
      */
     private fun createBidAdapter() {
-        bidListAdapter = BidListAdapter(taskBidList, userList)
-        bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
-            override fun onItemClick(view : View, position : Int) {
-                val bid = taskBidList[position]
-                if (view.id == R.id.bidderName) {
-                    startUserInfoFragment(bid.owner)
-                } else if (displayTask.status == TaskStatus.BID) {
-                    if (isRequester) {
-                        startAcceptBidFragment(bid)
-                    } else if (username == bid.owner) {
-                        startEditBidFragment(bid)
-                    }
-                }
-            }
-        })
-        // Set adapter for bid list.
-        bidListView.apply {
-            layoutManager = viewManager
-            adapter = bidListAdapter
-        }
         // Get all users from server, then pass them as a list to adapter.
         GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 Log.i("network", response.body().toString())
                 userList.addAll(response.body() as ArrayList<User>)
-                bidListAdapter.notifyDataSetChanged()
+                bidListAdapter = BidListAdapter(taskBidList, userList)
+                bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
+                    override fun onItemClick(view : View, position : Int) {
+                        val bid = taskBidList[position]
+                        if (view.id == R.id.bidderName) {
+                            startUserInfoFragment(bid.owner)
+                        } else if (displayTask.status == TaskStatus.BID) {
+                            if (isRequester) {
+                                startAcceptBidFragment(bid)
+                            } else if (username == bid.owner) {
+                                startEditBidFragment(bid)
+                            }
+                        }
+                    }
+                })
+                // Set adapter for bid list.
+                bidListView.apply {
+                    layoutManager = viewManager
+                    adapter = bidListAdapter
+                }
             }
             override fun onFailure(call: Call<List<User>>, t: Throwable) {
                 Log.e("network", "Network Failed!")
