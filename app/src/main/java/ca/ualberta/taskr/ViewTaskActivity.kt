@@ -104,7 +104,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
     var userController: UserController = UserController(this)
-    private var authorImageStr : String = ""
 
     private lateinit var bidListAdapter: BidListAdapter
     private var userList: ArrayList<User> = ArrayList()
@@ -182,10 +181,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 oldTask = displayTask
                 populateBidList() // Populate Bid list to be displayed.
-
-                //Update displayed attributes for Task
-                updateDetails()
-                updateLowestBidAmount()
             }
         }
 
@@ -207,6 +202,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         viewManager = LinearLayoutManager(this)
         createBidAdapter()
 
+        //Update displayed attributes for Task
+        updateDetails()
+        updateLowestBidAmount()
     }
 
     /**
@@ -371,30 +369,30 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateDetails() {
         taskAuthor.text = displayTask.owner
-        CachingRetrofit(this).getUsers(object: Callback<List<User>> {
-            override fun onResponse(response: List<User>, responseFromCache : Boolean) {
-                var userList = response.filter {u -> (u.username == displayTask.owner)}
-                if (userList.isNotEmpty()) {
-                    var user = userList[0]
-                    Log.i("RRRRRRRR", user.name + user.phoneNumber)
-                    if (user.profilePicture != null) {
-                        authorImageStr = user.profilePicture!!
-                    }
+        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                Log.i("network", response.body().toString())
+                var allUsers = response.body() as ArrayList<User>
+                val userProfile = allUsers.find { it.username == displayTask.owner}
+                if (userProfile != null && userProfile.profilePicture?.isNotEmpty() == true) {
+                    val imageStr = userProfile.profilePicture
+                    authorImage.setImageBitmap(PhotoConversion.getBitmapFromString(imageStr as String))
                 }
             }
-        }).execute()
-        Log.i("HEY", authorImageStr + "HHHH")
-        if (authorImageStr.isNotEmpty()) {
-            authorImage.setImageBitmap(PhotoConversion.getBitmapFromString(authorImageStr))
-        } else {
-            authorImage.visibility = View.GONE
-        }
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
         taskTitle.text = displayTask.title
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
         if (displayTask.photos.size != 0){
             taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
+        } else {
+            taskBannerImage.visibility = View.GONE
         }
     }
 
