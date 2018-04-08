@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.ImageView
 import butterknife.BindView
 import butterknife.ButterKnife
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.util.PhotoConversion
 
 
 /**
@@ -28,6 +30,8 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 class UserInfoFragment : DialogFragment() {
 
     private lateinit var user : User
+    @BindView(R.id.userProfileImagePopup)
+    lateinit var userPhoto : ImageView
     @BindView(R.id.usernamePopup)
     lateinit var username : TextView
     @BindView(R.id.userEmailAddressPopup)
@@ -51,7 +55,10 @@ class UserInfoFragment : DialogFragment() {
         if (arguments != null) {
             var strUser = arguments.getString("USER")
             user = GenerateRetrofit.generateGson().fromJson(strUser, User::class.java)
-
+            var profilePicString = user.profilePicture
+            if (profilePicString != null && profilePicString.isNotEmpty()) {
+                userPhoto.setImageBitmap(PhotoConversion.getBitmapFromString(profilePicString))
+            }
             username.text = user.name
             userEmail.text = user.email
             userPhone.text = user.phoneNumber
