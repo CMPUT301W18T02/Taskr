@@ -32,13 +32,22 @@ import ca.ualberta.taskr.ViewTaskActivity
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
-//TODO Documentation
-//TODO UPLOAD CACHED TASKS and USERS
+
+// TODO: Documentation
+// TODO: UPLOAD CACHED TASKS and USERS
+
+/**
+ * CachingRetrofit class. This class is responsible for fetching cached data and locally mocking
+ * Retrofit calls instead of trying to grab results via elasticsearch
+ */
 class CachingRetrofit(val context: Context) {
     private val server = GenerateRetrofit.generateRetrofit()
     private val gson = Gson()
 
-
+    /**
+     * Save users to disk
+     * @param users a [List] of [User] objects to save to disk
+     */
     private fun setUsers(users: List<User>) {
         val file = File(context.filesDir, "users.json")
         if (!file.exists()) {
@@ -49,6 +58,10 @@ class CachingRetrofit(val context: Context) {
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(users))
     }
 
+    /**
+     * Get users from disk
+     * @return a [List] of [User] objects
+     */
     private fun getUsersFromDisk(): List<User> {
         val file = File(context.filesDir, "users.json")
         if (!file.exists()) {
@@ -61,6 +74,10 @@ class CachingRetrofit(val context: Context) {
         return gson.fromJson(json, taskListType)
     }
 
+    /**
+     * Save tasks to disk
+     * @param tasks a [List] of [Task] objects
+     */
     private fun setTasks(tasks: List<Task>) {
         val file = File(context.filesDir, "tasks.json")
         if (!file.exists()) {
@@ -71,6 +88,10 @@ class CachingRetrofit(val context: Context) {
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(tasks))
     }
 
+    /**
+     * Load tasks from disk
+     * @return a [List] of [Task] objects
+     */
     private fun getTasksFromDisk(): List<Task> {
         // https://stackoverflow.com/questions/14376807/how-to-read-write-string-from-a-file-in-android
         val file = File(context.filesDir, "tasks.json")
@@ -86,6 +107,11 @@ class CachingRetrofit(val context: Context) {
         return gson.fromJson(json, taskListType)
     }
 
+    // TODO: This should be done using the UserController class
+    /**
+     * Get the application user's username
+     * @returns a [String] containing the username
+     */
     private fun getLocalUserName(): String {
         val sharedPrefs = context.getSharedPreferences(
                 context.getString(R.string.prefs_name),
@@ -94,6 +120,10 @@ class CachingRetrofit(val context: Context) {
         return sharedPrefs.getString(context.getString(R.string.sf_username_key), "")
     }
 
+    /**
+     * Create a list of tasks that will be uploaded once network connectivity is regained
+     * @param pair a [Pair] containing the old and modified [Task] objects.
+     */
     private fun addTaskToUpload(pair: Pair<Task?, Task>) {
         val file = File(context.filesDir, "tasksToUpload.json")
         if (!file.exists()) {
@@ -106,6 +136,12 @@ class CachingRetrofit(val context: Context) {
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentTasksToUpload))
     }
 
+    /**
+     * Returns a [List] of all differences between [Task] objects that are to be passed to
+     * the server upon regaining network connectivity
+     *
+     * @return a [List] of [Pair] objects containing [Task] object
+     */
     private fun getTasksToUpload(): ArrayList<Pair<Task?, Task>> {
         val file = File(context.filesDir, "tasksToUpload.json")
         if (!file.exists()) {
@@ -121,6 +157,10 @@ class CachingRetrofit(val context: Context) {
 
     }
 
+    /**
+     * Create a list of users that will be uploaded once network connectivity is regained
+     * @param pair a [Pair] containing the old and modified [User] objects.
+     */
     private fun addUserToUpload(pair: User) {
         val currentUsersToUpload = getUsersToUpload()
         currentUsersToUpload.add(pair)
@@ -133,6 +173,12 @@ class CachingRetrofit(val context: Context) {
         Files.asCharSink(file, Charsets.UTF_8).write(gson.toJson(currentUsersToUpload))
     }
 
+    /**
+     * Returns a [List] of all differences between [User] objects that are to be passed to
+     * the server upon regaining network connectivity
+     *
+     * @return a [List] of [Pair] objects containing [User] object
+     */
     private fun getUsersToUpload(): ArrayList<User> {
         val file = File(context.filesDir, "usersToUpload.json")
         if (!file.exists()) {
@@ -148,7 +194,10 @@ class CachingRetrofit(val context: Context) {
 
     }
 
-
+    /**
+     * produces notifications whenever a [Task] in the [List] of tasks gets updated
+     * @param tasks the [List] of [Task] objects to check for updates
+     */
     private fun notifyUserOfBids(tasks: List<Task>) {
         val owner = getLocalUserName()
         val oldTasks = getTasksFromDisk().filter({ it -> it.owner == owner })
@@ -195,9 +244,19 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
-
+    /**
+     * Return the server status of the server. A local cached copy will be returned if the network
+     * is unavailable and an updated copy will be returned if the network is available
+     * @property callback the [ServerInfo] instance that gets returned
+     * @see [AsyncTask]
+     */
     inner class getServerInfo(val callback: Callback<ServerInfo?>) : AsyncTask<Void, Void, ServerInfo?>() {
         private var resultFromCache: Boolean = false
+
+        /**
+         * Attempt to talk to the elasticsearch server and update data if a connection was established
+         * @param result a [ServerInfo] instance
+         */
         override fun onPostExecute(result: ServerInfo?) {
             super.onPostExecute(result)
             if (result == null) {
@@ -209,13 +268,33 @@ class CachingRetrofit(val context: Context) {
 
         }
 
+        /**
+         * Function callback that gets executed asyncronously in the background
+         * @param params the passed in parameters
+         * @return a [ServerInfo] instance
+         */
         override fun doInBackground(vararg params: Void): ServerInfo? {
             return server.getServerInfo().execute().body()
         }
     }
 
+
+    /**
+     * Return a [List] of [User] objects from either a cached source or via elasticsearch,
+     * depending on if the network is available. If there are is any cached information that is
+     * not on the server this information will be attempted to be uploaded
+     *
+     * @property callback the [List] of [User] objects to reference
+     * @see [AsyncTask]
+     */
     inner class getUsers(val callback: Callback<List<User>>) : AsyncTask<Void, Void, List<User>>() {
+
         private var resultFromCache: Boolean = false
+
+        /**
+         * Attempt to talk to the elasticsearch server
+         * @param result a [List] of [User] object instance
+         */
         override fun onPostExecute(result: List<User>) {
             super.onPostExecute(result)
             callback.onResponse(result, resultFromCache)
@@ -224,6 +303,11 @@ class CachingRetrofit(val context: Context) {
             }
         }
 
+        /**
+         * Function callback that gets executed asyncronously in the background
+         * @param params the passed in parameters
+         * @return a [List] of [User] objects instance
+         */
         override fun doInBackground(vararg params: Void): List<User> {
             var users = server.getUsers().execute().body()
             if (users == null) {
@@ -237,8 +321,22 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
+    /**
+     * Return a [List] of [Task] objects from either a cached source or via elasticsearch,
+     * depending on if the network is available. If there are is any cached information that is
+     * not on the server this information will be attempted to be uploaded
+     *
+     * @property callback the [List] of [Task] objects to reference
+     * @see [AsyncTask]
+     */
     inner class getTasks(val callback: Callback<List<Task>>) : AsyncTask<Void, Void, List<Task>>() {
+
         private var resultFromCache: Boolean = false
+
+        /**
+         * Attempt to talk to the elasticsearch server
+         * @param result a [List] of [Task] object instances
+         */
         override fun onPostExecute(result: List<Task>) {
             super.onPostExecute(result)
             callback.onResponse(result, resultFromCache)
@@ -248,6 +346,11 @@ class CachingRetrofit(val context: Context) {
 
         }
 
+        /**
+         * Function callback that gets executed asyncronously in the background
+         * @param params the passed in parameters
+         * @return a [List] of [User] objects instance
+         */
         override fun doInBackground(vararg params: Void): List<Task> {
             var tasks: List<Task>
             try {
@@ -270,7 +373,18 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
+    /**
+     * Attempt to update a task. If the task was succesfully updated, attempt to upload any other
+     * cached data to the elasticsearch server
+     * @property callback a [Boolean] that gets updated indicating whether the option was a success
+     * or not
+     */
     inner class updateTask(val callback: Callback<Boolean>) : AsyncTask<Pair<Task?, Task>, Void, Boolean>() {
+
+        /**
+         * Attempt to talk to the elasticsearch server
+         * @param uploadSucceeded a [Boolean] indicating if the upload was a success
+         */
         override fun onPostExecute(uploadSucceeded: Boolean) {
             super.onPostExecute(uploadSucceeded)
             if (uploadSucceeded) {
@@ -281,6 +395,11 @@ class CachingRetrofit(val context: Context) {
             }
         }
 
+        /**
+         * Function callback that gets executed asyncronously in the background
+         * @param params the passed in parameters
+         * @return a [Boolean] indicating results
+         */
         override fun doInBackground(vararg params: Pair<Task?, Task>): Boolean {
             var uploadSuccessful = true
             for (pair in params) {
@@ -310,8 +429,18 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
-
+    /**
+     * Attempt to update a user. If the user was succesfully updated, attempt to upload any other
+     * cached data to the elasticsearch server
+     * @property callback a [Boolean] that gets updated indicating whether the option was a success
+     * or not
+     */
     inner class updateUser(val callback: Callback<Boolean>) : AsyncTask<User, Void, Boolean>() {
+
+        /**
+         * Attempt to talk to the elasticsearch server
+         * @param uploadSucceeded a [Boolean] indicating if the upload was a success
+         */
         override fun onPostExecute(uploadSucceeded: Boolean) {
             super.onPostExecute(uploadSucceeded)
             if (uploadSucceeded) {
@@ -322,6 +451,11 @@ class CachingRetrofit(val context: Context) {
             }
         }
 
+        /**
+         * Function callback that gets executed asyncronously in the background
+         * @param params the passed in parameters
+         * @return a [Boolean] indicating results
+         */
         override fun doInBackground(vararg params: User): Boolean {
             var uploadSuccessful = true
             for (user in params) {
@@ -345,6 +479,9 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
+    /**
+     * Attempt to upload any new data that needs to be pushed to the server still
+     */
     private fun tryUploads() {
         val callback = object : Callback<Boolean> {
             override fun onResponse(response: Boolean, responseFromCache: Boolean) {}
@@ -358,6 +495,10 @@ class CachingRetrofit(val context: Context) {
         }
     }
 
+    /**
+     * Return whether the server is online or not
+     * @return the status of the server
+     */
     fun isOnline(): Boolean {
         TODO("not implemented")
     }

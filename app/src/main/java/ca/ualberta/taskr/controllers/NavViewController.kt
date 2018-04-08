@@ -9,7 +9,14 @@ import android.widget.TextView
 import ca.ualberta.taskr.*
 import ca.ualberta.taskr.util.PhotoConversion
 
-
+/**
+ * NavViewController class. This Controller is responsible
+ * for powering the Hamburger menu that appears on the left
+ * hand side of the screen
+ *
+ * @constructor the constructor sets the controller to be minimized off to the
+ * side by default
+ */
 class NavViewController(var navView: NavigationView,
                         var drawerLayout: DrawerLayout,
                         var context: Context){
@@ -64,6 +71,10 @@ class NavViewController(var navView: NavigationView,
         })
     }
 
+    /**
+     * Function callback for when the user chooses to logout
+     * @param userController the [UserController] instance
+     */
     fun logout(userController: UserController){
         userController.setLocalUsername("")
         userController.setLocalUserObject(null)

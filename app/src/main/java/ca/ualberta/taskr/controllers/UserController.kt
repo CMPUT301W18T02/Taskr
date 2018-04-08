@@ -8,7 +8,15 @@ import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
+/**
+ * UserController class. This class is responsible for passing information to and From
+ * [SharedPreferences] for storage of user information between activities and between
+ * use sessions
+ *
+ * @see [SharedPreferences]
+ */
 class UserController(val context: Context) {
+
     /**
      * Set the locally stored username in shared prefs
      *

@@ -31,6 +31,20 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
+/**
+ * Displays a map with markers for all tasks within 5km of the current user's location. Popups
+ * displaying task information are shown when markers are clicked, and tapping these popups
+ * opens a [ViewTaskActivity] for that task.
+ *
+ * @author marissasnihur
+ * @author xrendan
+ * @property mapView [MapView] displaying map centered on user's location.
+ * @property mapboxMap The map to be displayed.
+ * @property locationEngine Provides location services.
+ * @property masterTaskList List of all [Task] objects on server.
+ * @property currentLocation Location of current user.
+ * @see [ViewTaskActivity]
+ */
 class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 
 
@@ -41,7 +55,12 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
     private var masterTaskList: ArrayList<Task> = ArrayList()
     private var currentLocation: Location = Location("")
 
-
+    /**
+     * Initializes [MapBoxMap] and related views sets default values for
+     * currentLocation in case user does not grant location permissions.
+     *
+     * @param savedInstanceState
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, "pk.eyJ1IjoiYmFybmFidXN0aGViZW5pZ24iLCJhIjoiY2pldWI2MHN2NGhrZDJxbWU4dHdubmwxYSJ9.ZVq95tHTxTgyyppAfj3Jdw")
@@ -58,45 +77,78 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    /**
+     * Default onStart() method with corresponding mapView method added.
+     */
     public override fun onStart() {
         super.onStart()
         mapView.onStart()
     }
 
+    /**
+     * Default onResume() method with corresponding mapView method added.
+     */
     public override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
 
+    /**
+     * Default onPause() method with corresponding mapView method added.
+     */
     public override fun onPause() {
         super.onPause()
         mapView.onPause()
     }
 
+    /**
+     * Default onStop() method with corresponding mapView method added.
+     */
     public override fun onStop() {
         super.onStop()
         mapView.onStop()
     }
 
-
+    /**
+     * Default onLowMemory() method with corresponding mapView method added.
+     */
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
     }
 
+    /**
+     * Default onDestroy() method with corresponding mapView method added.
+     */
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
     }
 
-
+    /**
+     * Default onSaveInstanceState() method with corresponding mapView method added.
+     */
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         mapView.onSaveInstanceState(outState!!)
     }
 
+    /**
+     * Once [MapBoxMap] is initialized, populate masterTaskList and add tasks within 5km radius
+     * of user to the map. Updates user's current location before setting the camera's position to
+     * their location.
+     * Sets a listener for each marker's info window so that, when clicked, a [ViewTaskActivity]
+     * is started and provided with the task corresponding to that marker.
+     *
+     * @param mapboxMap
+     * @see [MapBoxMap]
+     * @see [CachingRetrofit]
+     * @see [ViewTaskActivity]
+     * @see [GenerateRetrofit]
+     */
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
+        // Obtain all tasks from server, populate list, then add relevant tasks to map.
         CachingRetrofit(this).getTasks(object : ca.ualberta.taskr.models.elasticsearch.Callback<List<Task>> {
             override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 //TODO Offline signifier, handle responseFromCache
@@ -123,10 +175,11 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
                 })
         updateCurrentLocation()
         setCameraPosition(currentLocation)
-
-
     }
 
+    /**
+     * If location permissions are enabled for the app, save the user's current location.
+     */
     private fun updateCurrentLocation() {
         //TODO convert permissions to Permsutil
 //        PermsUtil.getPermissions(this)
@@ -140,11 +193,17 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Remove all existing markers from map, then add markers to map for each task within 5km of
+     * user's current location.
+     * Filters list of all task's for those whose locations are within 5km of user. For each
+     * nearby task's marker, populate its popup fragment with the task's title and owner.
+     *
+     * @see [MapBoxMap]
+     */
     private fun addTasksToMap() {
         mapboxMap.removeAnnotations()
         mapboxMap.addPolygon(generatePerimeter(latLngFromLocation(currentLocation), 5.0, 100))
-
-
         for (task in masterTaskList.filter { it.location != null && latLngFromLocation(currentLocation).distanceTo(it.location) <= 5000 }) {
             if (task.location != null) {
                 mapboxMap.addMarker(MarkerOptions()
@@ -177,21 +236,47 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
 //        }
 //    }
 
+    /**
+     * Initializes [LocationEngine] for providing location services.
+     *
+     * @see [LocationEngine]
+     */
     private fun initializeLocationEngine() {
         locationEngine = Mapbox.getLocationEngine()
         locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
         locationEngine.activate()
     }
 
+    /**
+     * Converts [Location] object to [LatLng].
+     *
+     * @param location The [Location] to be converted.
+     * @return [LatLng] The converted location.
+     */
     private fun latLngFromLocation(location: Location): LatLng {
         return LatLng(location.latitude, location.longitude)
     }
 
+    /**
+     * Moves [MapBoxMap] camera to a provided location.
+     *
+     * @param location The camera's new location.
+     * @see [MapBoxMap]
+     */
     private fun setCameraPosition(location: Location) {
         mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                 latLngFromLocation(location), 10.0))
     }
 
+    /**
+     * Creates [PolygonOptions] for displaying a 5km perimeter around the user's current location.
+     *
+     * @param centerCoordinates Coordinates for the perimeter center.
+     * @param radiusInKilometers
+     * @param numberOfSides
+     * @return [PolygonOptions]
+     * @see [PolygonOptions]
+     */
     private fun generatePerimeter(centerCoordinates: LatLng, radiusInKilometers: Double, numberOfSides: Int): PolygonOptions {
         val positions = ArrayList<LatLng>()
         val distanceX = radiusInKilometers / (111.319 * Math.cos(centerCoordinates.latitude * Math.PI / 180))

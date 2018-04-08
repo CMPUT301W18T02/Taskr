@@ -13,17 +13,20 @@ import retrofit2.http.*
  */
 
 /**
- * ElasticSearch Interface
+ * ElasticSearch Interface. This interface defines the specific search queries to be performed
  */
 interface ElasticSearch {
+
     /**
      * Produce server information for the application. E.g whether the server is connected
+     * @return a [ServerInfo] instance
      */
     @GET("_cluster/health")
     fun getServerInfo(): Call<ServerInfo>
 
     /**
      * Return a list of all users connected to the server
+     * @return a [List] of [User] object instances
      */
     @GET("cmput301w18t02/user/_search?q=*:*&filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getUsers(): Call<List<User>>
@@ -31,12 +34,14 @@ interface ElasticSearch {
 
     /**
      * Return a list of all tasks located on the server
+     * @return a [List] of [Task] object instances
      */
     @GET("cmput301w18t02/task/_search?q=*:*&filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getTasks(): Call<List<Task>>
 
     /**
      * Returns user's elasticsearch id from the server based on a user query body
+     * @return the [ElasticsearchID] of a specific [User] instance
      */
     @POST("cmput301w18t02/user/_search?filter_path=hits.hits._id,aggregations.*")
     fun getUserID(@Body userQueryBody: RequestBody): Call<ElasticsearchID>
@@ -44,6 +49,7 @@ interface ElasticSearch {
 
     /**
      * Returns task's elasticsearch id from the server based on a task query body
+     * @return the [ElasticsearchID] of a specific [Task] instance
      */
     @POST("cmput301w18t02/task/_search?filter_path=hits.hits._id,aggregations.*")
     fun getTaskID(@Body taskQueryBody: RequestBody): Call<ElasticsearchID>
@@ -75,6 +81,7 @@ interface ElasticSearch {
 
     /**
      * Returns user's owned task
+     * @return a [List] of [Task] object instances belonging to a specific [User]
      */
     @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getUserTasks(@Body userTasksQueryBody: RequestBody): Call<List<Task>>
@@ -82,6 +89,7 @@ interface ElasticSearch {
 
     /**
      * Returns task's elasticsearch id from the server based on a task query body
+     * @return a [List] of [Task] object instances that a [User] has bid on
      */
     @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getUserBids(@Body userBidsQuery: RequestBody): Call<ElasticsearchID>
@@ -100,6 +108,7 @@ interface ElasticSearch {
 
     /**
      * Returns user's owned task
+     * @return a [List] of [Task] object instances that a [User] has won
      */
     @POST("cmput301w18t02/task/_search?filter_path=hits.hits.*,aggregations.*&size=99999")
     fun getWonTasks(@Body userTasksQueryBody: RequestBody): Call<List<Task>>

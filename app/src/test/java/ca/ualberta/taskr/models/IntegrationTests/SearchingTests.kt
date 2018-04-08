@@ -83,6 +83,9 @@ class SearchingTests {
     }
 
 
+    /**
+     * Test task deletion
+     */
     private fun deleteTestTask(){
         //delete test task in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, title, description))
@@ -111,11 +114,17 @@ class SearchingTests {
      *
      */
 
+    /**
+     * Check to see that the activity is not null
+     */
     @Test
     fun checkActivityNotNull() {
         Assert.assertNotNull(activity)
     }
 
+    /**
+     * Test Task searching
+     */
     @Test
     fun testSearchContains() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
@@ -173,6 +182,9 @@ class SearchingTests {
      *
      */
 
+    /**
+     * Test Search result affirmation
+     */
     @Test
     fun onSearchResult(){
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)

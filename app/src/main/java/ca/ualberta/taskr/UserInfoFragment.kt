@@ -15,6 +15,16 @@ import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 
+/**
+ * A fragment for displaying user information when that user's username is clicked somewhere
+ * in the app.
+ *
+ * @author jtbakker
+ * @property user The [User] object corresponding to the clicked username
+ * @property username [TextView] displaying username
+ * @property userEmail [TextView] displaying user email address
+ * @property userPhone [TextView] displaying user phone number
+ */
 class UserInfoFragment : DialogFragment() {
 
     private lateinit var user : User
@@ -25,7 +35,13 @@ class UserInfoFragment : DialogFragment() {
     @BindView(R.id.userPhoneNumberPopup)
     lateinit var userPhone : TextView
 
-
+    /**
+     * Populates text fields with user information.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -44,6 +60,9 @@ class UserInfoFragment : DialogFragment() {
         return view
     }
 
+    /**
+     * Sets fragment's width to match screen width.
+     */
     override fun onStart() {
         super.onStart()
         dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
@@ -53,6 +72,12 @@ class UserInfoFragment : DialogFragment() {
 
         private val ARG_USER = "USER"
 
+        /**
+        * Factory method for creating instance of UserBidFragment given a User object.
+        *
+        * @param user
+        * @return fragment
+        */
         fun newInstance(user: User): UserInfoFragment {
             val fragment = UserInfoFragment()
             val args = Bundle()
