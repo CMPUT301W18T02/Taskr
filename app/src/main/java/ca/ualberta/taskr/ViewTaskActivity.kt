@@ -390,6 +390,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
         if (displayTask.photos.size != 0){
+            taskBannerImage.visibility = View.VISIBLE
             taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
         } else {
             taskBannerImage.visibility = View.GONE
