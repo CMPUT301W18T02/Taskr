@@ -23,6 +23,15 @@ import ca.ualberta.taskr.util.PhotoConversion
  * AddPhotoToTaskActivity
  *
  * This class allows for the ability to add a photo to a given task
+ *
+ * @author eyesniper2
+ * @property REQUEST_IMAGE_CAPTURE RequestCode for opening camera app.
+ * @property REQUEST_IMAGE_GALLERY RequestCode for opening image gallery.
+ * @property photoList [RecyclerView] for currentPhotosList
+ * @property toolbar [Toolbar] containing back button.
+ * @property photoListAdapter [AddPhotosListAdapter] for rows of currentPhotosList
+ * @property viewManager [RecyclerView.LayoutManager] for list adapter.
+ * @property currentPhotosList List of task's photos
  */
 class AddPhotoToTaskActivity : AppCompatActivity() {
 
@@ -41,6 +50,12 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
 
     var currentPhotosList: ArrayList<String> = ArrayList()
 
+    /**
+     * Initialize activity views, toolbar, and photo list adapter.
+     *
+     * @param savedInstanceState
+     * @see [AddPhotosListAdapter]
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_photo_to_task)
@@ -69,7 +84,11 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         })
     }
 
-
+    /**
+     * On click of "Take Picture" button, start camera app.
+     *
+     * @see [MediaStore]
+     */
     @OnClick(R.id.takePhotoButton)
     fun onTakePhotoClicked() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -78,6 +97,11 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * On click of "Gallery" button, start image gallery app.
+     *
+     * @see [MediaStore]
+     */
     @OnClick(R.id.selectImageFromGalleryButton)
     fun onTakeGalleryPhotoClicked() {
         val pickPhoto = Intent(Intent.ACTION_PICK,
@@ -87,6 +111,11 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * On click of "Add Photos" button, return list of added photos to [EditTaskActivity].
+     *
+     * @see [EditTaskActivity]
+     */
     @OnClick(R.id.addPhotosToTask)
     fun sendPhotosBack(){
         val intent = Intent()
@@ -95,6 +124,12 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Handles interactions with toolbar. If back button clicked, exit activity.
+     *
+     * @param item The clicked [MenuItem] in the toolbar
+     * @see [Toolbar]
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -105,14 +140,27 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * After user has added a photo via camera/gallery, this method converts the selected photo
+     * to a string and saves it to currentPhotosList, updating the [RecyclerView] afterwards.
+     *
+     * @param requestCode Request code for activity which provided the new photo.
+     * @param reseultCode
+     * @param data Contains new photo
+     * @see [AddPhotosListAdapter]
+     * @see [PhotoConversion]
+     *
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(data == null) return
+        // If photo was taken with camera.
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val extras = data.extras
             val imageBitmap = extras.get("data") as Bitmap
             currentPhotosList.add(PhotoConversion.getPhotoString(imageBitmap))
             photoListAdapter.notifyDataSetChanged()
         }
+        // If photo was provided from gallery.
         if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK) {
 //            val extras = data.extras
 //            val imageBitmap = extras.get("data") as Bitmap
