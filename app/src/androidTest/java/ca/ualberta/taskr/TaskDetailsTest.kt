@@ -2,6 +2,7 @@ package ca.ualberta.taskr
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.test.runner.AndroidJUnit4
 import android.widget.TextView
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
@@ -13,18 +14,13 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
+
 
 /**
  * Created by marissasnihur on 2018-04-06.
  *
  */
-
-@RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
+@RunWith(AndroidJUnit4::class)
 class TaskDetailsTest {
 
     private val taskTitle = "Test Title for a Task"
@@ -72,7 +68,7 @@ class TaskDetailsTest {
         shownTaskList.add(task)
 
         val position = 0
-        val intent = Intent(ShadowApplication.getInstance().applicationContext, ViewTaskActivity::class.java)
+        //val intent = Intent(ShadowApplication.getInstance().applicationContext, ViewTaskActivity::class.java)
         val bundle = Bundle()
         val strTask = GenerateRetrofit.generateGson().toJson(shownTaskList[position])
         bundle.putString("TASK", strTask)
@@ -81,11 +77,11 @@ class TaskDetailsTest {
 
 
         //TODO: Stop Mapbox from breAKING THINGSSS
-        val editTaskActivity = Robolectric.setupActivity(EditTaskActivity::class.java)
+        //val editTaskActivity = Robolectric.setupActivity(EditTaskActivity::class.java)
 
-        UserController(editTaskActivity).setLocalUsername(username)
+        //UserController(editTaskActivity).setLocalUsername(username)
 
-        activity = Robolectric.buildActivity(ViewTaskActivity::class.java, intent).create().visible().get()
+        //activity = Robolectric.buildActivity(ViewTaskActivity::class.java, intent).create().visible().get()
 
         taskAuthor = activity.findViewById<TextView>(R.id.taskAuthorText)
         taskTitleView = activity.findViewById(R.id.taskTitle)
