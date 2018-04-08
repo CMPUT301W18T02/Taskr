@@ -223,8 +223,6 @@ class EditUserActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (data == null) return
     /**
      * Obtains image provided by user via [MediaStore] image capture activity, updates
      * profile image on screen to provided image, then encodes the photo as a string.

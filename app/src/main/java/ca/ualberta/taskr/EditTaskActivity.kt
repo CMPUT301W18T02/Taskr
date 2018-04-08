@@ -164,7 +164,6 @@ class EditTaskActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     /**
      * Receives new location for task from [AddLocationToTaskActivity].
      *
