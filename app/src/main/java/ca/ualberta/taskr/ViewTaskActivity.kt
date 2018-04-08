@@ -721,6 +721,11 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         errorPopup.show(fragmentManager, "DialogFragment")
     }
 
+    /**
+     * Starts an [PhotoGalleryActivity] to display all the photos
+     *
+     * @see [PhotoGalleryActivity]
+     */
     @OnClick(R.id.taskBannerImage)
     fun onClickTaskImage(){
         val intent = Intent(this, PhotoGalleryActivity::class.java).apply {
