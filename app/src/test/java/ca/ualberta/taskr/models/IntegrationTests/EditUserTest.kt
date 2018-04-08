@@ -76,6 +76,9 @@ class EditUserTest {
         EditUSerErrorTextView = activity.findViewById<TextView>(R.id.EditUserErrorTextView)
     }
 
+    /**
+     * Test deleting a user from the elasticsearch database
+     */
     private fun deleteTestUser(){
         //delete test user in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(username))
@@ -99,6 +102,9 @@ class EditUserTest {
      *
      */
 
+    /**
+     * test modifying a user
+     */
     @Test
     fun checkApplyChangesButton() {
 
@@ -125,6 +131,9 @@ class EditUserTest {
         deleteTestUser()
     }
 
+    /**
+     * test user character lengths
+     */
     @Test
     fun checkMaxUserLength(){
         Assert.assertTrue(true)

@@ -65,6 +65,9 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Test task deletion
+     */
     private fun deleteTestTask(){
         //delete test task in elastic search
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr)).enqueue(object : Callback<ElasticsearchID> {
@@ -82,12 +85,18 @@ class TaskBasicsTest {
         })
     }
 
+    /**
+     * Check edit task activity to make sure its not null
+     */
     @Test
     fun checkActivityNotNull() {
         //make sure that activity is not null before starting tests.
         Assert.assertNotNull(editTaskActivity)
     }
 
+    /**
+     * Test adding a task
+     */
     @Test
     fun addATask() {
         //populate text fields, push add task button, check server for posted task, compare to expected
@@ -124,6 +133,9 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Test to see if the title length is within bounds
+     */
     @Ignore // TODO: FIX
     @Test
     fun maxLengthOfTaskTitle(){
@@ -161,6 +173,9 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Test task description bounds
+     */
     @Test
     fun maxLengthOfTaskDesc(){
         //Add a task with large description, check if stored title is less than or equal to 30
@@ -203,6 +218,9 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Test viewing a list of a users tasks
+     */
     @Test
     fun viewListOfMyTasks(){
         //populate a task, post the task, check if its associated with this user
@@ -216,6 +234,9 @@ class TaskBasicsTest {
         postTaskBtn.performClick()
     }
 
+    /**
+     * Test editing the description
+     */
     @Ignore // This test works, but it breaks travis TODO: Make this not break travis
     @Test
     fun editDescription(){
@@ -290,6 +311,9 @@ class TaskBasicsTest {
         deleteTestTask()
     }
 
+    /**
+     * Test task deletion
+     */
     @Ignore //TODO: Update test
     @Test
     fun delTask(){

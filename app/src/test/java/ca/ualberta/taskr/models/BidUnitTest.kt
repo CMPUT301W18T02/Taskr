@@ -18,6 +18,9 @@ class BidUnitTest {
     private val amount = 10.00
     private val owner = "Richard B. Small"
 
+    /**
+     * Test getting the bidder
+     */
     @Test
     fun testGetBidder(){
         val bid = Bid(owner, amount, false)
@@ -25,6 +28,9 @@ class BidUnitTest {
         assertEquals(owner, otherBidder)
     }
 
+    /**
+     * Test getting the value of the bid
+     */
     @Test
     fun testGetValue(){
         val bid = Bid(owner, amount, false)

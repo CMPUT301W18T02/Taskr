@@ -56,7 +56,6 @@ class CreateNewUserTest {
      * As a user, I want the contact information to include an email address and a phone number.
      *
      */
-
     @Test
     fun checkUser(){
         val MasterUserList : ArrayList<User> = ArrayList<User>()
@@ -75,6 +74,9 @@ class CreateNewUserTest {
 
     }
 
+    /**
+     * Test the login button click
+     */
     @Test
     fun testOnLoginButtonClick() {
         val diffButton: Button = activity.findViewById(R.id.LoginButton)
@@ -90,6 +92,9 @@ class CreateNewUserTest {
 
     }
 
+    /**
+     * Test adding a new user upon button click
+     */
     @Test
     fun testOnNewUserButtonClick() {
 
