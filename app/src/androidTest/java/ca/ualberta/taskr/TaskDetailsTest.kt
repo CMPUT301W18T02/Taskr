@@ -2,6 +2,7 @@ package ca.ualberta.taskr
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.test.runner.AndroidJUnit4
 import android.widget.TextView
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
@@ -19,8 +20,7 @@ import org.junit.runner.RunWith
  *
  */
 
-//@RunWith(RobolectricTestRunner::class)
-//@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
+@RunWith(AndroidJUnit4::class)
 class TaskDetailsTest {
 
     private val taskTitle = "Test Title for a Task"
