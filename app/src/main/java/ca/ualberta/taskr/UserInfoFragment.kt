@@ -1,101 +1,90 @@
 package ca.ualberta.taskr
 
-import android.content.Context
-import android.net.Uri
+import android.app.ActionBar
+import android.app.DialogFragment
 import android.os.Bundle
-import android.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
+import ca.ualberta.taskr.models.User
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [UserInfoFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [UserInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A fragment for displaying user information when that user's username is clicked somewhere
+ * in the app.
+ *
+ * @author jtbakker
+ * @property user The [User] object corresponding to the clicked username
+ * @property username [TextView] displaying username
+ * @property userEmail [TextView] displaying user email address
+ * @property userPhone [TextView] displaying user phone number
  */
-class UserInfoFragment : Fragment() {
+class UserInfoFragment : DialogFragment() {
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
+    private lateinit var user : User
+    @BindView(R.id.usernamePopup)
+    lateinit var username : TextView
 
-    private var mListener: OnFragmentInteractionListener? = null
+    @BindView(R.id.userEmailAddressPopup)
+    lateinit var userEmail : TextView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
-    }
+    @BindView(R.id.userPhoneNumberPopup)
+    lateinit var userPhone : TextView
 
+    /**
+     * Populates text fields with user information.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_info, container, false)
-    }
+        var view =  inflater.inflate(R.layout.fragment_user_info, container, false)
+        ButterKnife.bind(this, view)
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
+        if (arguments != null) {
+            var strUser = arguments.getString("USER")
+            user = GenerateRetrofit.generateGson().fromJson(strUser, User::class.java)
+
+            username.text = user.name
+            userEmail.text = user.email
+            userPhone.text = user.phoneNumber
         }
-    }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
+        return view
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
+     * Sets fragment's width to match screen width.
      */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    override fun onStart() {
+        super.onStart()
+        dialog.window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
+
+        private val ARG_USER = "USER"
 
         /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UserInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): UserInfoFragment {
+        * Factory method for creating instance of UserBidFragment given a User object.
+        *
+        * @param user
+        * @return fragment
+        */
+        fun newInstance(user: User): UserInfoFragment {
             val fragment = UserInfoFragment()
             val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
+            val strUser = GenerateRetrofit.generateGson().toJson(user, User::class.java)
+            args.putString(ARG_USER, strUser)
             fragment.arguments = args
             return fragment
         }
     }
-}// Required empty public constructor
+}

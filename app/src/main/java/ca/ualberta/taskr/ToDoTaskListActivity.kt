@@ -29,26 +29,40 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
+/**
+ * Displays a list of all tasks assigned to the user (i.e. bidded tasks where the user's bid
+ * was accepted). Displayed tasks can be clicked to open a [ViewTaskActivity] for that task.
+ *
+ * @property toDoTaskList [RecyclerView] of assigned tasks.
+ * @property drawerLayout [DrawerLayout] for [NavViewController]
+ * @property searchBar [EditText] for search terms.
+ * @property toolbar [Toolbar] for top of screen containing back button.
+ * @property loadingPanel [RelativeLayout] for loading panel.
+ * @property navView [NavigationView] for [NavViewController]
+ * @property todoTasksRefresh [SwipeRefreshLayout] for refreshing assigned task list.
+ *
+ * @property viewManager [RecyclerView.LayoutManager] for list adapter.
+ * @property searchText [String] of search terms.
+ * @property masterTaskList List of all tasks on server.
+ * @property shownTaskList List of all tasks assigned to user.
+ * @property taskListAdapter [TaskListAdapter] for shownTaskList
+ * @property username [String] of current user's username.
+ */
 class ToDoTaskListActivity : AppCompatActivity() {
 
     @BindView(R.id.toDoTaskList)
     lateinit var toDoTaskList: RecyclerView
-
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
-
     @BindView(R.id.todoTaskSearchBar)
     lateinit var searchBar: EditText
-
     @BindView(R.id.toDoListToolbar)
     lateinit var toolbar: Toolbar
-
     @BindView(R.id.loadingPanel)
     lateinit var loadingPanel: RelativeLayout
-
     @BindView(R.id.nav_view)
     lateinit var navView: NavigationView
-
     @BindView(R.id.todoTasksRefresh)
     lateinit var todoTasksRefresh: SwipeRefreshLayout
 
@@ -60,6 +74,17 @@ class ToDoTaskListActivity : AppCompatActivity() {
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
+    /**
+     * Initializes all views including toolbar and [RecyclerView] for task list.
+     * Sets listener for task list that starts [ViewTaskActivity] for the clicked task and sets
+     * the refresh listener to repopulate the task list on refresh.
+     *
+     * @param savedInstanceState
+     * @see [Toolbar]
+     * @see [UserController]
+     * @see [ViewManager]
+     * @see [TaskListAdapter]
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_to_do_task_list)
@@ -115,7 +140,10 @@ class ToDoTaskListActivity : AppCompatActivity() {
     }
 
     /**
-     * Network call to generate master task list in a async
+     * Network call to generate master task list in an async.
+     *
+     * @see CachingRetrofit
+     * //TODO: Use CachingRetrofit instead of GenerateRetrofit
      */
     private fun updateTasks() {
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
@@ -135,7 +163,12 @@ class ToDoTaskListActivity : AppCompatActivity() {
     }
 
     /**
-     * The android built in listener for the menu button on the toolbar
+     * The android built in listener for the menu button on the toolbar.
+     *
+     * @param item
+     * @return [Boolean]
+     * @see [Toolbar]
+     * @see [DrawerLayout]
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -148,7 +181,10 @@ class ToDoTaskListActivity : AppCompatActivity() {
     }
 
     /**
-     * Use to update the shownTaskList by applying a search filter to the master list
+     * Use to update the shownTaskList by applying a search filter to the master list.
+     *
+     * @param textToSearch
+     * @see TaskListAdapter
      */
     fun updateSearch(textToSearch : String){
         loadingPanel.visibility = View.VISIBLE
@@ -165,6 +201,9 @@ class ToDoTaskListActivity : AppCompatActivity() {
         taskListAdapter.notifyDataSetChanged()
     }
 
+    /**
+     * Refresh list of tasks whenever activity is resumed.
+     */
     override fun onResume() {
         super.onResume()
         updateTasks()

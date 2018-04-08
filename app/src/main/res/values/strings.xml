@@ -18,6 +18,14 @@
     <string name="activity_view_tasks_requester_add_bid">Add Bid</string>
     <string name="activity_view_tasks_requester_edit_task">Edit Task</string>
 
+    <string name="activity_view_tasks_lowest_bid">Top Bid: $%.2f</string>
+    <string name="activity_view_tasks_error_generic_title">Error</string>
+    <string name="activity_view_tasks_error_dismiss">OK</string>
+    <string name="activity_view_tasks_error_edit">Tasks with bids cannot be edited.</string>
+    <string name="activity_view_tasks_error_mark_done">Tasks must be assigned to be marked done.</string>
+    <string name="activity_view_tasks_error_reopen">Tasks must be assigned to be reopened.</string>
+    <string name="activity_view_tasks_error_add_bid">Cannot bid on assigned or done tasks.</string>
+
     <string name="row_bid_amount">$%.2f</string>
 
     <string name="fragment_edit_bid_enter_amount">Amount:</string>
@@ -26,7 +34,7 @@
     <string name="fragment_edit_bid_save_changes">Save</string>
     <string name="fragment_accept_bid_title">Accept Bid</string>
     <string name="fragment_accept_bid_username">from %1$s?</string>
-    <string name="fragment_accept_bid_remove">Remove</string>
+    <string name="fragment_accept_bid_remove">Decline</string>
     <string name="fragment_accept_bid_yes">Yes</string>
 
     <string name="prefs_name">"TaskrPrefs"</string>
@@ -51,4 +59,10 @@
     <string name="prefs_user">user_key</string>
     <string name="my_bids">My Bids</string>
     <string name="my_tasks">My Tasks</string>
+    <string name="taskimages">TaskImages</string>
+    <string name="add_photos">Add Photos</string>
+    <string name="select_photo_from_gallery">Select photo from gallery</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="add_edit_task">Add/Edit Task</string>
+    <string name="task_photos">Task Photos</string>
 </resources>

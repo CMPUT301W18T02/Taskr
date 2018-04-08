@@ -16,7 +16,13 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 
 
 /**
- * Allows Task Requesters to accept or decline a bid on one of tasks.
+ * Fragment that allows Task Requesters to accept or decline a bid on one of tasks.
+ *
+ * @author jtbakker
+ * @property bidAmountView TextView displaying bid amount.
+ * @property bidUsernameView TextView displaying bid owner.
+ * @property mListener Allows this fragment's interface methods to be called in @ViewTaskActivity.
+ * @see [DialogFragment]
  */
 class AcceptBidFragment : DialogFragment() {
 
@@ -30,27 +36,27 @@ class AcceptBidFragment : DialogFragment() {
     /**
      * Creates the view for AcceptBidFragment's layout, then updates displayed Bid attributes with
      * those obtained from a provided Bid object.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_accept_bid, container, false)
         ButterKnife.bind(this, view)
-
         if (arguments != null) {
             var strBid = arguments.getString("DISPLAYBID")
             displayBid = GenerateRetrofit.generateGson().fromJson(strBid, Bid::class.java)
         }
-
         // Update Bid attribute views using received Bid.
         bidAmountView.text = String.format(bidAmountView.text.toString(), displayBid.amount)
         bidUsernameView.text = String.format(bidUsernameView.text.toString(), displayBid.owner)
-
         return view
     }
 
     /**
-     * Update layout width to MATCH_PARENT so that fragment width expands to fit screen width.
+     * Update fragment width to fit screen width.
      */
     override fun onStart() {
         super.onStart()
@@ -58,7 +64,9 @@ class AcceptBidFragment : DialogFragment() {
     }
 
     /**
-     * Default onAttach function.
+     * Default onAttach function for fragments.
+     *
+     * @param context
      */
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -70,7 +78,7 @@ class AcceptBidFragment : DialogFragment() {
     }
 
     /**
-     * Default onDetach function
+     * Default onDetach function for fragments.
      */
     override fun onDetach() {
         super.onDetach()
@@ -78,7 +86,7 @@ class AcceptBidFragment : DialogFragment() {
     }
 
     /**
-     * Defines stubs for accept/decline bid methods.
+     * Defines method stubs for accept/decline bid methods.
      */
     interface AcceptBidFragmentInteractionListener {
         fun declinedBid(bid: Bid)
@@ -90,6 +98,9 @@ class AcceptBidFragment : DialogFragment() {
 
         /**
          * Factory method for creating instance of AcceptBidFragment given a Bid object.
+         *
+         * @param bid
+         * @return fragment
          */
         fun newInstance(bid: Bid): AcceptBidFragment {
             val fragment = AcceptBidFragment()
@@ -103,6 +114,8 @@ class AcceptBidFragment : DialogFragment() {
 
     /**
      * Cancels accept/decline of bid by closing AcceptBidFragment.
+     *
+     * @param view
      */
     @OnClick(R.id.requesterCancel)
     fun cancel(view : View) {
@@ -110,7 +123,11 @@ class AcceptBidFragment : DialogFragment() {
     }
 
     /**
-     * Declines bid by calling declineBid method in container activity, then closes AcceptBidFragment.
+     * Declines bid by calling declineBid method in [ViewActivity],
+     * then closes AcceptBidFragment.
+     *
+     * @param view
+     * @see [ViewTaskActivity]
      */
     @OnClick(R.id.requesterDecline)
     fun decline(view : View) {
@@ -119,7 +136,11 @@ class AcceptBidFragment : DialogFragment() {
     }
 
     /**
-     * Accepts bid by calling acceptBid method in container activity, then closes AcceptBidFragment.
+     * Accepts bid by calling acceptBid method in [ViewTaskActivity]
+     * then closes AcceptBidFragment.
+     *
+     * @param view
+     * @see [ViewTaskActivity]
      */
     @OnClick(R.id.requesterAccept)
     fun accept(view : View) {

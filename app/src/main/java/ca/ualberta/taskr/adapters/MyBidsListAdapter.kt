@@ -9,10 +9,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.util.PhotoConversion
 
 /**
- * MyBidsListAdapter class. Take in a task list and produce an adapter subclass that allows
- * lists of tasks to be used with the recyclerview view
+ * BidListAdapter Class. This class takes in an [ArrayList] of Bids and produces a [RecyclerView.Adapter]
+ * for displaying the views of bids put out by a specific [User]
+ *
+ * @property masterTaskList An [ArrayList] containing all of the bids
+ * @property username A [String] representing the user
+ * @constructor initializes the bidlist and links into the [OnItemClickListener]
+ * @see [RecyclerView.Adapter]
  */
 class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : RecyclerView.Adapter<MyBidsListAdapter.LocalViewHolder>() {
     private var taskList: List<Task> = masterTaskList
@@ -21,7 +27,11 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
     private lateinit var mClickListener: View.OnClickListener
 
     /**
-     * LocalViewHolder function
+     * Local view of the [MyBidsListAdapter]
+     * @property view the specified [View] containing the local view
+     * @constructor Set the [OnItemClickListener] value
+     * @see [RecyclerView.ViewHolder]
+     * @see [View.OnClickListener]
      */
     class LocalViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
@@ -39,7 +49,10 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
     }
 
     /**
-     * Create the LocalViewHolder
+     * Create a view for a selected view
+     * @param parent the [ViewGroup] the viewHolder is a part of
+     * @param viewType the type of view
+     * @return an instance of [LocalViewHolder] containing a view pointing towards our item
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -51,7 +64,9 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
     }
 
     /**
-     * Bind a subset window of the dataset to the LocalViewHolder
+     * Bind a selected view
+     * @param holder the [LocalViewHolder] to bind
+     * @param position the position within the view to bind
      */
     override fun onBindViewHolder(holder: LocalViewHolder, position: Int) {
         val task = taskList[position]
@@ -73,14 +88,23 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
         else{
             holder.myBid.text = "No bid!"
         }
+        if (task.photos.size != 0){
+            holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
+        }
     }
+
     /**
-     * Return the size of the dataset
+     * Return the number of items in the task list
+     * @return the size of the list
      */
     override fun getItemCount(): Int {
         return taskList.size
     }
 
+    /**
+     * Set the click listener to a callback function
+     * @param callback a [View.OnClickListener]
+     */
     fun setClickListener(callback: View.OnClickListener) {
         mClickListener = callback
     }

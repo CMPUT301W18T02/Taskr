@@ -46,6 +46,9 @@ class GSONTest {
 
     private val gson = GenerateRetrofit.generateGson()
 
+    /**
+     * Test JSON conversion of users
+     */
     @Test
     fun getUserJson() {
         val json = "{\"name\":\"Jim\",\"phoneNumber\":\"7809991111\",\"profilePicture\":null,\"email\":\"jim@mail.com\",\"username\":\"jim\"}"
@@ -53,12 +56,18 @@ class GSONTest {
         assertEquals(json, gson.toJson(user))
     }
 
+    /**
+     * Test JSON Conversion of Tasks
+     */
     @Test
     fun getTaskJson() {
         val json = "{\"owner\":\"Corkus\",\"title\":\"I\\u0027m a wot\",\"status\":\"ASSIGNED\",\"bids\":[{\"owner\":\"Mr. MoneyBags McGee\\u0027s Monetary Mmmm\",\"amount\":0.009999999776482582,\"isDismissed\":false},{\"owner\":\"A Bribe\",\"amount\":6.659999847412109,\"isDismissed\":false}],\"description\":\"4 mana 7/7\",\"photos\":[],\"location\":{\"latitude\":40.1231,\"longitude\":12.12321,\"altitude\":0.0},\"chosenBidder\":\"The Mask\"}"
         assertEquals(json,gson.toJson(task))
     }
 
+    /**
+     * test lists of users to JSON
+     */
     @Test
     fun serverToUsers() {
         val serverJson = "{\"hits\":{\"hits\":[{\"_source\":{\"name\": \"Lynn Stephens\", \"phoneNumber\": \"1-749-949-4881\", \"email\": \"zimmermanstacey@silva.info\", \"username\": \"lynn\", \"profilePicture\": null}},{\"_source\":{\"name\": \"Kim Wallace\", \"phoneNumber\": \"597-096-8855x26141\", \"email\": \"thomastonya@gmail.com\", \"username\": \"kim\", \"profilePicture\": null}},{\"_source\":{\"name\": \"John Kelly\", \"phoneNumber\": \"980-062-5671\", \"email\": \"sabrinachen@zimmerman-miller.com\", \"username\": \"john\", \"profilePicture\": null}},{\"_source\":{\"name\": \"William Berger\", \"phoneNumber\": \"040-284-7779\", \"email\": \"amber05@atkins.com\", \"username\": \"william\", \"profilePicture\": null}},{\"_source\":{\"name\": \"Thomas Camacho\", \"phoneNumber\": \"996-196-2187\", \"email\": \"cody68@sims-stephens.com\", \"username\": \"thomas\", \"profilePicture\": null}},{\"_source\":{\"name\": \"Richard Robbins\", \"phoneNumber\": \"+99(1)7046393461\", \"email\": \"pamelajohnston@hanson.com\", \"username\": \"richard\", \"profilePicture\": null}}]}}"
@@ -68,6 +77,9 @@ class GSONTest {
         assertEquals(userList, usersFromJson)
     }
 
+    /**
+     * test lists of tasks to JSON
+     */
     @Test
     fun serverToTasks() {
         val serverJson = "{\"hits\":{\"hits\":[{\"_index\":\"cmput301w18t02\",\"_type\":\"task\",\"_id\":\"AWH6QhnSXBxuGPxAgwG6\",\"_score\":1.0,\"_source\":{\"owner\": \"ryan\", \"title\": \"unleash user-centric metrics\", \"status\": \"DONE\", \"bids\": [{\"owner\": \"thomas\", \"amount\": 1096.74}, {\"owner\": \"mr.\", \"amount\": 3765.2}, {\"owner\": \"kim\", \"amount\": 2833.19}, {\"owner\": \"william\", \"amount\": 177.97}, {\"owner\": \"lynn\", \"amount\": 3213.34}, {\"owner\": \"mary\", \"amount\": 1464.36}, {\"owner\": \"john\", \"amount\": 6149.91}, {\"owner\": \"richard\", \"amount\": 3767.3}, {\"owner\": \"william\", \"amount\": 6380.1}], \"description\": \"Hospital particular benefit possible defense if. Government exist seek.\\nBase tonight recently world bar must. Financial power security tax. Notice although participant than health bit.\", \"photos\": [], \"location\": {\"latitude\": -61.78094842150479, \"longitude\": 18.443136034102086, \"altitude\": 0.0}, \"chosenBidder\": null}},{\"_index\":\"cmput301w18t02\",\"_type\":\"task\",\"_id\":\"AWH6Qhu4XBxuGPxAgwG7\",\"_score\":1.0,\"_source\":{\"owner\": \"mr.\", \"title\": \"orchestrate rich models\", \"status\": \"DONE\", \"bids\": [{\"owner\": \"ryan\", \"amount\": 2318.54}, {\"owner\": \"william\", \"amount\": 1131.33}, {\"owner\": \"kim\", \"amount\": 3347.58}, {\"owner\": \"john\", \"amount\": 306.38}, {\"owner\": \"richard\", \"amount\": 866.95}, {\"owner\": \"lynn\", \"amount\": 654.77}, {\"owner\": \"thomas\", \"amount\": 3302.94}, {\"owner\": \"mary\", \"amount\": 678.18}, {\"owner\": \"william\", \"amount\": 1708.06}], \"description\": \"Across radio career realize. Follow cultural anything race. Often add by long. Technology everything year concern sense foot white.\", \"photos\": [], \"location\": {\"latitude\": -5.322559707342336, \"longitude\": -127.69139614611947, \"altitude\": 0.0}, \"chosenBidder\": \"richard\"}}]}}"

@@ -6,22 +6,62 @@
     android:layout_height="match_parent"
     tools:context="ca.ualberta.taskr.EditTaskActivity">
 
-    <ImageView
-        android:id="@+id/taskImageView"
-        android:layout_width="363dp"
-        android:layout_height="128dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="TaskImages"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/editTaskToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/Toolbar">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <TextView
+                android:id="@+id/editTaskToolbarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/add_edit_task"
+                android:textSize="25sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+    </android.support.v7.widget.Toolbar>
+
+    <Button
+        android:id="@+id/taskAddImageButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/taskimages"
+
+        android:drawableStart="@drawable/ic_camera"
+        android:text="@string/add_photos"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTaskToolbar"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
         android:id="@+id/postTaskButton"
-        android:layout_width="318dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -34,7 +74,7 @@
 
     <Button
         android:id="@+id/getLocationButton"
-        android:layout_width="314dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -47,7 +87,7 @@
 
     <EditText
         android:id="@+id/taskTitleEditText"
-        android:layout_width="360dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -55,31 +95,29 @@
         android:ems="10"
         android:hint="@string/activity_edit_task_task_title"
         android:inputType="textPersonName"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskImageView"
-        android:maxLength="30"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/taskAddImageButton" />
 
     <EditText
         android:id="@+id/detailsEditText"
-        android:layout_width="356dp"
-        android:layout_height="137dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/activity_edit_task_details"
         android:inputType="textMultiLine"
+        android:maxLength="300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskTitleEditText"
-        android:maxLength="300"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/taskTitleEditText" />
 
     <EditText
         android:id="@+id/locationEditText"
-        android:layout_width="356dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

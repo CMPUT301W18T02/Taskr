@@ -19,7 +19,18 @@ import ca.ualberta.taskr.models.elasticsearch.Callback
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  *  https://stackoverflow.com/questions/15572530/android-alarm-start-on-boot
  */
+
+/**
+ * Alarm class. Used to handle notifications and updating data when the application is asleep
+ * and not active
+ */
 class Alarm : BroadcastReceiver() {
+
+    /**
+     * When an alarm is recieved
+     * @param context the [Context]
+     * @param intent the delivered [Intent]
+     */
     override fun onReceive(context: Context, intent: Intent) {
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "")
@@ -31,6 +42,10 @@ class Alarm : BroadcastReceiver() {
         wl.release()
     }
 
+    /**
+     * Set the alarm
+     * @param context the [Context] of the alarm
+     */
     fun setAlarm(context: Context) {
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val i = Intent(context, Alarm::class.java)

@@ -9,6 +9,10 @@ import android.content.Intent
  *
  *  Copyright (c) 2018 Brendan Samek. All Rights Reserved.
  */
+
+/**
+ * AlarmService class. This class acts like a background service for recieving alarms
+ */
 class AlarmService : BroadcastReceiver() {
     private val alarm = Alarm()
     override fun onReceive(context: Context, intent: Intent) {

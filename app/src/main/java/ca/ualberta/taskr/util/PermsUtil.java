@@ -14,7 +14,9 @@ import android.support.v4.app.ActivityCompat;
  * Static helper function to request all perms for app
  */
 
-
+/**
+ * PermsUtil class. This class is responsible for handling user permissions
+ */
 public class PermsUtil {
 
 
@@ -24,7 +26,13 @@ public class PermsUtil {
             Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.INTERNET};
 
+
     // Massive thanks to this stackoverflow post: https://stackoverflow.com/questions/34342816/android-6-0-multiple-permissions
+
+    /**
+     * Collect permissions from an activity
+     * @param activity the {@code Activity} to get permissions for
+     */
     public static void getPermissions(Activity activity) {
         int PERMISSION_ALL = 1;
         if(!hasPermissions(activity, PERMISSIONS)){
@@ -32,6 +40,11 @@ public class PermsUtil {
         }
     }
 
+    /**
+     * Check to see if permissions were loaded
+     * @param activity the {@code Activity} to check
+     * @return whether permissions have been loaded or not
+     */
     public static boolean checkPermission(Activity activity){
         if(!hasPermissions(activity, PERMISSIONS)){
             return true;
@@ -39,6 +52,12 @@ public class PermsUtil {
         return false;
     }
 
+    /**
+     * check to see if a series of permissions exist within the activity
+     * @param context the {@code Context} to check against
+     * @param permissions the list of permissions to check
+     * @return whether the permissions are set or not
+     */
     private static boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
