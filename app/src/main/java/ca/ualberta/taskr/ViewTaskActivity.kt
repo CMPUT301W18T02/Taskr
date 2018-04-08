@@ -26,9 +26,7 @@ import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
-import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.Callback
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.*
 import ca.ualberta.taskr.util.PermsUtil
 import ca.ualberta.taskr.util.PhotoConversion
 import com.mapbox.mapboxsdk.Mapbox
@@ -44,6 +42,8 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import retrofit2.Call
 import retrofit2.Response
 import java.util.*
+import ca.ualberta.taskr.models.elasticsearch.Callback
+
 
 
 /**
@@ -81,6 +81,7 @@ import java.util.*
  * @property editTaskButton [Button] for requester to modify task information.
  * @property toolbar [Toolbar] at top of screen. Contains back button and task title.
  * @property toolbarTitle [TextView] for displaying task title in toolbar.
+ * @property deleteButton [Button] for deleting tasks
  *
  * @property mapView [MapView] displaying task location.
  * @property mapboxMap [MapBoxMap] used to create displayed map.
@@ -145,6 +146,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var taskBannerImage: ImageView
     @BindView(R.id.taskAuthorImage)
     lateinit var authorImage : ImageView
+    @BindView(R.id.deleteButton)
+    lateinit var deleteButton : Button
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -190,6 +193,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             addOrMarkButton.text = getResources().getString(R.string.activity_view_tasks_provider_done)
             reopenButton.visibility = View.VISIBLE
             editTaskButton.visibility = View.VISIBLE
+            deleteButton.visibility = View.VISIBLE
         }
 
         // Initialize toolbar for back button and task title.
@@ -472,6 +476,37 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         startUserInfoFragment(taskAuthor.text.toString())
     }
 
+    /**
+     * If user is requester and task status is REQUESTED or DONE, delete the task. Else,
+     * show an error message.
+     *
+     * @param view
+     * @see [ErrorDialogFragment]
+     * @see [GenerateRetrofit]
+     */
+    @OnClick(R.id.deleteButton)
+    fun delete(view : View) {
+        if (displayTask.status == TaskStatus.BID || displayTask.status == TaskStatus.ASSIGNED) {
+            showErrorDialog(R.string.activity_view_tasks_error_delete)
+        } else {
+            val owner : String = displayTask.owner
+            val title : String = displayTask.title
+            val desc : String = displayTask.description
+            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(owner, title, desc)).enqueue(object : retrofit2.Callback<ElasticsearchID> {
+                        override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                            Log.i("network2222", response.body().toString())
+                            val id = response.body() as ElasticsearchID
+                            GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                            finish()
+                        }
+                        override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                            Log.e("network", "Network Failed!")
+                            t.printStackTrace()
+                            return
+                        }
+                    })
+        }
+    }
     /**
      * This method will either set the displayed Task's status to DONE if user is its Requester or
      * allow user to add a bid to the Task otherwise using [EditBidFragment].
