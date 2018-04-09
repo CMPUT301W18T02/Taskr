@@ -14,6 +14,7 @@ import butterknife.OnClick
 /**
  * Fragment for displaying an error message.
  *
+ * @author jtbakker
  * @property message [String] of the displayed error message.
  * @property messageView [TextView] for the error message.
  * @see [DialogFragment]
