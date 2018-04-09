@@ -17,14 +17,13 @@ import android.support.test.runner.AndroidJUnit4
 import retrofit2.Callback
 import android.content.Intent
 import ca.ualberta.taskr.controllers.UserController
-import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.action.ViewActions.*
+import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.GrantPermissionRule
 import ca.ualberta.taskr.models.Bid
-import ca.ualberta.taskr.util.PermsUtil
 import org.junit.*
+import android.support.test.espresso.
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -64,7 +63,7 @@ class TaskBiddingTests {
 
     @Rule
     @JvmField
-    val activityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
+    val myBidsActivityRule = ActivityTestRule<MyBidsActivity>(MyBidsActivity::class.java, false, false)
 
     @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
                                                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -189,8 +188,8 @@ class TaskBiddingTests {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val i = Intent(context, ViewTaskActivity::class.java)
         i.putExtra("TASK", taskStr)
-        viewTaskActivity = activityRule.launchActivity(i)
-        activityRule.activity.supportFragmentManager.beginTransaction()
+        viewTaskActivity = viewTaskActivityRule.launchActivity(i)
+        viewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
         UserController(viewTaskActivity).setLocalUsername(username)
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
@@ -212,7 +211,21 @@ class TaskBiddingTests {
      */
     @Test
     fun viewListOfBids(){
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, MyBidsActivity::class.java)
+        myBidsActivity = myBidsActivityRule.launchActivity(i)
 
+        //Change bidder to the username
+        val oldTask = testTask
+        testTask.chosenBidder = username
+        CachingRetrofit(this).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))
+        //R.id.myBidsList
+        //onData(allOf(is(instanceOf(Map.class)), hasEntry(equalTo("STR"), is("item: 50"))).perform(click());
+        onView(withId(R.id.myBidsList)).perform(actionOnItemAtPosition(0, isDisplayed()))
     }
 
     /**
