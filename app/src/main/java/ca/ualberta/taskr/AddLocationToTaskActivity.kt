@@ -3,27 +3,25 @@ package ca.ualberta.taskr
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.location.Location
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import android.widget.Button
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.Icon
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.geometry.LatLng
-import ca.ualberta.taskr.R.id.mapView
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-
-import com.mapbox.mapboxsdk.constants.Style
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 
 
 /**
@@ -43,6 +41,10 @@ import com.mapbox.mapboxsdk.constants.Style
 class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMarkerClickListener {
     @BindView(R.id.rangeMapView)
     lateinit var mapView: MapView
+
+    @BindView(R.id.addLocationToolbar)
+    lateinit var toolbar: Toolbar
+
     private lateinit var mapboxMap: MapboxMap
     @BindView(R.id.add_location)
     lateinit var button: Button
@@ -78,10 +80,16 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
         Mapbox.getInstance(this, getString(R.string.access_token))
         setContentView(R.layout.activity_add_location_to_task)
         ButterKnife.bind(this)
+
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
         position = GenerateRetrofit.generateGson().fromJson(intent.getStringExtra("position"), LatLng::class.java)
-        println(position)
+
+        // Initialize toolbar for back button.
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
     }
 
@@ -208,5 +216,20 @@ class AddLocationToTaskActivity : AppCompatActivity(), OnMapReadyCallback, Mapbo
                 point, 10.0))
     }
 
-
+    /**
+     * Process button presses from the tool bar.
+     *
+     * @param item
+     * @return [Boolean]
+     * @see [Toolbar]
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }
