@@ -24,7 +24,9 @@ import org.robolectric.shadows.ShadowLog
 
 
 /**
- * Created by mrnic on 2018-03-24.
+ * Created by James Cook on 2018-03-24.
+ *
+ * This test class deals with all of the tests that involve the task basic requirements.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(26))
@@ -42,6 +44,10 @@ class TaskBasicsTest {
     private lateinit var descriptionEditText: EditText
     private lateinit var addressEditText: EditText
     private lateinit var postTaskBtn: Button
+
+    /**
+     * Sets up everything that is required for the TestClass to function properly.
+     */
 
     @Before
     fun setup() {
@@ -63,11 +69,13 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test task deletion
+     * Deletes the test task after it is used in a test case.
      */
+
     private fun deleteTestTask(){
         //delete test task in elastic search
-        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr)).enqueue(object : Callback<ElasticsearchID> {
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
+                .enqueue(object : Callback<ElasticsearchID> {
             override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
                 Log.i("network", response.body().toString())
                 val id = response.body() as ElasticsearchID
@@ -83,17 +91,27 @@ class TaskBasicsTest {
     }
 
     /**
-     * Check edit task activity to make sure its not null
+     * Tests that the activity is not null prior to starting functionality tests.
      */
+
     @Test
     fun checkActivityNotNull() {
-        //make sure that activity is not null before starting tests.
         Assert.assertNotNull(editTaskActivity)
     }
 
     /**
-     * Test adding a task
+     * US 01.01.01
+     *
+     * As a task requester, I want to add a task to my tasks, each denoted with a title, brief
+     * description, and initial status: requested.
+     *
+     * Test case that makes sure that data that is set in the EditText Fields are properly passed
+     * to the database after pressing the post task button.
+     *
+     * Makes sure that the data that was input for the task indeed matches the data
+     * that was stored in the server for the task.
      */
+
     @Test
     fun addATask() {
         //populate text fields, push add task button, check server for posted task, compare to expected
@@ -115,10 +133,12 @@ class TaskBasicsTest {
                 if(taskList.size == 0){
                     Log.d("Add Task Test", taskList.toString())
                 }
-                val task = taskList[0]
-                Assert.assertEquals(taskTitle, task.title)
-                Assert.assertEquals(taskDescr, task.description)
-                Assert.assertEquals(taskLocStr, task.location.toString())
+                else {
+                    val task = taskList[0]
+                    Assert.assertEquals(taskTitle, task.title)
+                    Assert.assertEquals(taskDescr, task.description)
+                    Assert.assertEquals(taskLocStr, task.location.toString())
+                }
             }
 
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
@@ -131,9 +151,15 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test to see if the title length is within bounds
+     * US 01.01.02
+     *
+     * As a task requester, I want the maximum length of the task title to be at least 30
+     * characters.
+     *
+     * Checks that the task title (either new or edited) does not exceed the maximum length
+     * required for the application specifications.
      */
-    @Ignore // TODO: FIX
+
     @Test
     fun maxLengthOfTaskTitle(){
         //Add a task with large title, check if stored title is less than or equal to 30
@@ -171,8 +197,15 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test task description bounds
+     * US 01.01.03
+     *
+     * As a task requester, I want the maximum length of the task description to be at least
+     * 300 characters.
+     *
+     * Makes sure that the length of the task description does not surpass
+     * the maximum length of the task description required for the application specifications
      */
+
     @Test
     fun maxLengthOfTaskDesc(){
         //Add a task with large description, check if stored title is less than or equal to 30
@@ -216,25 +249,58 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test viewing a list of a users tasks
+     * US 01.02.01
+     *
+     * As a task requester, I want to view a list of my tasks, with their titles and statuses.
+     *
+     * Tests to check if the user can view a list of their tasks on the screen.
      */
+
     @Test
     fun viewListOfMyTasks(){
         //populate a task, post the task, check if its associated with this user
         titleEditText.setText(taskTitle)
-        descriptionEditText.setText(taskDescr + "Extra characters so that the test will show" +
-                "restriction on description. This one has to be" +
-                "particularly long, as I have to go over the 300 character limit, which, when your" +
-                "writing a test, is pretty doggone long. Whelp. Just a few characters le")
+        descriptionEditText.setText(taskDescr)
         addressEditText.setText(taskLocStr)
 
         postTaskBtn.performClick()
+
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                var masterTaskList: ArrayList<Task> = ArrayList()
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                val taskList: ArrayList<Task> = masterTaskList.filter {
+                    it -> (it.title == taskTitle)
+                        && (it.location.toString() == taskLocStr)
+                } as ArrayList<Task>
+
+                if(taskList.size == 0) {
+                    Log.d("Max Description Length Test", taskList.toString())
+                }
+                else {
+                    val task = taskList[0]
+                    Assert.assertTrue(task.owner == username)
+                }
+            }
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                Assert.assertEquals(1, 2)
+            }
+
+
+    })
     }
 
     /**
-     * Test editing the description
+     * US 01.03.01
+     *
+     * As a task requester, I want to edit the details for any one of my tasks with status: requested.
+     *
+     * Test that checks to make sure that you can edit a Task.
      */
-    @Ignore // This test works, but it breaks travis TODO: Make this not break travis
+
     @Test
     fun editDescription(){
         //Create a task, pass it to the EditTaskActivity, edit it, see if its been edited correctly
@@ -309,11 +375,18 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test task deletion
+     * US 01.04.01
+     *
+     * As a task requester, I want to delete a task of mine.
+     *
+     * Test that checks to make sure that the task is deleted in the server after it has been
+     * requested to be deleted.
      */
-    @Ignore //TODO: Update test
+
     @Test
-    fun delTask(){
+    fun delTask(){ //TODO: Fix Erroring out "ca.ualberta.taskr.exceptions.ResourceDoesNotExistException"
+        //TODO: Make sure to use buttons to delete task. Don't simply just request it be deleted.
+
         //populate text fields, push add task button, delete task, check server for deletion
         titleEditText.setText(taskTitle)
         descriptionEditText.setText(taskDescr)
@@ -351,6 +424,7 @@ class TaskBasicsTest {
         })
 
         //delete the task
+        // TODO: Make it so this is a button press in the appropriate activity.
         deleteTestTask()
 
         //check if task is still in server
