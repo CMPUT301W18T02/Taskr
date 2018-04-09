@@ -64,6 +64,7 @@ class CreateNewUserTest {
      * a user to the database. In essence checks to make sure that we don't have two people
      * with the same username in the database.
      */
+
     @Test
     fun checkUser(){
         val MasterUserList : ArrayList<User> = ArrayList<User>()
@@ -83,8 +84,11 @@ class CreateNewUserTest {
     }
 
     /**
-     * Test the login button click
+     * Tests the Login Button, makes sure that it sends the correct information to the correct
+     * activity - also makes sure that the activity that the button is sending the
+     * information to is indeed the correct activity.
      */
+
     @Test
     fun testOnLoginButtonClick() {
         loginButton.performClick()
@@ -100,7 +104,9 @@ class CreateNewUserTest {
     }
 
     /**
-     * Test adding a new user upon button click
+     * Tests the button that adds a new user, makes sure that the button sends the correct
+     * information to the EditUserActivity activity. Makes sure that the activity that
+     * it is sending it to is indeed the right activity.
      */
 
     @Test

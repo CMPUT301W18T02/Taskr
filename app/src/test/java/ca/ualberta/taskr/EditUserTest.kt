@@ -82,6 +82,7 @@ class EditUserTest {
     /**
      * Delete the test User from the database after the tests have been run with the User.
      */
+
     private fun deleteTestUser(){
         //delete test user in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(username))
@@ -110,10 +111,6 @@ class EditUserTest {
      * for the user.
      */
 
-    /**
-     * test modifying a user
-     */
-
     @Test
     fun checkApplyChangesButton() {
 
@@ -139,7 +136,6 @@ class EditUserTest {
 
         deleteTestUser()
     }
-
 
 
 }

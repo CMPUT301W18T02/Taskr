@@ -40,7 +40,6 @@ import retrofit2.Response
  */
 
 @RunWith(AndroidJUnit4::class)
-
 class TaskDetailsTest {
 
     private val taskTitle = "Test Title for a Task"

@@ -80,15 +80,11 @@ class SearchingTests {
         ShadowLog.stream = System.out
 
     }
-
     /**
      * Delete tasks that are added to the database for the purpose of testing.
      */
 
 
-    /**
-     * Test task deletion
-     */
     private fun deleteTestTask(){
         //delete test task in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, title, description))
@@ -120,8 +116,10 @@ class SearchingTests {
      */
 
     /**
-     * Check to see that the activity is not null
+     * Makes sure that the activity that is created is not null for the purpose of the Test
+     * Class.
      */
+
     @Test
     fun checkActivityNotNull() {
         Assert.assertNotNull(activity)
@@ -192,9 +190,6 @@ class SearchingTests {
      * displayed by the task in the application.
      */
 
-    /**
-     * Test Search result affirmation
-     */
     @Test
     fun onSearchResult(){
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)

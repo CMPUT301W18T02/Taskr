@@ -69,8 +69,9 @@ class TaskBasicsTest {
     }
 
     /**
-     * Test task deletion
+     * Deletes the test task after it is used in a test case.
      */
+
     private fun deleteTestTask(){
         //delete test task in elastic search
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
@@ -92,6 +93,7 @@ class TaskBasicsTest {
     /**
      * Tests that the activity is not null prior to starting functionality tests.
      */
+
     @Test
     fun checkActivityNotNull() {
         Assert.assertNotNull(editTaskActivity)
@@ -109,6 +111,7 @@ class TaskBasicsTest {
      * Makes sure that the data that was input for the task indeed matches the data
      * that was stored in the server for the task.
      */
+
     @Test
     fun addATask() {
         //populate text fields, push add task button, check server for posted task, compare to expected
@@ -202,6 +205,7 @@ class TaskBasicsTest {
      * Makes sure that the length of the task description does not surpass
      * the maximum length of the task description required for the application specifications
      */
+
     @Test
     fun maxLengthOfTaskDesc(){
         //Add a task with large description, check if stored title is less than or equal to 30
@@ -251,6 +255,7 @@ class TaskBasicsTest {
      *
      * Tests to check if the user can view a list of their tasks on the screen.
      */
+
     @Test
     fun viewListOfMyTasks(){
         //populate a task, post the task, check if its associated with this user
@@ -295,6 +300,7 @@ class TaskBasicsTest {
      *
      * Test that checks to make sure that you can edit a Task.
      */
+    
     @Test
     fun editDescription(){
         //Create a task, pass it to the EditTaskActivity, edit it, see if its been edited correctly

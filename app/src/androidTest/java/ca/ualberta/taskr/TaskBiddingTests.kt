@@ -150,12 +150,6 @@ class TaskBiddingTests {
     @Test
     fun makeBid(){
 
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        rule.launchActivity(i)
-        rule.activity.supportFragmentManager.beginTransaction()
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
