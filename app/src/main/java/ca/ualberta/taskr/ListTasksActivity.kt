@@ -37,6 +37,20 @@ import com.google.android.gms.ads.AdView
  *  The master task list activity
  *
  *  @author eyesniper2
+ *  @property taskList [RecyclerView] for displaying searched tasks
+ *  @property drawerLayout [DrawerLayout] for [NavViewController]
+ *  @property searchBar [EditText] for inputted search terms
+ *  @property toolbar [Toolbar] for accessing hamburger menu and nearby tasks.
+ *  @property loadingPanel [RelativeLayout] for loading panel.
+ *  @property navView [NavigationView] for [NavViewController]
+ *  @property taskListRefresh [SwipeRefreshLayout] for refreshing user task list.
+ *  @property viewManager [RecyclerView.LayoutManager] for list adapter.
+ *
+ *  @property searchText [String] of search terms
+ *  @property masterTaskList List of all tasks on server
+ *  @property shownTaskList List of tasks which match search terms
+ *  @property taskListAdapter [TaskListAdapter] for shownTaskList
+ *  @property username Current user's username obtained using [UserController]
  */
 class ListTasksActivity : AppCompatActivity() {
 
@@ -72,9 +86,12 @@ class ListTasksActivity : AppCompatActivity() {
 
 
     /**
-     * The on create method for the ListTasksActivity.
      * Will set up the toolbar, base list, setup activity listeners and kick off network requests to get data
      * from elastic search.
+     *
+     * @param savedInstanceState
+     * @see [TaskListAdapter]
+     * ]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,6 +157,8 @@ class ListTasksActivity : AppCompatActivity() {
 
     /**
      * Network call to generate the master task list
+     *
+     * @see [CachingRetrofit]
      */
     private fun updateTasks() {
         CachingRetrofit(this).getTasks(object : Callback<List<Task>> {
@@ -156,6 +175,8 @@ class ListTasksActivity : AppCompatActivity() {
 
     /**
      * The android built in listener for the menu button on the toolbar
+     *
+     * @param item
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

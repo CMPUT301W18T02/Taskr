@@ -67,8 +67,12 @@ class NavViewController(var navView: NavigationView,
         val usernameTextView = headerView.findViewById<TextView>(R.id.navHeaderUsername)
         usernameTextView.text = userController.getLocalUserName()
         val userPhoto = headerView.findViewById<ImageView>(R.id.profileImage)
-        if(userController.getLocalUserObject()?.profilePicture != null){
-            userPhoto.setImageBitmap(PhotoConversion.getBitmapFromString(userController.getLocalUserObject()!!.profilePicture!!))
+        if(userController.getLocalUserObject()?.profilePicture != null ) {
+            var user = userController.getLocalUserObject()
+            var imageStr = user?.profilePicture
+            if (imageStr!!.isNotEmpty()) {
+                userPhoto.setImageBitmap(PhotoConversion.getBitmapFromString(userController.getLocalUserObject()!!.profilePicture!!))
+            }
         }
         userPhoto.setOnClickListener({
             val editUserIntent = Intent(context,
