@@ -83,6 +83,7 @@ class ListTasksActivity : AppCompatActivity() {
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
     lateinit var mAdView: AdView
+    private var blockAds = false
 
 
     /**
@@ -119,8 +120,15 @@ class ListTasksActivity : AppCompatActivity() {
             mAdView.visibility = View.GONE
             Log.d("AD", "Visibility is GONE")
         } else {
-            val adRequest = AdRequest.Builder().build()
-            mAdView.loadAd(adRequest)
+            try {
+                val adRequest = AdRequest.Builder().build()
+                mAdView.loadAd(adRequest)
+            }
+            catch (e: Throwable) {
+                Log.d("Ads", "Ads aren't loadable in tests")
+                blockAds = true
+                mAdView.visibility = View.GONE
+            }
         }
 
         updateTasks()

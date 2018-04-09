@@ -55,7 +55,7 @@ class SearchingTests {
     private var bids = java.util.ArrayList<Bid>()
     private var description = "TestTaskDescription"
     private var photos = java.util.ArrayList<String>()
-    private var location: LatLng = LatLng(100.5,100.5)
+    private var location: LatLng = LatLng(65.0,66.0)
     private var chosenBidder = "The Mask"
     private lateinit var id: ElasticsearchID
 
