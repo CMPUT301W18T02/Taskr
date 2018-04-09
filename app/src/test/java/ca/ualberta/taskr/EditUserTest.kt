@@ -46,7 +46,7 @@ class EditUserTest {
     private var phone = "1029381202"
     private var email = "bleh@skdfjh.com"
 
-    private var nameChange = "Blah"
+    private var nameChange = "Gyarados"
     private var phoneChange = "18009999999"
     private var emailChange = "blah@lalala.com"
     private lateinit var intent: Intent
@@ -113,6 +113,7 @@ class EditUserTest {
     /**
      * test modifying a user
      */
+
     @Test
     fun checkApplyChangesButton() {
 
@@ -139,21 +140,6 @@ class EditUserTest {
         deleteTestUser()
     }
 
-    /**
-
-     * TODO: Finish checkMaxUserLength Test
-     *
-     * US 03.01.02
-     *
-     * As a user, I want the maximum length of a username to be at least 8 characters.
-     *
-     * This test assures that the Username length of the individual does not exceed
-     * the maximum username length for the database/requirements of the application.
-     */
-    @Test
-    fun checkMaxUserLength(){
-        Assert.assertTrue(true)
-    }
 
 
 }

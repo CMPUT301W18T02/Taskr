@@ -51,11 +51,11 @@ class SearchingTests {
     //private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
-    private var status: TaskStatus? = null
+    private var status: TaskStatus = TaskStatus.REQUESTED
     private var bids = java.util.ArrayList<Bid>()
     private var description = "TestTaskDescription"
     private var photos = java.util.ArrayList<String>()
-    private var location: LatLng? = null
+    private var location: LatLng = LatLng(100.5,100.5)
     private var chosenBidder = "The Mask"
     private lateinit var id: ElasticsearchID
 
@@ -163,7 +163,7 @@ class SearchingTests {
                 })
 
                 if(shownTaskList.size == 0){
-                    Log.d("Search Test Malfunction", shownTaskList.toString())
+                    Log.e("Search Test Malfunction", shownTaskList.toString())
                 }
                 else {
 
