@@ -17,9 +17,16 @@ import retrofit2.Callback
 import android.content.Intent
 import ca.ualberta.taskr.controllers.UserController
 import android.support.test.InstrumentationRegistry
+import android.support.test.espresso.ViewAction
+import android.support.test.espresso.ViewInteraction
 import android.support.test.espresso.action.ViewActions.*
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions
+import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.GrantPermissionRule
+import android.support.v7.widget.RecyclerView
 import ca.ualberta.taskr.models.Bid
+import org.hamcrest.Matchers.allOf
 import org.junit.*
 
 /**
@@ -46,10 +53,15 @@ class TaskBiddingTests {
     private lateinit var returnBid: Bid
 
     private lateinit var viewTaskActivity: ViewTaskActivity
+    private lateinit var otherViewTaskActivity: ViewTaskActivity
 
     @Rule
     @JvmField
     val viewTaskActivityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
+
+    @Rule
+    @JvmField
+    val otherViewTaskActivityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
 
     @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
                                                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -135,7 +147,7 @@ class TaskBiddingTests {
         Log.i("test", "TEST")
 
         //TODO: Make networking work so you don't have tests that do nothing
-        returnBid = expectedBid
+        //returnBid = expectedBid
 
         val masterTaskList: ArrayList<Task> = ArrayList()
         val slaveTaskList: ArrayList<Task> = ArrayList()
@@ -158,6 +170,7 @@ class TaskBiddingTests {
                 }
                 else{
                     Log.e("network", "No test task found!")
+
                 }
             }
 
@@ -196,7 +209,18 @@ class TaskBiddingTests {
      */
     @Test
     fun notificationOnBid(){
+        UserController(viewTaskActivity).setLocalUsername(taskPosterUsername)
 
+        val oldTask = testTask
+        testTask.chosenBidder = username
+
+        CachingRetrofit(viewTaskActivity).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))
+
+        Thread.sleep(1000)
     }
 
      /**
@@ -206,7 +230,7 @@ class TaskBiddingTests {
      */
     @Test
     fun viewListOfMyTasksWithBids(){
-
+        // Self evident in MyTasksActivity
      }
 
     /**
@@ -215,7 +239,7 @@ class TaskBiddingTests {
      */
     @Test
     fun viewBidsOnMyTask(){
-
+        // Self evident in ViewTaskActivity
     }
 
     /**
@@ -225,7 +249,33 @@ class TaskBiddingTests {
      */
     @Test
     fun acceptBid(){
+        //post a bid on test task
+        val oldTask = testTask
+        testTask.chosenBidder = username
 
+        CachingRetrofit(viewTaskActivity).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))
+        Thread.sleep(1000)
+
+        viewTaskActivityRule.finishActivity()
+
+        // Start task poster view acti
+        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
+        i.putExtra("TASK", taskStr)
+        otherViewTaskActivity = otherViewTaskActivityRule.launchActivity(i)
+        otherViewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
+        UserController(otherViewTaskActivity).setLocalUsername(taskPosterUsername)
+
+        // press buttons to accept bid
+        onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo())
+        //ViewInteraction recyclerView = onView(allOf(withId(R.id.bidListView), isDisplayed()))
+        //onView(withId(R.id.bidListView)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+        //onView(withId(R.id.confirm)).perform(click())
     }
 
     /**
@@ -234,6 +284,32 @@ class TaskBiddingTests {
      */
     @Test
     fun declineBid(){
+        //post a bid on test task
+        val oldTask = testTask
+        testTask.chosenBidder = username
 
+        CachingRetrofit(viewTaskActivity).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))
+        Thread.sleep(1000)
+
+        viewTaskActivityRule.finishActivity()
+
+        // Start task poster
+        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
+        i.putExtra("TASK", taskStr)
+        otherViewTaskActivity = otherViewTaskActivityRule.launchActivity(i)
+        otherViewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
+        UserController(otherViewTaskActivity).setLocalUsername(taskPosterUsername)
+
+        // Press buttons to decline bid
+        onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo())
+        //ViewInteraction recyclerView = onView(allOf(withId(R.id.bidListView), isDisplayed()))
+        //onView(withId(R.id.bidListView)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+        //onView(withId(R.id.requesterDecline)).perform(click())
     }
 }
