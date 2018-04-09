@@ -15,16 +15,22 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * Created by marissasnihur on 2018-04-09.
@@ -54,7 +60,7 @@ class TaskDoneTests {
     val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
 
     private fun createTestTask(status: TaskStatus){
-        testTask = Task(owner=taskPosterUsername,
+        testTask = Task(owner=username,
                 title=taskTitle,
                 status= status,
                 bids=ArrayList(),
@@ -68,21 +74,32 @@ class TaskDoneTests {
         Thread.sleep(1000)
     }
 
-    /*@Before
+    @Before
     fun setUp(){
-        val statusReq: TaskStatus = TaskStatus.REQUESTED
-
-        createTestTask(statusReq)
-
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        rule.launchActivity(i)
-        rule.activity.supportFragmentManager.beginTransaction()
-
         UserController(context).setLocalUsername(username)
-    }*/
+    }
+
+    /**
+     * Delete the test Task.
+     */
+    private fun deleteTestTask(){
+        //delete test task in elastic search
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
+                .enqueue(object : Callback<ElasticsearchID> {
+                    override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                        Log.i("network", response.body().toString())
+                        val id = response.body() as ElasticsearchID
+                        GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                    }
+
+                    override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                        Log.e("network", "Network Failed!")
+                        t.printStackTrace()
+                        return
+                    }
+                })
+    }
 
     /**
      * US 07.01.01
@@ -94,6 +111,8 @@ class TaskDoneTests {
     fun setAssignedToDone(){
         val statusReq: TaskStatus = TaskStatus.ASSIGNED
 
+
+
         createTestTask(statusReq)
 
         val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
@@ -103,19 +122,21 @@ class TaskDoneTests {
         rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
 
-        UserController(context).setLocalUsername(username)
-
+        val userController = UserController(rule.activity)
+        var username = userController.getLocalUserName()
 
 
         onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.ASSIGNED.toString())))
+        Assert.assertTrue(username == testTask.owner)
 
 
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
 
-        Thread.sleep(1000)
-        //TODO: Figure out why this line isn't working
-       // onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.DONE.toString())))
+        Thread.sleep(2000)
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.DONE.toString())))
+
+        deleteTestTask()
     }
 
     /**
@@ -137,11 +158,18 @@ class TaskDoneTests {
         rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
 
-        UserController(context).setLocalUsername(username)
+        val userController = UserController(rule.activity)
+        var username = userController.getLocalUserName()
 
-        //onView(withId(R.id.reopenButton)).perform(click())
-        //TODO: figure out why this line isn't working.
-        //onView(withId(R.id.taskStatus)).check(ViewAssertions.matches(ViewMatchers.withText(TaskStatus.REQUESTED.toString())))
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.ASSIGNED.toString())))
+        Assert.assertTrue(username == testTask.owner)
+
+        onView(withId(R.id.reopenButton)).perform(scrollTo(), click())
+        Thread.sleep(2000)
+
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.REQUESTED.toString())))
+
+        deleteTestTask()
     }
 
 
