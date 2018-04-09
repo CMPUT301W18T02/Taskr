@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -22,9 +23,11 @@ import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+
 
 /**
  * Displays a list of all tasks owned by the current user and a button for creating new tasks.
@@ -43,8 +46,13 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
  * @see [TaskListAdapter]
  * @see [RecyclerView]
  * @see [Toolbar]
+ * @see [PopupMenu.OnMenuItemClickListener]
  */
-class MyTasksActivity : AppCompatActivity() {
+class MyTasksActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
+
+    private val filterNone = 0
+    private val filterAssigned = 1
+
     @BindView(R.id.loadingPanel)
     lateinit var loadingPanel: RelativeLayout
     @BindView(R.id.myTasksView)
@@ -62,6 +70,9 @@ class MyTasksActivity : AppCompatActivity() {
 
     private var myTasksList: ArrayList<Task> = ArrayList()
     private var myTasksAdapter: TaskListAdapter = TaskListAdapter(myTasksList)
+
+    private var filterStatus = filterNone
+
 
     /**
      * Initializes all views including toolbar and [RecyclerView] for task list.
@@ -136,9 +147,15 @@ class MyTasksActivity : AppCompatActivity() {
                 // Populate a master list and filter it by username to get our
                 val masterList: ArrayList<Task> = ArrayList()
                 masterList.addAll(response)
-                myTasksList.addAll(masterList.filter { it ->
-                    it.owner == username
-                })
+                if (filterStatus == filterAssigned){
+                    myTasksList.addAll(masterList.filter { it ->
+                        it.owner == username && it.status == TaskStatus.ASSIGNED
+                    })
+                } else {
+                    myTasksList.addAll(masterList.filter { it ->
+                        it.owner == username
+                    })
+                }
 
                 loadingPanel.visibility = View.GONE
                 myTasksAdapter.notifyDataSetChanged()
@@ -197,5 +214,38 @@ class MyTasksActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         populateList()
+    }
+
+    /**
+     * Show the filters menu for the [MyTasksActivity]
+     *
+     * @param view current view
+     */
+    @OnClick(R.id.myTasksFilterMenu)
+    fun showFiltersMenu(view: View) {
+        val popup = PopupMenu(this, view)
+        val inflater = popup.menuInflater
+        inflater.inflate(R.menu.my_tasks_menu, popup.menu)
+        popup.setOnMenuItemClickListener(this)
+        popup.show()
+    }
+
+    /**
+     * Handle the menu clicks and set the filter status
+     *
+     * @param item Item clicked
+     * @return result
+     */
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        if(item == null) return false
+        if(item.itemId == R.id.show_all_tasks){
+            filterStatus = filterNone
+            populateList()
+        }
+        else if(item.itemId == R.id.show_assigned_tasks){
+            filterStatus = filterAssigned
+            populateList()
+        }
+        return true
     }
 }

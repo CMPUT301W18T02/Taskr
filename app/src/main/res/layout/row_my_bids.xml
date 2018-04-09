@@ -10,15 +10,15 @@ android:layout_marginLeft="15dp"
 android:layout_marginRight="15dp"
 android:background="@color/colorContainer">
 
-<ImageView
-    android:id="@+id/taskHeaderImage"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/colorButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:srcCompat="@mipmap/ic_launcher" />
+    <ImageView
+        android:id="@+id/taskHeaderImage"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/colorButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/taskr_logo_full_foreground" />
 
 <TextView
     android:id="@+id/taskTitle"

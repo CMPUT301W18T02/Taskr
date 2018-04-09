@@ -218,7 +218,7 @@ class TaskBiddingTests {
         //Change bidder to the username
         val oldTask = testTask
         testTask.chosenBidder = username
-        CachingRetrofit(this).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+        CachingRetrofit(myBidsActivity).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
             override fun onResponse(response: Boolean, responseFromCache: Boolean) {
                 Log.e("network", "Posted!")
             }
