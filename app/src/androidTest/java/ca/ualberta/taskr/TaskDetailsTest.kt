@@ -11,8 +11,7 @@ import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.typeText
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.espresso.matcher.ViewMatchers.withText
+import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
@@ -102,7 +101,7 @@ class TaskDetailsTest {
     }
 
     /**
-     * US 02.01.01
+     * US 02.01.01, US 10.02.01
      *
      * As a task requester or provider, I want to view all the details for a given task, including
      * its title, description, status, and lowest bid so far (if any).
@@ -127,6 +126,7 @@ class TaskDetailsTest {
         onView(withId(R.id.taskDetails)).check(matches(withText(taskDescr)))
         onView(withId(R.id.taskTitle)).check(matches(withText(taskTitle)))
         onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.REQUESTED.toString())))
+        onView(withId(R.id.taskMapView)).check(matches(isDisplayed()))
 
         if(testTask.bids.size == 0){
             onView(withId(R.id.taskPay)).check(matches(withText("")))
