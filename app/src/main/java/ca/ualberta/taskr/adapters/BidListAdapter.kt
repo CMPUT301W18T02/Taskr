@@ -29,8 +29,6 @@ import ca.ualberta.taskr.util.PhotoConversion
  */
 class BidListAdapter(taskBidList: ArrayList<Bid>, userList : ArrayList<User>): RecyclerView.Adapter<BidListAdapter.LocalViewHolder>() {
 
-    @BindView(R.id.bidderName)
-    lateinit var bidderNameView : TextView
     private var bidList: ArrayList<Bid> = taskBidList
     private var userList: ArrayList<User> = userList
     var itemClickListener : OnItemClickListener? = null

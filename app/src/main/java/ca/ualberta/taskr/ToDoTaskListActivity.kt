@@ -191,14 +191,38 @@ class ToDoTaskListActivity : AppCompatActivity() {
         shownTaskList.clear()
         taskListAdapter.notifyDataSetChanged()
 
+        val keywords = textToSearch.split(' ')
         shownTaskList.addAll(masterTaskList.filter {
-            it -> (it.status == TaskStatus.ASSIGNED)
-                && (it.chosenBidder != null && it.chosenBidder == username)
-                && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
+            it -> checkIfTaskShouldBeShown(it, keywords)
         })
         loadingPanel.visibility = View.GONE
 
         taskListAdapter.notifyDataSetChanged()
+    }
+
+    /**
+     * Check to see if the [Task] should be shown.
+     *
+     * @param task Task to test
+     * @param keywords Split keywords to check for
+     *
+     * @return Boolean of if the task should be shown
+     */
+    private fun checkIfTaskShouldBeShown(task:Task, keywords:List<String>) : Boolean{
+        if (task.status != TaskStatus.ASSIGNED){
+            return false
+        }
+        if (task.chosenBidder == null || task.chosenBidder != username){
+            return false
+        }
+        val instancesOfKeywords = keywords.count {
+            it -> (task.title != null && task.title.contains(it, true)) ||
+                (task.description != null && task.description.contains(it, true))
+        }
+        if(instancesOfKeywords == keywords.size){
+            return true
+        }
+        return false
     }
 
     /**

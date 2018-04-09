@@ -169,12 +169,13 @@ class ListTasksActivity : AppCompatActivity() {
 
     /**
      * Use to update the shownTaskList by applying a search filter to the master list
+     *
+     * @param textToSearch The search terms
      */
     fun updateSearch(textToSearch: String) {
         loadingPanel.visibility = View.VISIBLE
         shownTaskList.clear()
         taskListAdapter.notifyDataSetChanged()
-
         shownTaskList.addAll(masterTaskList.filter { it ->
             (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
                     && (it.owner != username)
@@ -185,12 +186,43 @@ class ListTasksActivity : AppCompatActivity() {
         taskListAdapter.notifyDataSetChanged()
     }
 
+    /**
+     * Check to see if the [Task] should be shown.
+     *
+     * @param task Task to test
+     * @param keywords Split keywords to check for
+     *
+     * @return Boolean of if the task should be shown
+     */
+    private fun checkIfTaskShouldBeShown(task:Task, keywords:List<String>) : Boolean{
+        if (task.status == TaskStatus.ASSIGNED && task.status == TaskStatus.DONE){
+            return false
+        }
+        if (task.owner == username){
+            return false
+        }
+        val instancesOfKeywords = keywords.count {
+            it -> (task.title != null && task.title.contains(it, true)) ||
+                    (task.description != null && task.description.contains(it, true))
+        }
+        if(instancesOfKeywords == keywords.size){
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Open the [NearbyTasksActivity] when the viewTaskMapButton is clicked
+     */
     @OnClick(R.id.viewTaskMapButton)
     fun openMapView() {
         val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
     }
 
+    /**
+     * When the activity is resumed update the tasks
+     */
     override fun onResume() {
         super.onResume()
         updateTasks()
