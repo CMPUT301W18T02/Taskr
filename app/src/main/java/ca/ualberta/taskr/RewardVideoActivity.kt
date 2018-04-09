@@ -2,10 +2,12 @@ package ca.ualberta.taskr
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import butterknife.BindView
@@ -134,5 +136,19 @@ class RewardVideoActivity : AppCompatActivity(), RewardedVideoAdListener {
     override fun onRewardedVideoStarted() {
     }
 
+    /**
+     * The android built in listener for the menu button on the toolbar
+     *
+     * @param item The [MenuItem] clicked
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 }
