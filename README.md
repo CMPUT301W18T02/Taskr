@@ -1,5 +1,5 @@
 # Taskr 
-![Build Status](https://raw.githubusercontent.com/dwyl/repo-badges/master/highresPNGs/build-passing.png)
+[![badImage](https://img.youtube.com/vi/qkUT9em_yPE/0.jpg)](https://www.youtube.com/watch?v=qkUT9em_yPE&feature=youtu.be) 
 
 ## What is Taskr
 
