@@ -21,7 +21,6 @@ import android.support.test.espresso.ViewAction
 import android.support.test.espresso.ViewInteraction
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.GrantPermissionRule
 import android.support.v7.widget.RecyclerView
