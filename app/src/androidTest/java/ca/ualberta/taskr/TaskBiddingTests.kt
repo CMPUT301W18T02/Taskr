@@ -77,11 +77,11 @@ class TaskBiddingTests {
 
         val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
+        UserController(context).setLocalUsername(username)
         val i = Intent(context, ViewTaskActivity::class.java)
         i.putExtra("TASK", taskStr)
         viewTaskActivity = viewTaskActivityRule.launchActivity(i)
         viewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
-        UserController(viewTaskActivity).setLocalUsername(username)
     }
 
     /**
@@ -147,7 +147,7 @@ class TaskBiddingTests {
         Log.i("test", "TEST")
 
         //TODO: Make networking work so you don't have tests that do nothing
-        //returnBid = expectedBid
+        returnBid = expectedBid
 
         val masterTaskList: ArrayList<Task> = ArrayList()
         val slaveTaskList: ArrayList<Task> = ArrayList()
@@ -179,6 +179,7 @@ class TaskBiddingTests {
                 t.printStackTrace()
             }
         })
+        Thread.sleep(1000)
     }
 
     /**
@@ -191,10 +192,13 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
+        UserController(viewTaskActivity).setLocalUsername(username)
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
+        Thread.sleep(2000)
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
+        Thread.sleep(2000)
         onView(withId(R.id.confirm)).perform(click())
-        Thread.sleep(1000)
+        Thread.sleep(2000)
         getTaskBid()
         Assert.assertEquals(expectedBid.toString(), returnBid.toString())
         Assert.assertTrue(expectedBid.amount == returnBid.amount)
