@@ -15,6 +15,10 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 
 import android.support.test.espresso.action.ViewActions.click
+import android.support.test.espresso.assertion.ViewAssertions
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.matcher.ViewMatchers
+import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withId
 
 /**
@@ -22,18 +26,14 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
  *
  * This Test Class handles all of the functionality of AddLocationToTaskActivity, and
  * deals with maps and a button that sends a location back to the EditTaskActivity.
+ *
+ * US 10.01.01, US 10.03.01
  */
 
 @RunWith(AndroidJUnit4::class)
 //@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
 class GeoLocationTests {
 
-    //private lateinit var activity: AddLocationToTaskActivity
-    private lateinit var button: Button
-
-    /**
-     * Sets up all of the variables needed by the Test Class.
-     */
 
     @Rule @JvmField
     var activity = ActivityTestRule<AddLocationToTaskActivity>(AddLocationToTaskActivity::class.java)
@@ -75,7 +75,11 @@ class GeoLocationTests {
     @Test
     fun onMapClickTest(){
 
+
+        onView(withId(R.id.rangeMapView)).check(matches(isDisplayed()))
+
         onView(withId(R.id.rangeMapView)).perform(click())
+
 
     }
 

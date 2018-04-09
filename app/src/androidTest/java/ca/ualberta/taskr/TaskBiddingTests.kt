@@ -171,6 +171,7 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
+
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
         onView(withId(R.id.confirm)).perform(click())
