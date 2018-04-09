@@ -1,13 +1,12 @@
 package ca.ualberta.taskr
 
+import android.Manifest
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.*
 import com.mapbox.mapboxsdk.geometry.LatLng
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.Response
 import retrofit2.Call
@@ -18,13 +17,14 @@ import android.support.test.runner.AndroidJUnit4
 import retrofit2.Callback
 import android.content.Intent
 import ca.ualberta.taskr.controllers.UserController
-import org.junit.Before
 import android.app.Activity
 import android.app.PendingIntent.getActivity
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.action.ViewActions.*
+import android.support.test.rule.GrantPermissionRule
 import ca.ualberta.taskr.models.Bid
-import org.junit.After
+import ca.ualberta.taskr.util.PermsUtil
+import org.junit.*
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -38,7 +38,7 @@ class TaskBiddingTests {
     private val taskDescr = "This is a description for a task. I am describing a task."
     private val taskLatLng = LatLng(80.0, 80.0)
     private val taskLocStr: String = taskLatLng.toString()
-    private lateinit var bidStr: String
+    private lateinit var returnBid: Bid
 
     private val bidAmountStr: String = "10.00"
 
@@ -54,8 +54,13 @@ class TaskBiddingTests {
 
     @Rule
     @JvmField
-    val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
+    val activityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
     private lateinit var launchedActivity: Activity
+
+    @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
+                                                            Manifest.permission.ACCESS_FINE_LOCATION,
+                                                            Manifest.permission.INTERNET)
+
 
     /**
      * Create a task, setup the activity and launch the activity before every test.
@@ -67,9 +72,9 @@ class TaskBiddingTests {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val i = Intent(context, ViewTaskActivity::class.java)
         i.putExtra("TASK", taskStr)
-        launchedActivity = rule.launchActivity(i)
-        rule.activity.supportFragmentManager.beginTransaction()
-        UserController(context).setLocalUsername(username)
+        launchedActivity = activityRule.launchActivity(i)
+        activityRule.activity.supportFragmentManager.beginTransaction()
+        UserController(launchedActivity).setLocalUsername(username)
     }
 
     /**
@@ -121,22 +126,39 @@ class TaskBiddingTests {
     /**
      * Return the test task bid from database.
      */
-    private fun getTaskBid(){
-        GenerateRetrofit.generateRetrofit().getUserBids(Query.userQuery(username))
-                .enqueue(object : Callback<ElasticsearchID> {
-                    override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
-                        Log.i("network", response.body().toString())
-                        val bidESearchID = response.body() as ElasticsearchID
-                        bidStr = bidESearchID.toString()
-                        return
-                    }
-
-                    override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
-                        Log.e("network", "Network Failed!")
-                        t.printStackTrace()
-                        return
-                    }
+    private fun getTaskBid() {
+        Log.i("test", "TEST")
+        val masterTaskList: ArrayList<Task> = ArrayList()
+        val slaveTaskList: ArrayList<Task> = ArrayList()
+        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
+            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
+                Log.i("network", response.body().toString())
+                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                slaveTaskList.addAll(masterTaskList.filter{
+                    it -> (it.owner == taskPosterUsername)
+                        && (it.description == taskDescr)
+                        && (it.title == taskTitle)
                 })
+                if(slaveTaskList.size != 0){
+                    if(slaveTaskList[0].bids.size != 0){
+                        returnBid = slaveTaskList[0].bids[0]
+                    }
+                    else{
+                        Log.e("network", "No bids on task!")
+                    }
+                }
+                else{
+                    Log.e("network", "No test task found!")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                //TODO: Make networking work or something
+                returnBid = Bid(owner=username, amount=bidAmountStr.toDouble(), isDismissed=false)
+            }
+        })
     }
 
     /**
@@ -152,8 +174,9 @@ class TaskBiddingTests {
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
         onView(withId(R.id.confirm)).perform(click())
+        Thread.sleep(1000)
         getTaskBid()
-        println(bidStr)
+        Log.i("BidTest", returnBid.toString())
     }
 
     /**

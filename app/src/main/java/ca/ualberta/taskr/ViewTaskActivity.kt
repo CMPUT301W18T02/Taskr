@@ -21,6 +21,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.BidListAdapter
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
@@ -355,8 +356,8 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * @see [UserController]
      */
     private fun getUserType() {
-        var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        username = editor.getString("Username", null)
+        //var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
+        username = UserController(this).getLocalUserName()//editor.getString("Username", null)
         if (username == displayTask.owner) {
             isRequester = true
         }
