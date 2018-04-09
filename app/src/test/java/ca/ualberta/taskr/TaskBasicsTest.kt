@@ -1,11 +1,8 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import ca.ualberta.taskr.BuildConfig
-import ca.ualberta.taskr.EditTaskActivity
-import ca.ualberta.taskr.R
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit

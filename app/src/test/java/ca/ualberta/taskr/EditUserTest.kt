@@ -1,20 +1,16 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.content.Intent
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import ca.ualberta.taskr.BuildConfig
-import ca.ualberta.taskr.EditUserActivity
-import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.User
 import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Query
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -50,7 +46,7 @@ class EditUserTest {
     private var phone = "1029381202"
     private var email = "bleh@skdfjh.com"
 
-    private var nameChange = "Blah"
+    private var nameChange = "Gyarados"
     private var phoneChange = "18009999999"
     private var emailChange = "blah@lalala.com"
     private lateinit var intent: Intent

@@ -15,19 +15,22 @@ import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import ca.ualberta.taskr.adapters.AddPhotosListAdapter
+import ca.ualberta.taskr.adapters.PhotosListAdapter
 import ca.ualberta.taskr.util.PhotoConversion
 
 
 /**
  * AddPhotoToTaskActivity
  *
- * This class allows for the ability to add a photo to a given task
+ * This class allows for the ability to add a photos to a given task.
+ *
+ * @author eyesniper2
+ * @see AppCompatActivity
  */
 class AddPhotoToTaskActivity : AppCompatActivity() {
 
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val REQUEST_IMAGE_GALLERY = 2
+    private val requestImageCapture = 1
+    private val requestImageGallery = 2
 
     @BindView(R.id.addPhotosList)
     lateinit var photoList: RecyclerView
@@ -35,12 +38,18 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     @BindView(R.id.addPhotosToolbar)
     lateinit var toolbar: Toolbar
 
-    lateinit var photoListAdapter: AddPhotosListAdapter
+    lateinit var photoListAdapter: PhotosListAdapter
 
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     var currentPhotosList: ArrayList<String> = ArrayList()
 
+    /**
+     * Initializes the view and obtains previous photos from an [Intent] object.
+     *
+     * @param savedInstanceState
+     * @see [Intent]
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_photo_to_task)
@@ -53,7 +62,7 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
 
         currentPhotosList.addAll(intent.getStringArrayListExtra("currentPhotos"))
 
-        photoListAdapter = AddPhotosListAdapter(currentPhotosList)
+        photoListAdapter = PhotosListAdapter(currentPhotosList)
 
         // Build up recycle view
         viewManager = LinearLayoutManager(this)
@@ -70,23 +79,37 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Start up a photo capture activity to capture a picture for the users camera.
+     *
+     * @see MediaStore.ACTION_IMAGE_CAPTURE
+     */
     @OnClick(R.id.takePhotoButton)
     fun onTakePhotoClicked() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            startActivityForResult(takePictureIntent, requestImageCapture)
         }
     }
 
+    /**
+     * Start up a gallery import activity to capture a picture for the users camera.
+     *
+     * @see Intent.ACTION_PICK
+     * @see android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+     */
     @OnClick(R.id.selectImageFromGalleryButton)
     fun onTakeGalleryPhotoClicked() {
         val pickPhoto = Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if (pickPhoto.resolveActivity(packageManager) != null) {
-            startActivityForResult(pickPhoto, REQUEST_IMAGE_GALLERY)
+            startActivityForResult(pickPhoto, requestImageGallery)
         }
     }
 
+    /**
+     * Send photo strings back to the [EditTaskActivity]
+     */
     @OnClick(R.id.addPhotosToTask)
     fun sendPhotosBack(){
         val intent = Intent()
@@ -95,6 +118,12 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Handle when back button in [toolbar] is pressed
+     *
+     * @param item The menu item pressed
+     * @return result
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -105,24 +134,30 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Receives new photos and processes them.
+     *
+     * @param requestCode Request id
+     * @param resultCode Result code
+     * @param data Contains photo in [Bitmap] form.
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(data == null) return
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+        val thumbSize = 128
+        if (requestCode == requestImageCapture && resultCode == Activity.RESULT_OK) {
             val extras = data.extras
             val imageBitmap = extras.get("data") as Bitmap
-            currentPhotosList.add(PhotoConversion.getPhotoString(imageBitmap))
+            val thumbImage = ThumbnailUtils.extractThumbnail(imageBitmap,
+                    thumbSize, thumbSize)
+            currentPhotosList.add(PhotoConversion.getPhotoString(thumbImage))
             photoListAdapter.notifyDataSetChanged()
         }
-        if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK) {
-//            val extras = data.extras
-//            val imageBitmap = extras.get("data") as Bitmap
-
+        if (requestCode == requestImageGallery && resultCode == Activity.RESULT_OK) {
             val imageURI = data.data
 
-            val THUMBSIZE = 64
             val imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageURI)
             val thumbImage = ThumbnailUtils.extractThumbnail(imageBitmap,
-                    THUMBSIZE, THUMBSIZE)
+                    thumbSize, thumbSize)
             currentPhotosList.add(PhotoConversion.getPhotoString(thumbImage))
             photoListAdapter.notifyDataSetChanged()
         }

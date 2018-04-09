@@ -1,16 +1,9 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.content.Intent
-import android.support.design.widget.NavigationView
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.EditText
-import android.widget.RelativeLayout
-import butterknife.BindView
-import ca.ualberta.taskr.*
-import ca.ualberta.taskr.adapters.TaskListAdapter
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
@@ -25,7 +18,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Robolectric
-import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowActivity
 import org.robolectric.shadows.ShadowLog
@@ -59,11 +51,11 @@ class SearchingTests {
     //private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
-    private var status: TaskStatus? = null
+    private var status: TaskStatus = TaskStatus.REQUESTED
     private var bids = java.util.ArrayList<Bid>()
     private var description = "TestTaskDescription"
     private var photos = java.util.ArrayList<String>()
-    private var location: LatLng? = null
+    private var location: LatLng = LatLng(100.5,100.5)
     private var chosenBidder = "The Mask"
     private lateinit var id: ElasticsearchID
 
@@ -88,7 +80,6 @@ class SearchingTests {
         ShadowLog.stream = System.out
 
     }
-
     /**
      * Delete tasks that are added to the database for the purpose of testing.
      */
@@ -170,7 +161,7 @@ class SearchingTests {
                 })
 
                 if(shownTaskList.size == 0){
-                    Log.d("Search Test Malfunction", shownTaskList.toString())
+                    Log.e("Search Test Malfunction", shownTaskList.toString())
                 }
                 else {
 

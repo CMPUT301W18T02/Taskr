@@ -1,8 +1,9 @@
-package ca.ualberta.taskr.models.IntegrationTests
+package ca.ualberta.taskr
 
 import android.content.Intent
 import android.widget.Button
 import android.widget.EditText
+
 import ca.ualberta.taskr.*
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.User
@@ -13,10 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowIntent
 import org.robolectric.shadows.ShadowLog
 
 /**
