@@ -119,7 +119,7 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
     /**
-     * Handle when back button in [toolbar] is pressed
+     * Handle when the back button in [toolbar] is pressed
      *
      * @param item The menu item pressed
      * @return result

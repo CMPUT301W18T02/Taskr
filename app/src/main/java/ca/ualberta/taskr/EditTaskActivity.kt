@@ -11,6 +11,7 @@ import android.widget.EditText
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
@@ -18,7 +19,6 @@ import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.util.AdHelper.Companion.isAdFree
-import ca.ualberta.taskr.util.AdHelper.Companion.removeAdsTemporarily
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -53,6 +53,7 @@ class EditTaskActivity : AppCompatActivity() {
     private var editTask: Task? = null
     private var position: LatLng? = null
     private var photos: ArrayList<String> = ArrayList()
+    private val userController: UserController = UserController(this)
     private lateinit var mInterstitialAd: InterstitialAd
     private var stopAds: Boolean = false
 
@@ -113,7 +114,6 @@ class EditTaskActivity : AppCompatActivity() {
      * @param task [Task] object whose attributes are used to populate views.
      */
     private fun fillBoxes(task: Task) {
-        // TODO: populate images
         titleEditText.setText(task.title)
         detailsEditText.setText(task.description)
         locationEditText.setText(task.location.toString())
@@ -132,8 +132,6 @@ class EditTaskActivity : AppCompatActivity() {
     fun openLocationActivity() {
         val addLocationIntent = Intent(this, AddLocationToTaskActivity::class.java)
         addLocationIntent.putExtra("position", GenerateRetrofit.generateGson().toJson(position))
-        val s = intent.getStringExtra("EXTRA_SESSION_ID")
-        println(GenerateRetrofit.generateGson().toJson(position))
         startActivityForResult(addLocationIntent, 1)
     }
 
@@ -146,10 +144,7 @@ class EditTaskActivity : AppCompatActivity() {
     @OnClick(R.id.postTaskButton)
     fun postTask() {
         //create a new task object from fields, then post to server
-
-        // Grab username from SharedPreferences
-        val editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        val taskOwner = editor.getString("Username", null)
+        val taskOwner = userController.getLocalUserName()
 
         val taskTitle: String = titleEditText.text.toString()
         val taskStatus: TaskStatus = TaskStatus.REQUESTED
@@ -157,14 +152,19 @@ class EditTaskActivity : AppCompatActivity() {
         val taskDetails: String = detailsEditText.text.toString()
         val taskPhotos: ArrayList<String> = photos
 
-        // Convert String to latlng
-//        val taskLatLng = GenerateRetrofit.generateGson().fromJson(locationEditText.text.toString(), LatLng::class.java)
-//        val locationList: List<String> = locationEditText.text.toString().split(",")
-//        val lat: Double = locationList[0].toDouble()
-//        val lng: Double = locationList[0].toDouble()
-//        val taskLatLng = LatLng(lat, lng)
-
         val taskChosenBidder = ""
+
+        if(taskTitle.length <= 5){
+            ErrorDialogFragment.newInstance("Title must be greater than 5 characters")
+                    .show(fragmentManager, "error")
+            return
+        }
+        if(taskDetails.length <= 10){
+            ErrorDialogFragment.newInstance("Details must be greater than 10 characters")
+                    .show(fragmentManager, "error")
+            return
+        }
+
 
         val newTask = Task(taskOwner, taskTitle, taskStatus, taskBids, taskDetails, taskPhotos,
                 position, taskChosenBidder)
@@ -201,7 +201,7 @@ class EditTaskActivity : AppCompatActivity() {
      * @see [AddLocationToTaskActivity]
      * @see [GenerateRetrofit]
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data == null) return
         if (requestCode == 1) {
@@ -216,6 +216,12 @@ class EditTaskActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Handle when the back button in [toolbar] is pressed
+     *
+     * @param item The menu item pressed
+     * @return result
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -226,6 +232,9 @@ class EditTaskActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Start an [AddPhotoToTaskActivity] for the user to add or edit photo to a task
+     */
     @OnClick(R.id.taskAddImageButton)
     fun addImagesToTask() {
         val addImagesIntent = Intent(this, AddPhotoToTaskActivity::class.java)
