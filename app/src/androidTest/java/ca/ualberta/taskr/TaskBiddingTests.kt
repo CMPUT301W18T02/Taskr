@@ -1,7 +1,6 @@
 package ca.ualberta.taskr
 
 import android.Manifest
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
@@ -19,11 +18,9 @@ import android.content.Intent
 import ca.ualberta.taskr.controllers.UserController
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.action.ViewActions.*
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.GrantPermissionRule
 import ca.ualberta.taskr.models.Bid
 import org.junit.*
-import android.support.test.espresso.Espresso
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -36,12 +33,9 @@ class TaskBiddingTests {
     private val taskTitle = "Test Title for a Task"
     private val taskDescr = "This is a description for a task. I am describing a task."
     private val taskLatLng = LatLng(80.0, 80.0)
-    private val taskLocStr: String = taskLatLng.toString()
     private val bidAmountStr: String = "10.00"
-
     private lateinit var testTask: Task
     private val username = "TestUsername"
-
     private val taskPosterUsername = "TestTaskUsername"
 
     //The expected bid
@@ -51,19 +45,11 @@ class TaskBiddingTests {
     //The bid that is returned from the database
     private lateinit var returnBid: Bid
 
-    private lateinit var myBidsActivity: MyBidsActivity
     private lateinit var viewTaskActivity: ViewTaskActivity
-
-    private lateinit var bidListView: RecyclerView
-
 
     @Rule
     @JvmField
     val viewTaskActivityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
-
-    @Rule
-    @JvmField
-    val myBidsActivityRule = ActivityTestRule<MyBidsActivity>(MyBidsActivity::class.java, false, false)
 
     @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
                                                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -76,6 +62,14 @@ class TaskBiddingTests {
     @Before
     fun setup() {
         createTestTask()
+
+        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
+        i.putExtra("TASK", taskStr)
+        viewTaskActivity = viewTaskActivityRule.launchActivity(i)
+        viewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
+        UserController(viewTaskActivity).setLocalUsername(username)
     }
 
     /**
@@ -184,15 +178,6 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        viewTaskActivity = viewTaskActivityRule.launchActivity(i)
-        viewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
-        UserController(viewTaskActivity).setLocalUsername(username)
-
-
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
         onView(withId(R.id.confirm)).perform(click())
@@ -211,7 +196,7 @@ class TaskBiddingTests {
      *
      * Check if bids on server associated with username is the same as those in list.
      */
-    @Test
+    /*@Test
     fun viewListOfBids(){
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val i = Intent(context, MyBidsActivity::class.java)
@@ -228,7 +213,7 @@ class TaskBiddingTests {
         //R.id.myBidsList
         //onData(allOf(is(instanceOf(Map.class)), hasEntry(equalTo("STR"), is("item: 50"))).perform(click());
         //onView(withId(R.id.myBidsList)).perform(actionOnItemAtPosition(0, isDisplayed()))
-    }
+    }*/
 
     /**
      * US 05.03.01

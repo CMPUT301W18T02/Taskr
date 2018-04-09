@@ -23,6 +23,7 @@ class AdHelper {
             val file = File(context.filesDir, "adTime.json")
             if (!file.exists()) {
                 file.createNewFile()
+                Files.asCharSink(file, Charsets.UTF_8).write("0")
             }
             val expiryTimeInMillis: Long = Calendar.getInstance().timeInMillis + TIME_AD_FREE
             Files.asCharSink(file, Charsets.UTF_8).write(expiryTimeInMillis.toString())
@@ -39,6 +40,7 @@ class AdHelper {
             val file = File(context.filesDir, "adTime.json")
             if (!file.exists()) {
                 file.createNewFile()
+                Files.asCharSink(file, Charsets.UTF_8).write("0")
             }
             return Calendar.getInstance().timeInMillis < Files.asCharSource(file, Charsets.UTF_8).read().toLong()
 

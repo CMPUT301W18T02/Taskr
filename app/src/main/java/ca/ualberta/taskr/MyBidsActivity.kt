@@ -39,7 +39,7 @@ import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
  * @property viewManager
  * @property masterTaskList List of all tasks on server.
  * @property shownTaskList List of tasks bidden on by user with BID status.
- * @property myBidsListAdapter [TaskListAdapter] for shownTaskList.
+ * @property myBidsListAdapter [MyBidsListAdapter] for shownTaskList.
  * @property username Username of current user.
  */
 class MyBidsActivity : AppCompatActivity() {
@@ -115,7 +115,7 @@ class MyBidsActivity : AppCompatActivity() {
      *
      * @see [CachingRetrofit]
      */
-    private fun updateTasks() {
+    fun updateTasks() {
         CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
             override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 //TODO Deal with offline
