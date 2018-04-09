@@ -15,16 +15,22 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * Created by marissasnihur on 2018-04-09.
@@ -75,6 +81,27 @@ class TaskDoneTests {
     }
 
     /**
+     * Delete the test Task.
+     */
+    private fun deleteTestTask(){
+        //delete test task in elastic search
+        GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, taskTitle, taskDescr))
+                .enqueue(object : Callback<ElasticsearchID> {
+                    override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                        Log.i("network", response.body().toString())
+                        val id = response.body() as ElasticsearchID
+                        GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                    }
+
+                    override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                        Log.e("network", "Network Failed!")
+                        t.printStackTrace()
+                        return
+                    }
+                })
+    }
+
+    /**
      * US 07.01.01
      * As a task requester, I want to set a task with status:
      * assigned to have status: done, when it is completed.
@@ -108,6 +135,8 @@ class TaskDoneTests {
 
         Thread.sleep(2000)
         onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.DONE.toString())))
+
+        deleteTestTask()
     }
 
     /**
@@ -137,7 +166,10 @@ class TaskDoneTests {
 
         onView(withId(R.id.reopenButton)).perform(scrollTo(), click())
         Thread.sleep(2000)
+
         onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.REQUESTED.toString())))
+
+        deleteTestTask()
     }
 
 
