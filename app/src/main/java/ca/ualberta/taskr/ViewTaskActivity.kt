@@ -371,7 +371,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
-        if (displayTask.photos.size != 0){
+        if (displayTask.photos.size != 0 && displayTask.photos[0] != null){
             taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
         }
     }
