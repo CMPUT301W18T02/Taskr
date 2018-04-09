@@ -151,6 +151,9 @@ class EditTaskActivity : AppCompatActivity() {
         val taskBids: ArrayList<Bid> = ArrayList()
         val taskDetails: String = detailsEditText.text.toString()
         val taskPhotos: ArrayList<String> = photos
+        if (taskTitle.isEmpty() == true || taskDetails.isEmpty() == true) {
+            return
+        }
 
         val taskChosenBidder = ""
 

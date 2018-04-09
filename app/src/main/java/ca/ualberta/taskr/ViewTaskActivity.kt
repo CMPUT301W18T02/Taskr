@@ -21,13 +21,12 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import ca.ualberta.taskr.adapters.BidListAdapter
+import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.User
-import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.Callback
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.*
 import ca.ualberta.taskr.util.PermsUtil
 import ca.ualberta.taskr.util.PhotoConversion
 import com.mapbox.mapboxsdk.Mapbox
@@ -43,6 +42,8 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import retrofit2.Call
 import retrofit2.Response
 import java.util.*
+import ca.ualberta.taskr.models.elasticsearch.Callback
+
 
 
 /**
@@ -55,6 +56,7 @@ import java.util.*
  * @property isRequester [Boolean] set to true if current user is task requester.
  * @property username Obtained from shared preferences using [UserController]
  * @property taskBidList [RecyclerView] displaying all bids on displayed task.
+ * @property userController [UserController] for getting current user's username
  *
  * @property bidListAdapter [BidListAdapter] for taskBidList.
  * @property userList List of all users with bids on task. Required for [BidListAdapter].
@@ -79,6 +81,7 @@ import java.util.*
  * @property editTaskButton [Button] for requester to modify task information.
  * @property toolbar [Toolbar] at top of screen. Contains back button and task title.
  * @property toolbarTitle [TextView] for displaying task title in toolbar.
+ * @property deleteButton [Button] for deleting tasks
  *
  * @property mapView [MapView] displaying task location.
  * @property mapboxMap [MapBoxMap] used to create displayed map.
@@ -92,6 +95,7 @@ import java.util.*
  * @see [UserInfoFragment]
  * @see [ErrorDialogFragment]
  * @see [MapBoxMap]
+ * @see [UserController]
  */
 class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInteractionListener,
                         AcceptBidFragment.AcceptBidFragmentInteractionListener, OnMapReadyCallback,
@@ -100,6 +104,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     private var isRequester: Boolean = false
     private var username : String = ""
     private var taskBidList: ArrayList<Bid> = ArrayList()
+    var userController: UserController = UserController(this)
 
     private lateinit var bidListAdapter: BidListAdapter
     private var userList: ArrayList<User> = ArrayList()
@@ -139,6 +144,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
     lateinit var toolbarTitle: TextView
     @BindView(R.id.taskBannerImage)
     lateinit var taskBannerImage: ImageView
+    @BindView(R.id.taskAuthorImage)
+    lateinit var authorImage : ImageView
+    @BindView(R.id.deleteButton)
+    lateinit var deleteButton : Button
 
     // Mapbox-related attributes
     @BindView(R.id.taskMapView)
@@ -175,10 +184,6 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                 displayTask = GenerateRetrofit.generateGson().fromJson(taskStr, Task::class.java)
                 oldTask = displayTask
                 populateBidList() // Populate Bid list to be displayed.
-
-                //Update displayed attributes for Task
-                updateDetails()
-                updateLowestBidAmount()
             }
         }
 
@@ -188,6 +193,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
             addOrMarkButton.text = getResources().getString(R.string.activity_view_tasks_provider_done)
             reopenButton.visibility = View.VISIBLE
             editTaskButton.visibility = View.VISIBLE
+            deleteButton.visibility = View.VISIBLE
         }
 
         // Initialize toolbar for back button and task title.
@@ -200,6 +206,9 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         viewManager = LinearLayoutManager(this)
         createBidAdapter()
 
+        //Update displayed attributes for Task
+        updateDetails()
+        updateLowestBidAmount()
     }
 
     /**
@@ -220,41 +229,33 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * @see [GenerateRetrofit]
      */
     private fun createBidAdapter() {
-        bidListAdapter = BidListAdapter(taskBidList, userList)
-        bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
-            override fun onItemClick(view : View, position : Int) {
-                if (displayTask.status == TaskStatus.BID) {
-                    val bid = taskBidList[position]
-                    if (view.id == R.id.bidderName) {
-                        startUserInfoFragment(bid.owner)
-                    } else {
-                        if (isRequester) {
-                            startAcceptBidFragment(bid)
-                        } else if (username == bid.owner) {
-                            startEditBidFragment(bid)
+        // Get all users from server, then pass them as a list to adapter.
+        CachingRetrofit(this).getUsers(object : Callback<List<User>> {
+            override fun onResponse(response : List<User>, responseFromCache : Boolean) {
+                Log.i("network", response.toString())
+                userList.addAll(response as ArrayList<User>)
+                bidListAdapter = BidListAdapter(taskBidList, userList)
+                bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
+                    override fun onItemClick(view : View, position : Int) {
+                        val bid = taskBidList[position]
+                        if (view.id == R.id.bidderName) {
+                            startUserInfoFragment(bid.owner)
+                        } else if (displayTask.status == TaskStatus.BID) {
+                            if (isRequester) {
+                                startAcceptBidFragment(bid)
+                            } else if (username == bid.owner) {
+                                startEditBidFragment(bid)
+                            }
                         }
                     }
+                })
+                // Set adapter for bid list.
+                bidListView.apply {
+                    layoutManager = viewManager
+                    adapter = bidListAdapter
                 }
             }
-        })
-        // Set adapter for bid list.
-        bidListView.apply {
-            layoutManager = viewManager
-            adapter = bidListAdapter
-        }
-        // Get all users from server, then pass them as a list to adapter.
-        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                Log.i("network", response.body().toString())
-                userList.addAll(response.body() as ArrayList<User>)
-                bidListAdapter.notifyDataSetChanged()
-            }
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-                return
-            }
-        })
+        }).execute()
     }
 
     /**
@@ -355,8 +356,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      * @see [UserController]
      */
     private fun getUserType() {
-        var editor = getSharedPreferences(getString(R.string.prefs_name), MODE_PRIVATE)
-        username = editor.getString("Username", null)
+        username = userController.getLocalUserName()
         if (username == displayTask.owner) {
             isRequester = true
         }
@@ -367,12 +367,26 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateDetails() {
         taskAuthor.text = displayTask.owner
+        CachingRetrofit(this).getUsers(object : Callback<List<User>> {
+            override fun onResponse(response : List<User>, responseFromCache : Boolean) {
+                Log.i("network", response.toString())
+                var allUsers = response as ArrayList<User>
+                val userProfile = allUsers.find { it.username == displayTask.owner}
+                if (userProfile != null && userProfile.profilePicture?.isNotEmpty() == true) {
+                    val imageStr = userProfile.profilePicture
+                    authorImage.setImageBitmap(PhotoConversion.getBitmapFromString(imageStr as String))
+                }
+            }
+        }).execute()
         taskTitle.text = displayTask.title
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
         if (displayTask.photos.size != 0 && displayTask.photos[0] != null){
+            taskBannerImage.visibility = View.VISIBLE
             taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
+        } else {
+            taskBannerImage.visibility = View.GONE
         }
     }
 
@@ -452,6 +466,37 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
         startUserInfoFragment(taskAuthor.text.toString())
     }
 
+    /**
+     * If user is requester and task status is REQUESTED or DONE, delete the task. Else,
+     * show an error message.
+     *
+     * @param view
+     * @see [ErrorDialogFragment]
+     * @see [GenerateRetrofit]
+     */
+    @OnClick(R.id.deleteButton)
+    fun delete(view : View) {
+        if (displayTask.status == TaskStatus.BID || displayTask.status == TaskStatus.ASSIGNED) {
+            showErrorDialog(R.string.activity_view_tasks_error_delete)
+        } else {
+            val owner : String = displayTask.owner
+            val title : String = displayTask.title
+            val desc : String = displayTask.description
+            GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(owner, title, desc)).enqueue(object : retrofit2.Callback<ElasticsearchID> {
+                        override fun onResponse(call: Call<ElasticsearchID>, response: Response<ElasticsearchID>) {
+                            Log.i("network2222", response.body().toString())
+                            val id = response.body() as ElasticsearchID
+                            GenerateRetrofit.generateRetrofit().deleteTask(id.toString())
+                            finish()
+                        }
+                        override fun onFailure(call: Call<ElasticsearchID>, t: Throwable) {
+                            Log.e("network", "Network Failed!")
+                            t.printStackTrace()
+                            return
+                        }
+                    })
+        }
+    }
     /**
      * This method will either set the displayed Task's status to DONE if user is its Requester or
      * allow user to add a bid to the Task otherwise using [EditBidFragment].

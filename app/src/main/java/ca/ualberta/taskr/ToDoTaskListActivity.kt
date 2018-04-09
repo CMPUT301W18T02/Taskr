@@ -26,8 +26,9 @@ import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Callback
 
 
 /**
@@ -143,23 +144,16 @@ class ToDoTaskListActivity : AppCompatActivity() {
      * Network call to generate master task list in an async.
      *
      * @see CachingRetrofit
-     * //TODO: Use CachingRetrofit instead of GenerateRetrofit
      */
     private fun updateTasks() {
-        GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                Log.i("network", response.body().toString())
+        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
+            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 masterTaskList.clear()
-                masterTaskList.addAll(response.body() as ArrayList<Task>)
+                masterTaskList.addAll(response as ArrayList<Task>)
                 updateSearch(searchText)
                 todoTasksRefresh.isRefreshing = false
             }
-
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-            }
-        })
+        }).execute()
     }
 
     /**
