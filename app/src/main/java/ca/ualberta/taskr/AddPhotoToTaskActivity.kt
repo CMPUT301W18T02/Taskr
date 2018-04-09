@@ -33,7 +33,6 @@ import ca.ualberta.taskr.util.PhotoConversion
  * @property viewManager [RecyclerView.LayoutManager] for list adapter.
  * @property currentPhotosList List of task's photos
  * @see AppCompatActivity
->>>>>>> Added remaining documentation for ListTasksActivity, AddPhotosToTaskActivity
  */
 class AddPhotoToTaskActivity : AppCompatActivity() {
 
@@ -85,8 +84,6 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
         })
     }
 
-
-
     /**
      * Start up a photo capture activity to capture a picture for the users camera.
      *
@@ -101,7 +98,6 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
     /**
-
      * Start up a gallery import activity to capture a picture for the users camera.
      *
      * @see Intent.ACTION_PICK
@@ -144,7 +140,6 @@ class AddPhotoToTaskActivity : AppCompatActivity() {
     }
 
     /**
-<<<<<<< HEAD
      * Receives new photos and processes them.
      *
      * @param requestCode Request id
