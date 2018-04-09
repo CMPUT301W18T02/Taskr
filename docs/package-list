@@ -1,5 +1,4 @@
 ca.ualberta.taskr
-ca.ualberta.taskr.Perms
 ca.ualberta.taskr.adapters
 ca.ualberta.taskr.controllers
 ca.ualberta.taskr.exceptions
