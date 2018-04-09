@@ -15,7 +15,7 @@ class User:
         self.email = f.email()
         self.username = self.name.split()[0].lower()
         # self.profilePicture = str(base64.encodebytes(bytes(f.text(), "utf-8")))
-        self.profilePicture = makeImage()
+        self.profilePicture = makeImage(False)
 
     def __str__(self):
         return f"Name: {self.name}; Username: {self.username}"
@@ -30,7 +30,7 @@ class Task:
         self.title = f.bs().capitalize()
         self.bids = self.random_null_bids([Bid(bidder) for bidder in bidders if random.choice([True, False])])
         self.description = f.text().replace("\n", "")
-        self.photos = [makeImage() for _ in range(random.randint(0, 4))]
+        self.photos = [makeImage(True) for _ in range(random.randint(0, 4))]
         # self.photos = []
         self.location = {
             "latitude": random.uniform(53.433298, 53.635187),
