@@ -230,10 +230,10 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun createBidAdapter() {
         // Get all users from server, then pass them as a list to adapter.
-        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                Log.i("network", response.body().toString())
-                userList.addAll(response.body() as ArrayList<User>)
+        CachingRetrofit(this).getUsers(object : Callback<List<User>> {
+            override fun onResponse(response : List<User>, responseFromCache : Boolean) {
+                Log.i("network", response.toString())
+                userList.addAll(response as ArrayList<User>)
                 bidListAdapter = BidListAdapter(taskBidList, userList)
                 bidListAdapter.setOnItemClickListener(object : BidListAdapter.OnItemClickListener {
                     override fun onItemClick(view : View, position : Int) {
@@ -255,12 +255,7 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
                     adapter = bidListAdapter
                 }
             }
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-                return
-            }
-        })
+        }).execute()
     }
 
     /**
@@ -372,27 +367,22 @@ class ViewTaskActivity: AppCompatActivity(), EditBidFragment.EditBidFragmentInte
      */
     private fun updateDetails() {
         taskAuthor.text = displayTask.owner
-        GenerateRetrofit.generateRetrofit().getUsers().enqueue(object : retrofit2.Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                Log.i("network", response.body().toString())
-                var allUsers = response.body() as ArrayList<User>
+        CachingRetrofit(this).getUsers(object : Callback<List<User>> {
+            override fun onResponse(response : List<User>, responseFromCache : Boolean) {
+                Log.i("network", response.toString())
+                var allUsers = response as ArrayList<User>
                 val userProfile = allUsers.find { it.username == displayTask.owner}
                 if (userProfile != null && userProfile.profilePicture?.isNotEmpty() == true) {
                     val imageStr = userProfile.profilePicture
                     authorImage.setImageBitmap(PhotoConversion.getBitmapFromString(imageStr as String))
                 }
             }
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e("network", "Network Failed!")
-                t.printStackTrace()
-                return
-            }
-        })
+        }).execute()
         taskTitle.text = displayTask.title
         toolbarTitle.text = displayTask.title
         taskDetails.text = displayTask.description
         taskStatus.text = displayTask.status?.name
-        if (displayTask.photos.size != 0){
+        if (displayTask.photos.size != 0 && displayTask.photos[0] != null){
             taskBannerImage.visibility = View.VISIBLE
             taskBannerImage.setImageBitmap(PhotoConversion.getBitmapFromString(displayTask.photos[0]))
         } else {

@@ -10,6 +10,7 @@ import android.widget.TextView
 import ca.ualberta.taskr.R
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.util.PhotoConversion
+import java.text.DecimalFormat
 
 
 /**
@@ -72,13 +73,14 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
         holder.taskDesc.text = task.description
         holder.taskStatus.text = task.status.toString()
         val lowestBid = task.bids.minBy { it ->  it.amount }
+        val moneyFormat = DecimalFormat("0.00")
         if (lowestBid != null){
-            holder.taskLowestBid.text = "Top Bid: $" + lowestBid.amount
+            holder.taskLowestBid.text = "Top Bid: $" + moneyFormat.format(lowestBid.amount)
         }
         else{
             holder.taskLowestBid.text = "No bid!"
         }
-        if (task.photos.size != 0){
+        if (task.photos.size != 0 && task.photos[0] != null){
             holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
         }
     }
