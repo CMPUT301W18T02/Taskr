@@ -1,5 +1,7 @@
 package ca.ualberta.taskr.adapters
 
+import android.content.Context
+import android.graphics.BitmapFactory
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,7 +24,6 @@ import java.text.DecimalFormat
 class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<TaskListAdapter.LocalViewHolder>() {
 
     private var taskList: List<Task> = masterTaskList
-
     private lateinit var mClickListener: View.OnClickListener
 
     /**
@@ -81,7 +82,14 @@ class TaskListAdapter(masterTaskList: ArrayList<Task>) : RecyclerView.Adapter<Ta
             holder.taskLowestBid.text = "No bid!"
         }
         if (task.photos.size != 0 && task.photos[0] != null){
+            Log.d("IMAGES", task.title)
+            println(task.photos)
+            holder.taskHeaderImage.visibility = View.VISIBLE
             holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
+        }
+        else {
+            holder.taskHeaderImage.visibility = View.GONE
+
         }
     }
 

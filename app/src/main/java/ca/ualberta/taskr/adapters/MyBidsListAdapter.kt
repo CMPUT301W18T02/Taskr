@@ -91,7 +91,12 @@ class MyBidsListAdapter(masterTaskList: ArrayList<Task>, username: String) : Rec
             holder.myBid.text = "No bid!"
         }
         if (task.photos.size != 0 && task.photos[0] != null){
+            holder.taskHeaderImage.visibility = View.VISIBLE
             holder.taskHeaderImage.setImageBitmap(PhotoConversion.getBitmapFromString(task.photos[0]))
+        }
+        else {
+            holder.taskHeaderImage.visibility = View.GONE
+
         }
     }
 
