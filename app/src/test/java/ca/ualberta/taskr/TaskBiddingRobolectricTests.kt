@@ -1,41 +1,47 @@
 package ca.ualberta.taskr
 
-import android.Manifest
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import ca.ualberta.taskr.models.Bid
 import ca.ualberta.taskr.models.Task
 import ca.ualberta.taskr.models.TaskStatus
-import ca.ualberta.taskr.models.elasticsearch.*
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.ElasticsearchID
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.models.elasticsearch.Query
 import com.mapbox.mapboxsdk.geometry.LatLng
+import junit.framework.Assert.assertTrue
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
-import retrofit2.Response
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import retrofit2.Call
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
 import retrofit2.Callback
-import android.content.Intent
-import ca.ualberta.taskr.controllers.UserController
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.action.ViewActions.*
-import android.support.test.rule.GrantPermissionRule
-import ca.ualberta.taskr.models.Bid
-import org.junit.*
+import retrofit2.Response
+import org.robolectric.shadows.ShadowLog
+
 
 /**
- * Created by James Cook on 2018-04-07.
+ * Created by James Cook on 2018-03-24.
  *
- * This test class deals with all of the tests that involve bidding.
+ * This test class deals with all of the tests that involve the task basic requirements.
  */
-@RunWith(AndroidJUnit4::class)
-class TaskBiddingTests {
+@RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(26))
+class TaskBiddingRobolectricTests {
 
     private val taskTitle = "Test Title for a Task"
     private val taskDescr = "This is a description for a task. I am describing a task."
     private val taskLatLng = LatLng(80.0, 80.0)
     private val bidAmountStr: String = "10.00"
+
     private lateinit var testTask: Task
     private val username = "TestUsername"
+
     private val taskPosterUsername = "TestTaskUsername"
 
     //The expected bid
@@ -45,45 +51,33 @@ class TaskBiddingTests {
     //The bid that is returned from the database
     private lateinit var returnBid: Bid
 
-    private lateinit var viewTaskActivity: ViewTaskActivity
+    private lateinit var myBidsActivity: MyBidsActivity
+    private lateinit var bidsRecyclerView: RecyclerView
 
-    @Rule
-    @JvmField
-    val viewTaskActivityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
-
-    @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
-                                                            Manifest.permission.ACCESS_FINE_LOCATION,
-                                                            Manifest.permission.INTERNET)
-
-
-    /**
-     * Create a task, setup the activity and launch the activity before every test.
-     */
     @Before
-    fun setup() {
+    fun setup(){
+        ShadowLog.stream = System.out
+
         createTestTask()
 
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        viewTaskActivity = viewTaskActivityRule.launchActivity(i)
-        viewTaskActivityRule.activity.supportFragmentManager.beginTransaction()
-        UserController(viewTaskActivity).setLocalUsername(username)
+        // Setup views
+        val activityController = Robolectric.buildActivity(MyBidsActivity::class.java)
+        activityController.create().start().visible()
+        myBidsActivity = activityController.get()
+
+        val myActivityShadow = shadowOf(activityController.get())
+
+        bidsRecyclerView = myActivityShadow.findViewById(R.id.myBidsList) as RecyclerView
     }
 
-    /**
-     * Destroy the created task.
-     */
     @After
-    fun takeDown(){
+    fun teardown(){
         deleteTestTask()
     }
-
     /**
      * Posts a dummy task to be bid on.
      */
-   private fun createTestTask(){
+    private fun createTestTask(){
         testTask = Task(owner=taskPosterUsername,
                 title=taskTitle,
                 status= TaskStatus.REQUESTED,
@@ -168,72 +162,30 @@ class TaskBiddingTests {
         })
     }
 
+
     /**
-     * US 05.01.01
+     * US 05.02.01 (revised 2018-02-14)
+     * As a task provider, I want to view a list of tasks that I have bidded on, each with its task
+     * requester username, title, status, lowest bid so far, and my bid.
      *
-     * As a task provider, I want to make a bid on a given task with status: requested or bidded,
-     * using a monetary amount.
-     *
-     * Post a task under one name, bid on said task through new name.
+     * Check if bids on server associated with username is the same as those in list.
      */
     @Test
-    fun makeBid(){
-        onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
-        onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
-        onView(withId(R.id.confirm)).perform(click())
+    fun viewListOfBids(){
+        //Change chosen bidder to be the username on the test task
+        val oldTask = testTask
+        testTask.chosenBidder = username
+
+        CachingRetrofit(myBidsActivity).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))
+
         Thread.sleep(1000)
-        getTaskBid()
-        Assert.assertEquals(expectedBid.toString(), returnBid.toString())
-        Assert.assertTrue(expectedBid.amount == returnBid.amount)
-        returnBid = wrongBid
-    }
-
-    /**
-     * US 05.03.01
-     * As a task requester, I want to be notified of a bid on my tasks.
-     *
-     * Check if user is notified on bid.
-     */
-    @Test
-    fun notificationOnBid(){
-
-    }
-
-     /**
-     * US 05.04.01
-     * As a task requester, I want to view a list of my tasks with status bidded, each having one
-     * or more bids.
-     */
-    @Test
-    fun viewListOfMyTasksWithBids(){
-
-     }
-
-    /**
-     * US 05.05.01
-     * As a task requester, I want to view the bids on one of my tasks.
-     */
-    @Test
-    fun viewBidsOnMyTask(){
-
-    }
-
-    /**
-     * US 05.06.01
-     * As a task requester, I want to accept a bid on one of my tasks, setting its status to
-     * assigned, and clearing any other bids on that task.
-     */
-    @Test
-    fun acceptBid(){
-
-    }
-
-    /**
-     * US 05.07.01
-     * As a task requester, I want to decline a bid on one of my tasks.
-     */
-    @Test
-    fun declineBid(){
-
+        myBidsActivity.updateTasks()
+        Thread.sleep(1000)
+        Log.e("TESTING", bidsRecyclerView.childCount.toString())
+        assertTrue(1 == bidsRecyclerView.childCount)
     }
 }

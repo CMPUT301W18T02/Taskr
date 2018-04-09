@@ -115,7 +115,7 @@ class MyBidsActivity : AppCompatActivity() {
      *
      * @see [CachingRetrofit]
      */
-    private fun updateTasks() {
+    fun updateTasks() {
         CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
             override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 //TODO Deal with offline
