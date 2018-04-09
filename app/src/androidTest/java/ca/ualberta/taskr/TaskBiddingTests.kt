@@ -203,7 +203,34 @@ class TaskBiddingTests {
         Assert.assertEquals(expectedBid.toString(), returnBid.toString())
         Assert.assertTrue(expectedBid.amount == returnBid.amount)
         returnBid = wrongBid
+        //println(bidStr)
     }
+
+    /**
+     * US 05.02.01 (revised 2018-02-14)
+     * As a task provider, I want to view a list of tasks that I have bidded on, each with its task
+     * requester username, title, status, lowest bid so far, and my bid.
+     *
+     * Check if bids on server associated with username is the same as those in list.
+     */
+    /*@Test
+    fun viewListOfBids(){
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, MyBidsActivity::class.java)
+        myBidsActivity = myBidsActivityRule.launchActivity(i)
+
+        //Change bidder to the username
+        val oldTask = testTask
+        testTask.chosenBidder = username
+        /*CachingRetrofit(this).updateTask(object: ca.ualberta.taskr.models.elasticsearch.Callback<Boolean> {
+            override fun onResponse(response: Boolean, responseFromCache: Boolean) {
+                Log.e("network", "Posted!")
+            }
+        }).execute(Pair(oldTask, testTask))*/
+        //R.id.myBidsList
+        //onData(allOf(is(instanceOf(Map.class)), hasEntry(equalTo("STR"), is("item: 50"))).perform(click());
+        //onView(withId(R.id.myBidsList)).perform(actionOnItemAtPosition(0, isDisplayed()))
+    }*/
 
     /**
      * US 05.03.01

@@ -177,6 +177,7 @@ class SearchingTests {
                 t.printStackTrace()
             }
         })
+
         deleteTestTask()
     }
 
