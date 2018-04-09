@@ -23,7 +23,6 @@ import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.GrantPermissionRule
 import ca.ualberta.taskr.models.Bid
 import org.junit.*
-import android.support.test.espresso.
 
 /**
  * Created by James Cook on 2018-04-07.
@@ -201,7 +200,6 @@ class TaskBiddingTests {
         Assert.assertEquals(expectedBid.toString(), returnBid.toString())
         Assert.assertTrue(expectedBid.amount == returnBid.amount)
         returnBid = wrongBid
-        println(bidStr)
     }
 
     /**
@@ -227,7 +225,6 @@ class TaskBiddingTests {
         }).execute(Pair(oldTask, testTask))
         //R.id.myBidsList
         //onData(allOf(is(instanceOf(Map.class)), hasEntry(equalTo("STR"), is("item: 50"))).perform(click());
-        onView(withId(R.id.myBidsList)).perform(actionOnItemAtPosition(0, isDisplayed()))
     }
 
     /**
