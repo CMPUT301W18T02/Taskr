@@ -28,7 +28,9 @@ import ca.ualberta.taskr.controllers.NavViewController
 import ca.ualberta.taskr.controllers.UserController
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
-
+import ca.ualberta.taskr.util.AdHelper.Companion.isAdFree
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 
 
 /**
@@ -66,6 +68,8 @@ class ListTasksActivity : AppCompatActivity() {
     private var shownTaskList: ArrayList<Task> = ArrayList()
     private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
+    lateinit var mAdView: AdView
+
 
     /**
      * The on create method for the ListTasksActivity.
@@ -92,6 +96,15 @@ class ListTasksActivity : AppCompatActivity() {
         }
 
         NavViewController(navView, drawerLayout, applicationContext)
+
+        mAdView = findViewById(R.id.adView)
+        if (isAdFree(this)) {
+            mAdView.visibility = View.GONE
+            Log.d("AD", "Visibility is GONE")
+        } else {
+            val adRequest = AdRequest.Builder().build()
+            mAdView.loadAd(adRequest)
+        }
 
         updateTasks()
 
@@ -129,7 +142,7 @@ class ListTasksActivity : AppCompatActivity() {
      * Network call to generate the master task list
      */
     private fun updateTasks() {
-        CachingRetrofit(this).getTasks(object: Callback<List<Task>> {
+        CachingRetrofit(this).getTasks(object : Callback<List<Task>> {
             override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
                 //TODO Deal with offline
                 masterTaskList.clear()
@@ -157,15 +170,15 @@ class ListTasksActivity : AppCompatActivity() {
     /**
      * Use to update the shownTaskList by applying a search filter to the master list
      */
-    fun updateSearch(textToSearch : String){
+    fun updateSearch(textToSearch: String) {
         loadingPanel.visibility = View.VISIBLE
         shownTaskList.clear()
         taskListAdapter.notifyDataSetChanged()
 
-        shownTaskList.addAll(masterTaskList.filter {
-            it -> (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
-                && (it.owner != username)
-                && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
+        shownTaskList.addAll(masterTaskList.filter { it ->
+            (it.status != TaskStatus.ASSIGNED && it.status != TaskStatus.DONE)
+                    && (it.owner != username)
+                    && ((it.title != null && it.title.contains(textToSearch, true)) || (it.description != null && it.description.contains(textToSearch, true)))
         })
         loadingPanel.visibility = View.GONE
 
@@ -173,7 +186,7 @@ class ListTasksActivity : AppCompatActivity() {
     }
 
     @OnClick(R.id.viewTaskMapButton)
-    fun openMapView(){
+    fun openMapView() {
         val nearbyTasksIntent = Intent(applicationContext, NearbyTasksActivity::class.java)
         startActivity(nearbyTasksIntent)
     }

@@ -50,6 +50,12 @@ class NavViewController(var navView: NavigationView,
                                 MyBidsActivity::class.java)
                         context.startActivity(myBidsIntent)
                     }
+                    else if(menuItem.itemId == R.id.nav_RemoveAds){
+                        val myBidsIntent = Intent(context,
+                                RewardVideoActivity::class.java)
+                        context.startActivity(myBidsIntent)
+                    }
+
                     else if(menuItem.itemId == R.id.nav_logout){
                         logout(userController)
                     }

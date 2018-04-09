@@ -18,6 +18,12 @@
             android:id="@+id/nav_MyBids"
             android:title="My bids"
             android:icon="@drawable/ic_attach_money"/>
+
+        <item
+            android:id="@+id/nav_RemoveAds"
+            android:title="Remove Ads"
+            android:icon="@drawable/ic_ad"/>
+
     </group>
 
     <group android:checkableBehavior="single"
