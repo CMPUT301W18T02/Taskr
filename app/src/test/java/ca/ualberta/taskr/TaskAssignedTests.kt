@@ -117,8 +117,7 @@ class TaskAssignedTests {
         myTasksRefresh = activity.findViewById<SwipeRefreshLayout>(R.id.todoTasksRefresh)
         taskSearchBar = activity.findViewById<EditText>(R.id.todoTaskSearchBar)
 
-        //delete test task in elastic search
-        deleteTestTask()
+
     }
 
     /**

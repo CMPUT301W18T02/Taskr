@@ -300,7 +300,7 @@ class TaskBasicsTest {
      *
      * Test that checks to make sure that you can edit a Task.
      */
-    
+
     @Test
     fun editDescription(){
         //Create a task, pass it to the EditTaskActivity, edit it, see if its been edited correctly
