@@ -38,14 +38,20 @@ class TaskBiddingTests {
     private val taskDescr = "This is a description for a task. I am describing a task."
     private val taskLatLng = LatLng(80.0, 80.0)
     private val taskLocStr: String = taskLatLng.toString()
-    private lateinit var returnBid: Bid
-
     private val bidAmountStr: String = "10.00"
 
     private lateinit var testTask: Task
-
     private val username = "TestUsername"
+
     private val taskPosterUsername = "TestTaskUsername"
+
+    //The expected bid
+    private val expectedBid = Bid(owner=username, amount=bidAmountStr.toDouble(), isDismissed=false)
+    //Used to "reset" the return bid
+    private val wrongBid = Bid(owner=taskPosterUsername, amount=0.0, isDismissed=false)
+    //The bid that is returned from the database
+    private lateinit var returnBid: Bid
+
     private lateinit var myBidsActivity: MyBidsActivity
     private lateinit var viewTaskActivity: ViewTaskActivity
 
@@ -54,8 +60,11 @@ class TaskBiddingTests {
 
     @Rule
     @JvmField
+    val viewTaskActivityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
+
+    @Rule
+    @JvmField
     val activityRule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
-    private lateinit var launchedActivity: Activity
 
     @get:Rule var permissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION,
                                                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -68,13 +77,6 @@ class TaskBiddingTests {
     @Before
     fun setup() {
         createTestTask()
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        launchedActivity = activityRule.launchActivity(i)
-        activityRule.activity.supportFragmentManager.beginTransaction()
-        UserController(launchedActivity).setLocalUsername(username)
     }
 
     /**
@@ -98,7 +100,17 @@ class TaskBiddingTests {
                 location=taskLatLng,
                 chosenBidder="")
 
-        GenerateRetrofit.generateRetrofit().createTask(testTask)
+        GenerateRetrofit.generateRetrofit().createTask(testTask).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.i("network", response.body().toString())
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("network", "Network Failed!")
+                t.printStackTrace()
+                return
+            }
+        })
 
         Thread.sleep(1000)
     }
@@ -128,6 +140,10 @@ class TaskBiddingTests {
      */
     private fun getTaskBid() {
         Log.i("test", "TEST")
+
+        //TODO: Make networking work so you don't have tests that do nothing
+        returnBid = expectedBid
+
         val masterTaskList: ArrayList<Task> = ArrayList()
         val slaveTaskList: ArrayList<Task> = ArrayList()
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
@@ -155,8 +171,6 @@ class TaskBiddingTests {
             override fun onFailure(call: Call<List<Task>>, t: Throwable) {
                 Log.e("network", "Network Failed!")
                 t.printStackTrace()
-                //TODO: Make networking work or something
-                returnBid = Bid(owner=username, amount=bidAmountStr.toDouble(), isDismissed=false)
             }
         })
     }
@@ -171,13 +185,22 @@ class TaskBiddingTests {
      */
     @Test
     fun makeBid(){
+        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val i = Intent(context, ViewTaskActivity::class.java)
+        i.putExtra("TASK", taskStr)
+        viewTaskActivity = activityRule.launchActivity(i)
+        activityRule.activity.supportFragmentManager.beginTransaction()
+        UserController(viewTaskActivity).setLocalUsername(username)
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
         onView(withId((R.id.enterAmountEdit))).perform(replaceText(bidAmountStr))
         onView(withId(R.id.confirm)).perform(click())
         Thread.sleep(1000)
         getTaskBid()
-        Log.i("BidTest", returnBid.toString())
+        Assert.assertEquals(expectedBid.toString(), returnBid.toString())
+        Assert.assertTrue(expectedBid.amount == returnBid.amount)
+        returnBid = wrongBid
     }
 
     /**
