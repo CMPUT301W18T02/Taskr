@@ -22,8 +22,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 /**
- * Created by marissasnihur on 2018-03-28.
+ * Created by marissasnihur on 2018-03-28 / edited by Nathan, James
  *
+ * This test class handles all of the buttons and circumstances when we edit information for a
+ * current user, as well as when we are creating a user (since it is used in both places!)
  */
 
 
@@ -44,7 +46,7 @@ class EditUserTest {
     private var phone = "1029381202"
     private var email = "bleh@skdfjh.com"
 
-    private var nameChange = "Blah"
+    private var nameChange = "Gyarados"
     private var phoneChange = "18009999999"
     private var emailChange = "blah@lalala.com"
     private lateinit var intent: Intent
@@ -53,6 +55,11 @@ class EditUserTest {
 
     lateinit var activity: EditUserActivity
     private var username = "iamdumb69"
+
+    /**
+     * Sets up all of the buttons and info that the test class needs in order to carry out
+     * individual tests.
+     */
 
     @Before
     fun setUp(){
@@ -73,8 +80,9 @@ class EditUserTest {
     }
 
     /**
-     * Test deleting a user from the elasticsearch database
+     * Delete the test User from the database after the tests have been run with the User.
      */
+
     private fun deleteTestUser(){
         //delete test user in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getUserID(Query.userQuery(username))
@@ -94,13 +102,15 @@ class EditUserTest {
     }
 
     /**
+     * US 03.02.01
+     *
      * As a user, I want to edit the contact information in my profile.
      *
+     * This function checks the ApplyChangesButton and makes sure that it takes the
+     * old information in and changes it, then outputs the changed information
+     * for the user.
      */
 
-    /**
-     * test modifying a user
-     */
     @Test
     fun checkApplyChangesButton() {
 
@@ -127,12 +137,5 @@ class EditUserTest {
         deleteTestUser()
     }
 
-    /**
-     * test user character lengths
-     */
-    @Test
-    fun checkMaxUserLength(){
-        Assert.assertTrue(true)
-    }
 
 }

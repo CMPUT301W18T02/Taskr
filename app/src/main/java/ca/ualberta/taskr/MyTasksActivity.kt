@@ -72,6 +72,7 @@ class MyTasksActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private var myTasksAdapter: TaskListAdapter = TaskListAdapter(myTasksList)
 
     private var filterStatus = filterNone
+    private var onCreateDone = false
 
 
     /**
@@ -161,7 +162,7 @@ class MyTasksActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
                 myTasksAdapter.notifyDataSetChanged()
 
                 myTasksRefresh.isRefreshing = false
-
+                onCreateDone = true
             }
         }).execute()
     }
@@ -213,7 +214,9 @@ class MyTasksActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
      */
     override fun onResume() {
         super.onResume()
-        populateList()
+        if (onCreateDone) {
+            populateList()
+        }
     }
 
     /**

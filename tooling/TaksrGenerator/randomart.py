@@ -65,11 +65,15 @@ def buildExpr(prob=0.99):
         return random.choice([X, Y])()
 
 
-def plotIntensity(exp, pixelsPerUnit=150):
-    canvasWidth = 2 * pixelsPerUnit + 1
-    canvas = Image.new("L", (canvasWidth, canvasWidth))
+def plotIntensity(exp, is_rectangle, pixelsPerUnit=150):
+    canvasLength = 2 * pixelsPerUnit + 1
+    if is_rectangle:
+        canvasWidth = canvasLength * 3
+    else:
+        canvasWidth = canvasLength
+    canvas = Image.new("L", (canvasWidth, canvasLength))
 
-    for py in range(canvasWidth):
+    for py in range(canvasLength):
         for px in range(canvasWidth):
             # Convert pixel location to [-1,1] coordinates
             x = float(px - pixelsPerUnit) / pixelsPerUnit
@@ -83,27 +87,31 @@ def plotIntensity(exp, pixelsPerUnit=150):
     return canvas
 
 
-def plotColor(redExp, greenExp, blueExp, pixelsPerUnit=150):
-    redPlane = plotIntensity(redExp, pixelsPerUnit)
-    greenPlane = plotIntensity(greenExp, pixelsPerUnit)
-    bluePlane = plotIntensity(blueExp, pixelsPerUnit)
+def plotColor(redExp, greenExp, blueExp, is_rectangle, pixelsPerUnit=150):
+    redPlane = plotIntensity(redExp, is_rectangle, pixelsPerUnit)
+    greenPlane = plotIntensity(greenExp, is_rectangle, pixelsPerUnit)
+    bluePlane = plotIntensity(blueExp, is_rectangle, pixelsPerUnit)
     return Image.merge("RGB", (redPlane, greenPlane, bluePlane))
 
 
-def makeImage():
+def generate_image(is_rectangle):
     # img = None
-    with io.BytesIO() as f:
-        redExp = buildExpr()
-        greenExp = buildExpr()
-        blueExp = buildExpr()
+    redExp = buildExpr()
+    greenExp = buildExpr()
+    blueExp = buildExpr()
+    image = plotColor(redExp, greenExp, blueExp, is_rectangle)
 
-        image = plotColor(redExp, greenExp, blueExp)
-        image.save(f, "JPEG")
+    return image
+
+
+def makeImage(is_rectangle):
+    image = generate_image(is_rectangle)
+    with io.BytesIO() as f:
+        image.save(f, "JPEG", quality = 50)
+
         im = base64.b64encode(f.getvalue())
-        print(type(im))
-        print()
         return str(im, 'utf-8')
 
 
 if __name__ == "__main__":
-    print(makeImage())
+    print(len(makeImage(True)))

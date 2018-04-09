@@ -1,34 +1,31 @@
 package ca.ualberta.taskr
 
 
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import butterknife.BindView
 import butterknife.ButterKnife
+import ca.ualberta.taskr.models.Task
+import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
+import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
 import ca.ualberta.taskr.util.PermsUtil
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.annotations.PolygonOptions
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.services.android.telemetry.location.LocationEngine
 import com.mapbox.services.android.telemetry.location.LocationEnginePriority
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.annotations.PolygonOptions
-import android.content.Intent
-import android.util.Log
-import ca.ualberta.taskr.models.Task
-import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
-import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 /**
@@ -45,11 +42,15 @@ import retrofit2.Response
  * @property currentLocation Location of current user.
  * @see [ViewTaskActivity]
  */
-class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
+class NearbyTasksActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     @BindView(R.id.mapView)
     lateinit var mapView: MapView
+
+    @BindView(R.id.nearbyTasksToolbar)
+    lateinit var toolbar: Toolbar
+
     private lateinit var mapboxMap: MapboxMap
     private lateinit var locationEngine: LocationEngine
     private var masterTaskList: ArrayList<Task> = ArrayList()
@@ -74,6 +75,12 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
+
+        // Initialize toolbar for back button.
+        setSupportActionBar(toolbar)
+        val actionbar = supportActionBar
+        actionbar!!.setDisplayHomeAsUpEnabled(true)
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
     }
 
 
@@ -301,6 +308,23 @@ class NearbyTasksActivity() : AppCompatActivity(), OnMapReadyCallback {
                 .addAll(positions)
                 .fillColor(Color.BLUE)
                 .alpha(0.1f)
+    }
+
+    /**
+     * Process button presses from the tool bar.
+     *
+     * @param item
+     * @return [Boolean]
+     * @see [Toolbar]
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
 

@@ -30,6 +30,9 @@ import retrofit2.Response
  *
  * Tests Use Cases 04.01.01 and 04.02.01
  *
+ * Deals with all of the test cases involved with Searching through tasks in the ListTasksActivity
+ * activity.
+ *
  */
 
 @RunWith(RobolectricTestRunner::class)
@@ -48,17 +51,21 @@ class SearchingTests {
     //private var taskListAdapter: TaskListAdapter = TaskListAdapter(shownTaskList)
     private lateinit var username: String
 
-    private var status: TaskStatus? = null
+    private var status: TaskStatus = TaskStatus.REQUESTED
     private var bids = java.util.ArrayList<Bid>()
     private var description = "TestTaskDescription"
     private var photos = java.util.ArrayList<String>()
-    private var location: LatLng? = null
+    private var location: LatLng = LatLng(65.0,66.0)
     private var chosenBidder = "The Mask"
     private lateinit var id: ElasticsearchID
 
     lateinit var taskList: RecyclerView
 
     lateinit var searchBar: EditText
+
+    /**
+     * Sets up all of the information needed by the test class.
+     */
 
     @Before
     fun setUp(){
@@ -73,11 +80,11 @@ class SearchingTests {
         ShadowLog.stream = System.out
 
     }
-
-
     /**
-     * Test task deletion
+     * Delete tasks that are added to the database for the purpose of testing.
      */
+
+
     private fun deleteTestTask(){
         //delete test task in elastic search, @JamesCook
         GenerateRetrofit.generateRetrofit().getTaskID(Query.taskQuery(username, title, description))
@@ -98,6 +105,8 @@ class SearchingTests {
 
     /**
      *
+     * US 04.01.01, US 04.02.01
+     *
      * As a task provider, I want to specify a set of keywords, and search for all tasks,
      * with status: requested or bidded, whose description contains all the keywords.
      *
@@ -107,16 +116,20 @@ class SearchingTests {
      */
 
     /**
-     * Check to see that the activity is not null
+     * Makes sure that the activity that is created is not null for the purpose of the Test
+     * Class.
      */
+
     @Test
     fun checkActivityNotNull() {
         Assert.assertNotNull(activity)
     }
 
     /**
-     * Test Task searching
+     * Test to check if the tasks in the database contain any of the test
+     * that is entered into the searchBar.
      */
+
     @Test
     fun testSearchContains() {
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
@@ -148,7 +161,7 @@ class SearchingTests {
                 })
 
                 if(shownTaskList.size == 0){
-                    Log.d("Search Test Malfunction", shownTaskList.toString())
+                    Log.e("Search Test Malfunction", shownTaskList.toString())
                 }
                 else {
 
@@ -164,19 +177,20 @@ class SearchingTests {
                 t.printStackTrace()
             }
         })
+
         deleteTestTask()
     }
 
     /**
+     * US 04.02.01
      *
      * As a task provider, I want search results to show each task with its task requester
      * username, title, status, lowest bid so far (if any).
      *
+     * Test to make sure that all of the information that needs to be displayed is indeed
+     * displayed by the task in the application.
      */
 
-    /**
-     * Test Search result affirmation
-     */
     @Test
     fun onSearchResult(){
         val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
