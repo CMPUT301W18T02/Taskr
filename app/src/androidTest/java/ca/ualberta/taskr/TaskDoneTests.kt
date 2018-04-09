@@ -54,7 +54,7 @@ class TaskDoneTests {
     val rule = ActivityTestRule<ViewTaskActivity>(ViewTaskActivity::class.java, false, false)
 
     private fun createTestTask(status: TaskStatus){
-        testTask = Task(owner=taskPosterUsername,
+        testTask = Task(owner=username,
                 title=taskTitle,
                 status= status,
                 bids=ArrayList(),
@@ -68,21 +68,11 @@ class TaskDoneTests {
         Thread.sleep(1000)
     }
 
-    /*@Before
+    @Before
     fun setUp(){
-        val statusReq: TaskStatus = TaskStatus.REQUESTED
-
-        createTestTask(statusReq)
-
-        val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val i = Intent(context, ViewTaskActivity::class.java)
-        i.putExtra("TASK", taskStr)
-        rule.launchActivity(i)
-        rule.activity.supportFragmentManager.beginTransaction()
-
         UserController(context).setLocalUsername(username)
-    }*/
+    }
 
     /**
      * US 07.01.01
@@ -94,6 +84,8 @@ class TaskDoneTests {
     fun setAssignedToDone(){
         val statusReq: TaskStatus = TaskStatus.ASSIGNED
 
+
+
         createTestTask(statusReq)
 
         val taskStr = GenerateRetrofit.generateGson().toJson(testTask)
@@ -103,19 +95,19 @@ class TaskDoneTests {
         rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
 
-        UserController(context).setLocalUsername(username)
-
+        val userController = UserController(rule.activity)
+        var username = userController.getLocalUserName()
 
 
         onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.ASSIGNED.toString())))
+        Assert.assertTrue(username == testTask.owner)
 
 
 
         onView(withId(R.id.addBidOrMarkDone)).perform(scrollTo(), click())
 
-        Thread.sleep(1000)
-        //TODO: Figure out why this line isn't working
-       // onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.DONE.toString())))
+        Thread.sleep(2000)
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.DONE.toString())))
     }
 
     /**
@@ -137,11 +129,15 @@ class TaskDoneTests {
         rule.launchActivity(i)
         rule.activity.supportFragmentManager.beginTransaction()
 
-        UserController(context).setLocalUsername(username)
+        val userController = UserController(rule.activity)
+        var username = userController.getLocalUserName()
 
-        //onView(withId(R.id.reopenButton)).perform(click())
-        //TODO: figure out why this line isn't working.
-        //onView(withId(R.id.taskStatus)).check(ViewAssertions.matches(ViewMatchers.withText(TaskStatus.REQUESTED.toString())))
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.ASSIGNED.toString())))
+        Assert.assertTrue(username == testTask.owner)
+
+        onView(withId(R.id.reopenButton)).perform(scrollTo(), click())
+        Thread.sleep(2000)
+        onView(withId(R.id.taskStatus)).check(matches(withText(TaskStatus.REQUESTED.toString())))
     }
 
 
