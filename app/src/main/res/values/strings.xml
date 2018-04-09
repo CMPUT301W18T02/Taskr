@@ -70,4 +70,6 @@
     <string name="watch_video_button_text">Watch the Video!!</string>
     <string name="remove_ads">Remove Ads</string>
     <string name="ad_watch_copy">Watching an ad helps keep Taskr freeand we couldn\'t thank you enough for taking the time to do so. In return you get a nice ad-free experience for awhile. A button will appear when the video is ready to be played.</string>
+    <string name="show_all_tasks">Show all tasks</string>
+    <string name="show_assigned_tasks">Show assigned tasks</string>
 </resources>
