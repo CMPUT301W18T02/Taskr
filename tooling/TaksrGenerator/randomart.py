@@ -107,11 +107,11 @@ def generate_image(is_rectangle):
 def makeImage(is_rectangle):
     image = generate_image(is_rectangle)
     with io.BytesIO() as f:
-        image.save(f, "JPEG")
+        image.save(f, "JPEG", quality = 50)
 
         im = base64.b64encode(f.getvalue())
         return str(im, 'utf-8')
 
 
 if __name__ == "__main__":
-    print(len(makeImage(False)))
+    print(len(makeImage(True)))
