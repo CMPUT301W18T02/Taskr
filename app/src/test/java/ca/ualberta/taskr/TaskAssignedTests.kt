@@ -35,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 import android.content.Intent
+import android.support.v7.widget.LinearLayoutManager
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowActivity
 
@@ -48,7 +49,7 @@ import org.robolectric.shadows.ShadowActivity
 class TaskAssignedTests {
 
     private lateinit var activity: ToDoTaskListActivity
-    private var username = "TestUsername"
+    private var username = "The Mask"
     private val taskTitle = "Test Title for a Task"
     private val taskDescr = "This is a description for a task. I am describing a task."
 
@@ -67,11 +68,13 @@ class TaskAssignedTests {
     lateinit var navView: NavigationView
 */
 
-    private var owner = "Corkus"
-    private var title = "I'm a wot"
+    private var searchText = "TaskTitle"
+
+    private var owner = "TaskOwner"
+    private var title = "TaskTitle"
     private var status: TaskStatus = TaskStatus.REQUESTED
     private var bids = java.util.ArrayList<Bid>()
-    private var description = "4 mana 7/7"
+    private var description = "TaskDescription"
     private var photos = ArrayList<String>()
     private var location: LatLng = LatLng(56.5, 50.0)
     private var chosenBidder = "The Mask"
@@ -99,13 +102,11 @@ class TaskAssignedTests {
 
     @Before
     fun setup() {
-        activity = Robolectric.setupActivity(ToDoTaskListActivity::class.java)
+        activity = Robolectric.buildActivity(ToDoTaskListActivity::class.java).create().visible().get()
 
         //set username
-        //UserController(activity).setLocalUsername(username)
+        UserController(activity).setLocalUsername(username)
 
-        val userController = UserController(activity)
-        username = userController.getLocalUserName()
 
         ShadowLog.stream = System.out
 
@@ -116,6 +117,14 @@ class TaskAssignedTests {
         loadingPanel =  activity.findViewById<RelativeLayout>(R.id.loadingPanel)
         myTasksRefresh = activity.findViewById<SwipeRefreshLayout>(R.id.todoTasksRefresh)
         taskSearchBar = activity.findViewById<EditText>(R.id.todoTaskSearchBar)
+
+        var viewManager = LinearLayoutManager(activity)
+        myTasksView.apply {
+            layoutManager = viewManager
+            adapter = myTasksAdapter
+        }
+
+        activity.supportFragmentManager.beginTransaction()
 
 
     }
@@ -138,7 +147,10 @@ class TaskAssignedTests {
     @Test
     fun viewAssignedTasks(){
 
-        val task = Task(owner, title, status, bids, description, photos, location, username)
+        val userController = UserController(activity)
+        username = userController.getLocalUserName()
+
+        val task = Task(owner, title, status, bids, description, photos, location, chosenBidder)
 
         GenerateRetrofit.generateRetrofit().createTask(task).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -154,39 +166,14 @@ class TaskAssignedTests {
 
         Thread.sleep(2000)
 
-        /*taskSearchBar.setText(task.title)
-        CachingRetrofit(activity).getTasks(object : ca.ualberta.taskr.models.elasticsearch.Callback<List<Task>> {
-            override fun onResponse(response: List<Task>, responseFromCache: Boolean) {
-                //TODO Deal with offline
-                Log.i("network", response.toString())
 
-                val username = UserController(activity).getLocalUserName()
-
-                activity.updateSearch(task.title)
-
-
-                // Populate a master list and filter it by username to get our
-                val masterList: ArrayList<Task> = ArrayList()
-                masterList.addAll(response)
-                myTasksList.addAll(masterList.filter { it ->
-                    it.chosenBidder == username
-                })
-
-                loadingPanel.visibility = View.GONE
-                myTasksAdapter.notifyDataSetChanged()
-
-                myTasksRefresh.isRefreshing = false
-
-            }
-        }).execute()*/
-
-        taskSearchBar.setText(task.title)
+        taskSearchBar.setText(searchText)
         GenerateRetrofit.generateRetrofit().getTasks().enqueue(object : Callback<List<Task>> {
             override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
                 Log.i("network", response.body().toString())
                 masterTaskList.clear()
                 masterTaskList.addAll(response.body() as ArrayList<Task>)
-                activity.updateSearch(task.title)
+                activity.updateSearch(searchText)
                 myTasksList.clear()
 
                 myTasksList.addAll(masterTaskList.filter { it ->
@@ -197,9 +184,12 @@ class TaskAssignedTests {
                     Log.e("Search Test Malfunction", myTasksList.toString())
                 } else {
 
-                    org.junit.Assert.assertEquals("TestTask", task.title)
+                    Assert.assertEquals("TestTask", searchText)
 
-                    org.junit.Assert.assertTrue(myTasksList.contains(task))
+
+                    Assert.assertTrue(myTasksList.contains(task))
+
+                    Log.d("SEARCH", "Searching statements done!")
                 }
 
             }
@@ -211,17 +201,21 @@ class TaskAssignedTests {
 
         Thread.sleep(2000)
 
+        myTasksAdapter.notifyDataSetChanged()
+
+        Thread.sleep(1000)
+
         Assert.assertEquals(myTasksView.visibility, View.VISIBLE)
 
 
         val item = myTasksView.getChildAt(0)
 
-        // TODO: Figure out why item is null
 
         if(item == null){
-            Log.d("Item", "Item is null")
+            Log.e("Item", "Item is null")
         }
         else{
+
             Assert.assertEquals(item.visibility, View.VISIBLE)
 
             Assert.assertEquals(item.taskTitle.visibility, View.VISIBLE)
