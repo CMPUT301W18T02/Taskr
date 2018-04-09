@@ -18,6 +18,9 @@ import ca.ualberta.taskr.models.TaskStatus
 import ca.ualberta.taskr.models.elasticsearch.CachingRetrofit
 import ca.ualberta.taskr.models.elasticsearch.Callback
 import ca.ualberta.taskr.models.elasticsearch.GenerateRetrofit
+import ca.ualberta.taskr.util.AdHelper.Companion.isAdFree
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
@@ -51,6 +54,8 @@ class EditTaskActivity : AppCompatActivity() {
     private var position: LatLng? = null
     private var photos: ArrayList<String> = ArrayList()
     private val userController: UserController = UserController(this)
+    private lateinit var mInterstitialAd: InterstitialAd
+    private var stopAds: Boolean = false
 
 
     /**
@@ -61,8 +66,24 @@ class EditTaskActivity : AppCompatActivity() {
      * @see [GenerateRetrofit]
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_task)
+
+
+        if (!isAdFree(this)) {
+            try {
+                mInterstitialAd = InterstitialAd(this)
+                mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+            } catch (e: Throwable) {
+                Log.d("AdError", "Ads can't be tested in Robolectric")
+                stopAds = true
+            }
+        } else {
+            stopAds = true
+        }
         ButterKnife.bind(this)
 
         setSupportActionBar(toolbar)
@@ -157,6 +178,12 @@ class EditTaskActivity : AppCompatActivity() {
             }
         }).execute(Pair(editTask, newTask))
 
+        if (!stopAds && mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
+
         // Serialize new/modified Task object and pass back to ViewTaskActivity.
         val editTaskIntent = Intent()
         var strTask = GenerateRetrofit.generateGson().toJson(newTask)
@@ -176,7 +203,7 @@ class EditTaskActivity : AppCompatActivity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(data == null) return
+        if (data == null) return
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 position = GenerateRetrofit.generateGson().fromJson(data.getStringExtra("position"), LatLng::class.java)
@@ -209,7 +236,7 @@ class EditTaskActivity : AppCompatActivity() {
      * Start an [AddPhotoToTaskActivity] for the user to add or edit photo to a task
      */
     @OnClick(R.id.taskAddImageButton)
-    fun addImagesToTask(){
+    fun addImagesToTask() {
         val addImagesIntent = Intent(this, AddPhotoToTaskActivity::class.java)
         addImagesIntent.putStringArrayListExtra("currentPhotos", photos)
         startActivityForResult(addImagesIntent, 2)
