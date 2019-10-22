@@ -2,7 +2,7 @@ certifi==2018.1.18
 chardet==3.0.4
 Faker==0.8.11
 idna==2.6
-Pillow==5.1.0
+Pillow==6.2.0
 python-dateutil==2.6.1
 requests==2.18.4
 six==1.11.0
